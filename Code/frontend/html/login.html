@@ -7,7 +7,6 @@
   <!-- same stylesheet used everywhere -->
   <link rel="stylesheet" href="../css/style.css">
   <link rel="stylesheet" href="../css/login.css">
-
 </head>
 
 <body>
@@ -50,12 +49,8 @@
     </p>
   </footer>
 
-  <script>
-    // demo only – remove or replace with real logic
-    document.getElementById('loginForm').addEventListener('submit', e => {
-      e.preventDefault();
-      alert('Replace this with real authentication!');
-    });
-  </script>
+  <!-- Load config FIRST, then login logic -->
+  <script src="../js/config.js"></script>
+  <script src="../js/login.js"></script>
 </body>
 </html>

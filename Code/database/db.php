@@ -2,7 +2,7 @@
 $HOSTNAME = 'localhost';
 $USERNAME = 'root';
 $PASSWORD = ''; 
-$DATABASE = 'agrifresh';
+$DATABASE = 'agrifresh2';
 
 mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
 
