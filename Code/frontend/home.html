@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Agri-Fresh</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght:300;400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- Header -->
+  <header>
+    <h1>Agri Fresh Market</h1>
+    <nav>
+      <a href="#" onclick="openOrders()" title="Cart">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
+             xmlns="http://www.w3.org/2000/svg" style="vertical-align:middle">
+          <path d="M9 2C7.89543 2 7 2.89543 7 4C7 5.10457 7.89543 6 9 6H15C16.1046 6 17 5.10457 17 4C17 2.89543 16.1046 2 15 2H9Z" fill="currentColor"/>
+          <path d="M3 8C2.44772 8 2 8.44772 2 9C2 9.55228 2.44772 10 3 10H4.24844L5.99219 18.5769C6.2019 19.6342 7.12542 20.4231 8.20703 20.4231H15.793C16.8746 20.4231 17.7981 19.6342 18.0078 18.5769L19.7516 10H21C21.5523 10 22 9.55228 22 9C22 8.44772 21.5523 8 21 8H3Z" fill="currentColor"/>
+        </svg>
+      </a>
+      <a href="about.html">About Us</a>
+      <a href="#products">Products</a>
+      <a href="#contact">Contact</a>
+    </nav>
+  </header>
+
+  <!-- Hero -->
+  <section id="home" class="hero">
+    <div class="hero-slides">
+      <img src="https://plus.unsplash.com/premium_photo-1724129050570-669724edcffc?q=80&w=687&auto=format&fit=crop" alt="Slide 1">
+      <img src="https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=1600&q=80" alt="Slide 2">
+      <img src="https://images.unsplash.com/photo-1597362925123-77861d3fbac7?auto=format&fit=crop&w=1170&q=80" alt="Slide 3">
+      <img src="https://images.unsplash.com/photo-1557844352-761f2565b576?auto=format&fit=crop&w=2070&q=80" alt="Slide 4">
+    </div>
+    <div class="hero-text">
+      <h2 class="mega-title">
+        <span class="line-1">Organic</span>
+        <span class="line-2">Food</span>
+        <span class="line-3">Everyday</span>
+      </h2>
+      <p class="mega-desc">
+        Handpicked daily,<br>
+        From local farms to your kitchen.
+        <small>No traffic, no hassle, just greens at one click!</small>
+      </p>
+      <button class="mega-cta" onclick="scrollToProducts()">SHOP NOW</button>
+    </div>
+  </section>
+
+  <!-- Filters -->
+  <div class="filters">
+    <div class="filters-inner">
+      <input id="search" type="text" placeholder="Search produce…" onkeyup="filterProducts()">
+      <select id="category" onchange="filterProducts()">
+        <option value="all">All Categories</option>
+        <option>Leafy Greens</option>
+        <option>Roots</option>
+        <option>Fruits</option>
+        <option>Herbs</option>
+      </select>
+      <div class="tags">
+        <button onclick="toggleTag(this,'organic')">Organic</button>
+        <button onclick="toggleTag(this,'seasonal')">Seasonal</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Product Grid -->
+  <main id="products" class="grid"></main>
+
+  <!-- Floating Cart -->
+  <aside id="cart" class="sidebar">
+    <div style="display:flex;justify-content:space-between;align-items:center">
+      <h4>Your Cart&nbsp;&nbsp;&nbsp;&nbsp; --><span id="cart-count">0</span></h4>
+      <span onclick="closeCart()" style="cursor:pointer;font-size:1.3rem;">×</span>
+    </div>
+    <ul id="cart-items"></ul>
+    <div class="cart-summary">
+      <strong>Total:</strong> <span id="cart-total">₱0</span>
+    </div>
+    <button onclick="checkout()">Checkout</button>
+  </aside>
+
+  <footer>
+    <p style="text-align:center;padding:1.5rem 0;color:#666;">
+      &copy; 2025 AgriFresh Market – Freshness Delivered.
+    </p>
+  </footer>
+
+  <script src="script.js"></script>
+  <script>
+    /* ======  CLICKABLE PHOTOS  ====== */
+    // Replace the render() function with this one
+    function render(list = products) {
+      const grid = document.getElementById('products');
+      grid.innerHTML = list.map(p => `
+        <div class="card">
+          <!-- image now links to product-detail -->
+          <a href="product-detail.html?name=${encodeURIComponent(p.name)}">
+            <img src="${p.img}" alt="${p.name}" loading="lazy">
+          </a>
+
+          <div class="card-body">
+            <h4>${p.name}</h4>
+            <span class="price">₱${p.price}</span>
+            <button onclick="addToCart('${p.name}', ${p.price})">Add to Cart</button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    /* Initial load */
+    render();
+  </script>
+</body>
+</html>

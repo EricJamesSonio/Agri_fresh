@@ -1,0 +1,304 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>My Orders – AgriFresh</title>
+
+  <!-- global theme -->
+  <link rel="stylesheet" href="style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+
+  <style>
+    body{background:#fafafa;font-family:Inter;margin:0}
+    header{background:#4caf50;color:#fff;padding:1rem 2rem;display:flex;justify-content:space-between;align-items:center}
+    header h1{margin:0;font-size:1.5rem}
+    header nav a{color:#fff;margin-left:1.5rem;text-decoration:none;font-weight:500}
+
+    .orders-wrapper{max-width:960px;margin:3rem auto;padding:0 1.5rem}
+    .orders-wrapper h1{color:#2e7d32;margin-bottom:1rem}
+
+    .bulk-bar{display:flex;align-items:center;gap:1rem;margin-bottom:.5rem;font-size:.9rem}
+    #bulkDeleteBtn{display:none;background:#ff4d4d;color:#fff;border:none;border-radius:4px;padding:.4rem .8rem;font-size:.85rem;cursor:pointer}
+
+    .order-table{width:100%;border-collapse:collapse;font-size:.9rem}
+    .order-table th,.order-table td{padding:.75rem .6rem;text-align:left;border-bottom:1px solid #eee}
+    .order-table th{background:#e8f5e9;color:#2e7d32;font-weight:600}
+    .order-table img{width:60px;height:60px;object-fit:cover;border-radius:4px}
+    .qty-btn{width:24px;height:24px;border:1px solid #4caf50;background:#fff;color:#2e7d32;border-radius:50%;cursor:pointer;font-size:.9rem;line-height:1;text-align:center}
+    .qty-btn:hover{background:#e8f5e9}
+    .delete-btn{color:#ff4d4d;cursor:pointer;font-size:1.1rem}
+
+    #grandTotalRow{display:none;background:#f9f9f9;font-weight:600}
+    #grandTotalRow td:nth-child(5){text-align:right}
+    #grandTotal{color:#2e7d32;font-size:1.1rem}
+
+    /* --- NEW: voucher / coins / checkout area --- */
+    .cart-footer{
+      margin-top:1.5rem;
+      background:#fff;
+      border:1px solid #eee;
+      border-radius:.5rem;
+      padding:1rem;
+      font-size:.9rem;
+    }
+    .cart-footer label{
+      font-weight:600;
+      color:#2e7d32;
+      margin-right:.5rem;
+    }
+    .cart-footer .voucher-line,
+    .cart-footer .coins-line{
+      display:flex;
+      align-items:center;
+      gap:.5rem;
+      margin-bottom:.5rem;
+    }
+    .cart-footer .voucher-line input,
+    .cart-footer .coins-line input{
+      flex:1;
+      max-width:150px;
+      padding:.25rem .5rem;
+      border:1px solid #ccc;
+      border-radius:4px;
+      font-size:.85rem;
+    }
+    .cart-footer .voucher-line button{
+      background:#4caf50;
+      color:#fff;
+      border:none;
+      border-radius:4px;
+      padding:.25rem .6rem;
+      font-size:.8rem;
+      cursor:pointer;
+    }
+    .cart-footer .grand-total{
+      text-align:right;
+      font-size:1.1rem;
+      font-weight:600;
+      margin-top:.75rem;
+    }
+    .cart-footer .grand-total span{color:#2e7d32}
+    .cart-footer .checkout-btn{
+      width:100%;
+      margin-top:.5rem;
+      background:#2e7d32;
+      color:#fff;
+      border:none;
+      border-radius:4px;
+      padding:.6rem;
+      font-size:1rem;
+      cursor:pointer;
+    }
+    .cart-footer .checkout-btn:hover{background:#1b5e20}
+
+    .empty-state{text-align:center;padding:3rem;color:#666}
+  </style>
+</head>
+
+<body>
+  <header>
+    <h1>Agri Fresh Market</h1>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="about.html">About&nbsp;Us</a>
+      <a href="index.html#products">Products</a>
+      <a href="index.html#contact">Contact</a>
+    </nav>
+  </header>
+
+  <main class="orders-wrapper">
+    <h1>My Orders</h1>
+
+    <div class="bulk-bar">
+      <label style="display:flex;align-items:center;gap:.4rem;font-weight:600;color:#2e7d32">
+        <input type="checkbox" id="selectAll" onchange="toggleAll(this)">
+        Select All
+      </label>
+      <button id="bulkDeleteBtn" onclick="bulkDelete()">Delete Selected</button>
+    </div>
+
+    <table class="order-table">
+      <thead>
+        <tr>
+          <th style="width:30px"></th>
+          <th style="width:70px">Product</th>
+          <th></th>
+          <th>Unit Price</th>
+          <th>Quantity</th>
+          <th>Total Price</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody id="orderBody"></tbody>
+      <tfoot>
+        <tr id="grandTotalRow">
+          <td colspan="5">Grand Total</td>
+          <td id="grandTotal">₱0</td>
+          <td></td>
+        </tr>
+      </tfoot>
+    </table>
+
+    <!-- NEW: voucher / coins / checkout block -->
+    <div class="cart-footer">
+      <div class="voucher-line">
+        <label>Platform Voucher</label>
+        <input type="text" id="voucherCode" placeholder="Enter code">
+        <button onclick="applyVoucher()">Apply</button>
+        <span id="voucherDiscount" style="margin-left:auto">-₱0</span>
+      </div>
+
+      <div class="coins-line">
+        <label>Agri Points</label>
+        <input type="number" id="coins" min="0" placeholder="0" oninput="recalcGrandTotal()">
+        <span id="coinsDiscount" style="margin-left:auto">-₱0</span>
+      </div>
+
+      <div class="grand-total">
+        Total (<span id="itemCount">0</span> item): <span id="finalTotal">₱0</span>
+      </div>
+
+      <button class="checkout-btn" onclick="checkout()">Check Out</button>
+    </div>
+
+    <div id="emptyState" class="empty-state">
+      <p>No orders yet. <a href="index.html" style="color:#2e7d32">Shop now</a></p>
+    </div>
+  </main>
+
+  <footer>
+    <p style="text-align:center;padding:1.5rem 0;color:#666;">&copy; 2025 AgriFresh Market – Freshness Delivered.</p>
+  </footer>
+
+  <script>
+    const user = JSON.parse(localStorage.getItem('currentUser'));
+    if (!user) { alert('Please log in first'); location.href = 'login.html'; }
+
+    const allOrders = JSON.parse(localStorage.getItem('orders') || '[]');
+    let orders = allOrders.filter(o => o.userId === user.id);
+
+    /* ---------- render table ---------- */
+    function renderTable() {
+      const tbody = document.getElementById('orderBody');
+      const empty = document.getElementById('emptyState');
+      if (!orders.length) { empty.style.display = 'block'; return; }
+      empty.style.display = 'none';
+
+      let rows = '';
+      orders.forEach(o => {
+        o.items.forEach(i => {
+          const lineTotal = i.price * i.qty;
+          rows += `
+            <tr data-order="${o.id}" data-product="${i.name}" data-price="${i.price}">
+              <td><input type="checkbox" class="rowCheck" onchange="updateControls()"></td>
+              <td><img src="${i.img || '/images/no-img.jpg'}" alt="${i.name}"></td>
+              <td>${i.name} <small>(${i.option})</small></td>
+              <td>₱${i.price}</td>
+              <td>
+                <button class="qty-btn" onclick="changeQty(this,-1)">−</button>
+                <span class="qtyVal">${i.qty}</span>
+                <button class="qty-btn" onclick="changeQty(this,1)">+</button>
+              </td>
+              <td class="lineTotal">₱${lineTotal}</td>
+              <td><span class="delete-btn" onclick="deleteItem(${o.id},'${i.name}')">×</span></td>
+            </tr>`;
+        });
+      });
+      tbody.innerHTML = rows;
+    }
+
+    /* ---------- quantity change ---------- */
+    function changeQty(btn, delta) {
+      const tr   = btn.closest('tr');
+      const span = tr.querySelector('.qtyVal');
+      let qty    = parseInt(span.textContent, 10) + delta;
+      if (qty < 1) qty = 1;
+      span.textContent = qty;
+
+      const price = parseFloat(tr.dataset.price);
+      tr.querySelector('.lineTotal').textContent = '₱' + (price * qty);
+      updateControls();
+    }
+
+    /* ---------- select-all / bulk ---------- */
+    function toggleAll(master) {
+      document.querySelectorAll('.rowCheck').forEach(cb => cb.checked = master.checked);
+      updateControls();
+    }
+
+    function updateControls() {
+      const checked = [...document.querySelectorAll('.rowCheck:checked')];
+
+      // top bar bulk delete
+      const bulkBtn   = document.getElementById('bulkDeleteBtn');
+      bulkBtn.style.display = checked.length ? 'inline-block' : 'none';
+
+      // bottom summary
+      let subTotal = 0;
+      checked.forEach(cb => {
+        const tr = cb.closest('tr');
+        subTotal += parseFloat(tr.querySelector('.lineTotal').textContent.replace('₱', ''));
+      });
+
+      document.getElementById('itemCount').textContent = checked.length;
+      document.getElementById('grandTotal').textContent = '₱' + subTotal;
+      recalcGrandTotal();
+    }
+
+    /* ---------- voucher / coins ---------- */
+    let voucherValue = 0;
+    function applyVoucher() {
+      const code = document.getElementById('voucherCode').value.trim().toUpperCase();
+      if (code === 'AGRI10') voucherValue = 10;
+      else if (code === 'AGRI20') voucherValue = 20;
+      else { alert('Invalid voucher'); voucherValue = 0; }
+      document.getElementById('voucherDiscount').textContent = '-₱' + voucherValue;
+      recalcGrandTotal();
+    }
+
+    function recalcGrandTotal() {
+      const checked = [...document.querySelectorAll('.rowCheck:checked')];
+      let subTotal = 0;
+      checked.forEach(cb => {
+        const tr = cb.closest('tr');
+        subTotal += parseFloat(tr.querySelector('.lineTotal').textContent.replace('₱', ''));
+      });
+
+      const coins = Math.min(parseInt(document.getElementById('coins').value || 0, 10), subTotal - voucherValue);
+      document.getElementById('coins').value = coins;
+      document.getElementById('coinsDiscount').textContent = '-₱' + coins;
+
+      const final = subTotal - voucherValue - coins;
+      document.getElementById('finalTotal').textContent = '₱' + final;
+    }
+
+    /* ---------- delete ---------- */
+    function deleteItem(orderId, productName) {
+      let ordersArr = JSON.parse(localStorage.getItem('orders') || '[]');
+      const order = ordersArr.find(o => o.id === orderId);
+      if (!order) return;
+
+      order.items = order.items.filter(i => i.name !== productName);
+      order.total = order.items.reduce((s, i) => s + i.price * i.qty, 0);
+
+      if (!order.items.length) {
+        ordersArr = ordersArr.filter(o => o.id !== orderId);
+      }
+      localStorage.setItem('orders', JSON.stringify(ordersArr));
+      orders = ordersArr.filter(o => o.userId === user.id);
+      renderTable();
+      updateControls();
+    }
+
+    /* ---------- checkout ---------- */
+    function checkout() {
+      const checked = [...document.querySelectorAll('.rowCheck:checked')];
+      if (!checked.length) { alert('Select at least one item to check out'); return; }
+      alert('Proceeding to payment gateway…');
+      // redirect / clear cart etc. here
+    }
+
+    renderTable();
+  </script>
+</body>
+</html>
