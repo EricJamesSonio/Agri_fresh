@@ -17,6 +17,10 @@ switch ($request) {
         require_once(__DIR__ . '/../Routes/product.php');
         break;
 
+    case 'signup':
+        require_once(__DIR__ . '/../Routes/signup.php');
+        break;
+
     default:
         echo json_encode([
             "status" => "error",

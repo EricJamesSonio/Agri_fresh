@@ -3,16 +3,19 @@
 <head>
   <meta charset="UTF-8">
   <title>Sign Up – Agri Fresh</title>
-
-  <!-- same global stylesheet -->
   <link rel="stylesheet" href="../css/style.css">
   <link rel="stylesheet" href="../css/signup.css">
-
+  <style>
+    .error {
+      color: red;
+      font-size: 0.85rem;
+      margin-top: 3px;
+      display: block;
+    }
+  </style>
 </head>
 
 <body>
-
-  <!-- 3-dot menu -->
   <nav class="dots-menu">
     <input type="checkbox" id="dots-toggle">
     <label for="dots-toggle">⋮</label>
@@ -25,31 +28,35 @@
 
   <main class="signup-wrapper">
     <h1>Sign Up</h1>
-
     <form id="signupForm">
       <label>
         First Name
         <input type="text" name="firstName" required />
+        <span class="error" id="firstNameError"></span>
       </label>
 
       <label>
         Last Name
         <input type="text" name="lastName" required />
+        <span class="error" id="lastNameError"></span>
       </label>
 
       <label>
         Contact No.
         <input type="tel" name="contact" required />
+        <span class="error" id="contactError"></span>
       </label>
 
       <label>
         Email
         <input type="email" name="email" required />
+        <span class="error" id="emailError"></span>
       </label>
 
       <label>
         Password
         <input type="password" name="password" required />
+        <span class="error" id="passwordError"></span>
       </label>
 
       <button type="submit">Create Account</button>
@@ -66,12 +73,7 @@
     </p>
   </footer>
 
-  <script>
-    // demo only – remove or replace with real logic
-    document.getElementById('signupForm').addEventListener('submit', e => {
-      e.preventDefault();
-      alert('Replace this with real registration logic!');
-    });
-  </script>
+  <script src="../js/config.js"></script>
+  <script src="../js/signup.js"></script>
 </body>
 </html>
