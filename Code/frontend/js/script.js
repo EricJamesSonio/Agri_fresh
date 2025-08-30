@@ -5,49 +5,49 @@ const products = [
     price: 25,
     tags: ['organic'],
     category: 'Leafy Greens',
-    img: '/images/kangkong.jfif'
+    img: '../images/kangkong.jfif'
   },
   {
     name: 'Sitaw',
     price: 30,
     tags: [],
     category: 'Beans',
-    img: '/images/sitaw.png'
+    img: '../images/sitaw.png'
   },
   {
     name: 'Ampalaya',
     price: 45,
     tags: ['organic'],
     category: 'Vegetables',
-    img: '/images/ampalaya.png'
+    img: '../images/ampalaya.png'
   },
   {
     name: 'Kalabasa',
     price: 35,
     tags: ['seasonal'],
     category: 'Roots',
-    img: '/images/kalabasa.jpg'
+    img: '../images/kalabasa.jpg'
   },
   {
     name: 'Okra',
     price: 20,
     tags: ['bestseller'],
     category: 'Vegetables',
-    img: '/images/okra.jpg'
+    img: '../images/okra.jpg'
   },
   {
     name: 'Labanos',
     price: 15,
     tags: [],
     category: 'Roots',
-    img: '/images/labanos.jpg'
+    img: '../images/labanos.jpg'
   },
   {
     name: 'Malunggay',
     price: 18,
     tags: ['organic'],
     category: 'Leafy Greens',
-    img: '/images/malunggay.jpg'
+    img: '../images/malunggay.jpg'
   }
 ];
 

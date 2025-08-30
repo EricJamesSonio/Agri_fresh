@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Sign Up – Agri Fresh</title>
+
+  <!-- same global stylesheet -->
+  <link rel="stylesheet" href="../css/style.css">
+  <link rel="stylesheet" href="../css/signup.css">
+
+</head>
+
+<body>
+
+  <!-- 3-dot menu -->
+  <nav class="dots-menu">
+    <input type="checkbox" id="dots-toggle">
+    <label for="dots-toggle">⋮</label>
+    <ul>
+      <li><a href="index.html">Home</a></li>
+      <li><a href="login.html">Log in</a></li>
+      <li><a href="admin.html">Admin</a></li>
+    </ul>
+  </nav>
+
+  <main class="signup-wrapper">
+    <h1>Sign Up</h1>
+
+    <form id="signupForm">
+      <label>
+        First Name
+        <input type="text" name="firstName" required />
+      </label>
+
+      <label>
+        Last Name
+        <input type="text" name="lastName" required />
+      </label>
+
+      <label>
+        Contact No.
+        <input type="tel" name="contact" required />
+      </label>
+
+      <label>
+        Email
+        <input type="email" name="email" required />
+      </label>
+
+      <label>
+        Password
+        <input type="password" name="password" required />
+      </label>
+
+      <button type="submit">Create Account</button>
+
+      <p class="switch">
+        Already have an account? <a href="login.html">Log in</a>
+      </p>
+    </form>
+  </main>
+
+  <footer>
+    <p style="text-align:center;padding:1.5rem 0;color:#666;">
+      &copy; 2025 AgriFresh Market – Freshness Delivered.
+    </p>
+  </footer>
+
+  <script>
+    // demo only – remove or replace with real logic
+    document.getElementById('signupForm').addEventListener('submit', e => {
+      e.preventDefault();
+      alert('Replace this with real registration logic!');
+    });
+  </script>
+</body>
+</html>

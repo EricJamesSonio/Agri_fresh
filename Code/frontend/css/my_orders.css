@@ -1,0 +1,165 @@
+/* orders.css - page-specific styles for My Orders page */
+
+body {
+  background: #fafafa;
+  font-family: Inter, sans-serif;
+  margin: 0;
+}
+
+header {
+  background: #4caf50;
+  color: #fff;
+  padding: 1rem 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+header h1 { margin: 0; font-size: 1.5rem; }
+header nav a {
+  color: #fff;
+  margin-left: 1.5rem;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.orders-wrapper {
+  max-width: 960px;
+  margin: 3rem auto;
+  padding: 0 1.5rem;
+}
+.orders-wrapper h1 {
+  color: #2e7d32;
+  margin-bottom: 1rem;
+}
+
+.bulk-bar {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: .5rem;
+  font-size: .9rem;
+}
+#bulkDeleteBtn {
+  display: none;
+  background: #ff4d4d;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  padding: .4rem .8rem;
+  font-size: .85rem;
+  cursor: pointer;
+}
+
+.order-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: .9rem;
+}
+.order-table th,
+.order-table td {
+  padding: .75rem .6rem;
+  text-align: left;
+  border-bottom: 1px solid #eee;
+}
+.order-table th {
+  background: #e8f5e9;
+  color: #2e7d32;
+  font-weight: 600;
+}
+.order-table img {
+  width: 60px;
+  height: 60px;
+  object-fit: cover;
+  border-radius: 4px;
+}
+.qty-btn {
+  width: 24px;
+  height: 24px;
+  border: 1px solid #4caf50;
+  background: #fff;
+  color: #2e7d32;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: .9rem;
+  line-height: 1;
+  text-align: center;
+}
+.qty-btn:hover { background: #e8f5e9; }
+.delete-btn {
+  color: #ff4d4d;
+  cursor: pointer;
+  font-size: 1.1rem;
+}
+
+#grandTotalRow {
+  display: none;
+  background: #f9f9f9;
+  font-weight: 600;
+}
+#grandTotalRow td:nth-child(5) { text-align: right; }
+#grandTotal { color: #2e7d32; font-size: 1.1rem; }
+
+/* --- Voucher / Checkout area --- */
+.cart-footer {
+  margin-top: 1.5rem;
+  background: #fff;
+  border: 1px solid #eee;
+  border-radius: .5rem;
+  padding: 1rem;
+  font-size: .9rem;
+}
+.cart-footer label {
+  font-weight: 600;
+  color: #2e7d32;
+  margin-right: .5rem;
+}
+.cart-footer .voucher-line,
+.cart-footer .coins-line {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  margin-bottom: .5rem;
+}
+.cart-footer .voucher-line input,
+.cart-footer .coins-line input {
+  flex: 1;
+  max-width: 150px;
+  padding: .25rem .5rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: .85rem;
+}
+.cart-footer .voucher-line button {
+  background: #4caf50;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  padding: .25rem .6rem;
+  font-size: .8rem;
+  cursor: pointer;
+}
+.cart-footer .grand-total {
+  text-align: right;
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-top: .75rem;
+}
+.cart-footer .grand-total span { color: #2e7d32; }
+.cart-footer .checkout-btn {
+  width: 100%;
+  margin-top: .5rem;
+  background: #2e7d32;
+  color: #fff;
+  border: none;
+  border-radius: .4rem;
+  padding: .6rem;
+  font-size: 1rem;
+  cursor: pointer;
+}
+.cart-footer .checkout-btn:hover { background: #1b5e20; }
+
+.empty-state {
+  text-align: center;
+  padding: 3rem;
+  color: #666;
+}

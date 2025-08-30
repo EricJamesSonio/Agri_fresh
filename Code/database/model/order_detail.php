@@ -14,5 +14,3 @@ createTable($con, 'order_detail', "
         FOREIGN KEY (product_id) REFERENCES product(product_id) ON DELETE CASCADE
     )
 ");
-
-?>
