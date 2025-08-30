@@ -1,58 +1,25 @@
-// 🌿 Filipino veggies – ₱ PHP
-const products = [
-  {
-    name: 'Kang kong',
-    price: 25,
-    tags: ['organic'],
-    category: 'Leafy Greens',
-    img: '../images/kangkong.jfif'
-  },
-  {
-    name: 'Sitaw',
-    price: 30,
-    tags: [],
-    category: 'Beans',
-    img: '../images/sitaw.png'
-  },
-  {
-    name: 'Ampalaya',
-    price: 45,
-    tags: ['organic'],
-    category: 'Vegetables',
-    img: '../images/ampalaya.png'
-  },
-  {
-    name: 'Kalabasa',
-    price: 35,
-    tags: ['seasonal'],
-    category: 'Roots',
-    img: '../images/kalabasa.jpg'
-  },
-  {
-    name: 'Okra',
-    price: 20,
-    tags: ['bestseller'],
-    category: 'Vegetables',
-    img: '../images/okra.jpg'
-  },
-  {
-    name: 'Labanos',
-    price: 15,
-    tags: [],
-    category: 'Roots',
-    img: '../images/labanos.jpg'
-  },
-  {
-    name: 'Malunggay',
-    price: 18,
-    tags: ['organic'],
-    category: 'Leafy Greens',
-    img: '../images/malunggay.jpg'
-  }
-];
-
+let products = []; 
 let cart = [];
 let activeTags = [];
+
+async function fetchProducts() {
+  try {
+    const res = await fetch(apiUrl('products')); // <-- uses config.js
+    if (!res.ok) throw new Error('Failed to fetch products');
+
+    products = await res.json();
+    products = products.map(p => ({
+      ...p,
+      img: `${CONFIG.IMAGE_PATH}/${p.img}` // use config.js IMAGE_PATH
+    }));
+
+    render(products);
+  } catch (err) {
+    console.error(err);
+    document.getElementById('products').innerHTML = `<p style="color:red;">Failed to load products</p>`;
+  }
+}
+
 
 // Render cards
 function render(list = products) {
@@ -71,24 +38,44 @@ function render(list = products) {
 
 // Cart helpers
 function addToCart(name, price) {
-  cart.push({ name, price });
+  const found = cart.find(i => i.name === name);
+  found ? found.qty++ : cart.push({ name, price, qty: 1 });
   updateCart();
 }
 function updateCart() {
-  const cartEl = document.getElementById('cart');
-  const count = document.getElementById('cart-count');
-  const items = document.getElementById('cart-items');
-  count.textContent = cart.length;
-  items.innerHTML = cart.map((item, idx) =>
-    `<li>${item.name} – ₱${item.price}
-       <span onclick="removeFromCart(${idx})" style="cursor:pointer;color:red;margin-left:8px;">×</span>
-     </li>`
+  const list   = document.getElementById('cart-items');
+  const total  = document.getElementById('cart-total');
+  const count  = document.getElementById('cart-count');
+
+  list.innerHTML = cart.map(
+    (item, idx) =>
+      `<li>
+         ${item.name} – ₱${item.price} × ${item.qty}
+         <span class="item-controls">
+           <button class="minus" onclick="changeQty(${idx},-1)">-</button>
+           <button class="plus"  onclick="changeQty(${idx},1)">+</button>
+           <button class="remove" onclick="removeItem(${idx})">×</button>
+         </span>
+       </li>`
   ).join('');
-  cartEl.classList.add('show');
+
+  const grand = cart.reduce((t, i) => t + i.price * i.qty, 0);
+  total.textContent = '₱' + grand;
+  count.textContent = cart.reduce((c, i) => c + i.qty, 0);
+
+  document.getElementById('cart').classList.toggle('show', cart.length > 0);
 }
-function removeFromCart(idx) {
+function changeQty(idx, delta) {
+  cart[idx].qty += delta;
+  if (cart[idx].qty < 1) cart.splice(idx, 1);
+  updateCart();
+}
+function removeItem(idx) {
   cart.splice(idx, 1);
   updateCart();
+}
+function closeCart() {
+  document.getElementById('cart').classList.remove('show');
 }
 
 // Filters
@@ -119,49 +106,5 @@ function scrollToProducts() {
   document.getElementById('products').scrollIntoView({ behavior: 'smooth' });
 }
 
-/* ---------- ACCUMULATOR CART ---------- */
-function addToCart(name, price) {
-  const found = cart.find(i => i.name === name);
-  found ? found.qty++ : cart.push({ name, price, qty: 1 });
-  updateCart();
-}
-function updateCart() {
-  const list   = document.getElementById('cart-items');
-  const total  = document.getElementById('cart-total');
-  const count  = document.getElementById('cart-count');
-
-  list.innerHTML = cart.map(
-  (item, idx) =>
-    `<li>
-       ${item.name} – ₱${item.price} × ${item.qty}
-       <span class="item-controls">
-         <button class="minus" onclick="changeQty(${idx},-1)">-</button>
-         <button class="plus"  onclick="changeQty(${idx},1)">+</button>
-         <button class="remove" onclick="removeItem(${idx})">×</button>
-       </span>
-     </li>`
-).join('');
-
-  const grand = cart.reduce((t, i) => t + i.price * i.qty, 0);
-  total.textContent = '₱' + grand;
-  count.textContent = cart.reduce((c, i) => c + i.qty, 0);
-
-  document.getElementById('cart').classList.toggle('show', cart.length > 0);
-}
-function changeQty(idx, delta) {
-  cart[idx].qty += delta;
-  if (cart[idx].qty < 1) cart.splice(idx, 1);
-  updateCart();
-}
-function removeItem(idx) {
-  cart.splice(idx, 1);
-  updateCart();
-}
-function closeCart() {
-  document.getElementById('cart').classList.remove('show');
-}
-
-
-
 // Init
-render();
+fetchProducts(); // uses API now

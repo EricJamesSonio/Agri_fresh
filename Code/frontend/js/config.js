@@ -1,8 +1,13 @@
 const CONFIG = {
-  BASE_URL: "http://localhost/agri_fresh/code/backend/api"
+  BASE_URL: "http://localhost/agri_fresh/code/backend/api",
+  IMAGE_PATH: "http://localhost/agri_fresh/code/frontend/images" // full URL to images folder
 };
 
 function apiUrl(endpoint) {
   return `${CONFIG.BASE_URL}/${endpoint}`; 
-  // htaccess rewrites "/login" -> index.php?request=login
+}
+
+// Helper to get full image URL
+function imageUrl(filename) {
+  return `${CONFIG.IMAGE_PATH}/${filename}`;
 }

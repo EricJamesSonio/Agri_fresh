@@ -1,12 +1,12 @@
 code/ 
 ---> backend/                   # Backend logics to manipulate and control the data from database to frontend
 ---> ----> api/                 # Api entry point connection of frontend & Backend
----> ----> ----> index.php      # main api entry point
+---> ----> ----> index.php      # main api entry point (calls routes)
 ---> ----> ----> .htaccess      # security for the backend
 
----> ----> Controller/  
----> ----> Model/
----> ----> Routes/
+---> ----> Controller/      # functions / logic
+---> ----> Model/           # model of data table
+---> ----> Routes/          # entrance
 
 ---> database/          # Database creation & seedings
 ---> ----> Model/
