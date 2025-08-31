@@ -9,7 +9,16 @@ createTable($con, 'orders', "
         customer_id INT NOT NULL,
         address_id INT NOT NULL,
         total_amount DECIMAL(10,2) NOT NULL,
-        order_status ENUM('pending', 'processing', 'shipped', 'delivered', 'cancelled') DEFAULT 'pending',
+        order_status ENUM(
+            'pending', 
+            'processing', 
+            'shipped', 
+            'delivered', 
+            'completed', 
+            'cancelled', 
+            'returned', 
+            'refunded'
+        ) DEFAULT 'pending',
         payment_method VARCHAR(50),
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,

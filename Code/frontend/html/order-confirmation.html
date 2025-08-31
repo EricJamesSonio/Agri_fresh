@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Confirmation | Agri-Fresh</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/style.css">
+    <style>
+        .confirmation-container {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 2rem;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        
+        .success-icon {
+            font-size: 4rem;
+            color: #4CAF50;
+            margin-bottom: 1rem;
+        }
+        
+        .order-details {
+            background: #f8f9fa;
+            padding: 2rem;
+            border-radius: 8px;
+            margin: 2rem 0;
+            text-align: left;
+        }
+        
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #e9ecef;
+        }
+        
+        .detail-row:last-child {
+            border-bottom: none;
+            font-weight: bold;
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 2px solid #4CAF50;
+        }
+        
+        .item-list {
+            margin: 1rem 0;
+        }
+        
+        .item {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #e9ecef;
+        }
+        
+        .btn {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1rem;
+            margin: 0.5rem;
+            text-decoration: none;
+            display: inline-block;
+        }
+        
+        .btn:hover {
+            background: #45a049;
+        }
+        
+        .btn-outline {
+            background: transparent;
+            color: #4CAF50;
+            border: 2px solid #4CAF50;
+        }
+        
+        .btn-outline:hover {
+            background: #4CAF50;
+            color: white;
+        }
+        
+        .address-info {
+            background: #e8f5e8;
+            padding: 1rem;
+            border-radius: 6px;
+            margin: 1rem 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="confirmation-container">
+        <div class="success-icon">✅</div>
+        <h1>Order Confirmed!</h1>
+        <p>Thank you for your order. We've received your order and will start processing it soon.</p>
+        
+        <div id="order-details" class="order-details">
+            <div class="loading">Loading order details...</div>
+        </div>
+        
+        <div class="action-buttons">
+            <a href="index.html" class="btn">Continue Shopping</a>
+            <button onclick="viewOrders()" class="btn btn-outline">View My Orders</button>
+        </div>
+    </div>
+
+    <script src="../js/config.js"></script>
+    <script>
+        let orderId = null;
+        let customerId = parseInt(localStorage.getItem("customer_id"), 10);
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // Get order_id from URL parameters
+            const urlParams = new URLSearchParams(window.location.search);
+            orderId = urlParams.get('order_id');
+            
+            if (!orderId) {
+                document.getElementById('order-details').innerHTML = 
+                    '<p class="error">Order ID not found.</p>';
+                return;
+            }
+            
+            if (!customerId) {
+                alert('Please login to view order details');
+                window.location.href = 'login.html';
+                return;
+            }
+            
+            loadOrderDetails();
+        });
+
+        async function loadOrderDetails() {
+            try {
+                const response = await fetch(apiUrl(`orders?order_id=${orderId}&customer_id=${customerId}`));
+                const result = await response.json();
+                
+                if (result.status === 'success') {
+                    displayOrderDetails(result.data);
+                } else {
+                    document.getElementById('order-details').innerHTML = 
+                        `<p class="error">${result.message}</p>`;
+                }
+            } catch (error) {
+                console.error('Failed to load order details:', error);
+                document.getElementById('order-details').innerHTML = 
+                    '<p class="error">Failed to load order details.</p>';
+            }
+        }
+
+        function displayOrderDetails(data) {
+            const order = data.order;
+            const details = data.details;
+            
+            const orderDate = new Date(order.created_at).toLocaleDateString();
+            const total = parseFloat(order.total_amount);
+            
+            document.getElementById('order-details').innerHTML = `
+                <h3>Order Details</h3>
+                
+                <div class="detail-row">
+                    <span>Order ID:</span>
+                    <span>#${order.order_id}</span>
+                </div>
+                
+                <div class="detail-row">
+                    <span>Order Date:</span>
+                    <span>${orderDate}</span>
+                </div>
+                
+                <div class="detail-row">
+                    <span>Status:</span>
+                    <span style="text-transform: capitalize; color: #4CAF50;">${order.order_status}</span>
+                </div>
+                
+                <div class="detail-row">
+                    <span>Payment Method:</span>
+                    <span>${order.payment_method}</span>
+                </div>
+                
+                <div class="address-info">
+                    <strong>Delivery Address:</strong><br>
+                    ${order.street}<br>
+                    ${order.city}${order.state ? ', ' + order.state : ''} ${order.postal_code || ''}<br>
+                    ${order.country}
+                </div>
+                
+                <h4>Items Ordered:</h4>
+                <div class="item-list">
+                    ${details.map(item => `
+                        <div class="item">
+                            <div>
+                                <strong>${item.product_name}</strong><br>
+                                <small>₱${parseFloat(item.price_each).toFixed(2)} each</small>
+                            </div>
+                            <div>
+                                ${item.quantity} × ₱${parseFloat(item.price_each).toFixed(2)} = 
+                                ₱${(item.quantity * parseFloat(item.price_each)).toFixed(2)}
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+                
+                <div class="detail-row">
+                    <span>Total Amount:</span>
+                    <span>₱${total.toFixed(2)}</span>
+                </div>
+            `;
+        }
+
+        function viewOrders() {
+            // Redirect to orders page (you can create this later)
+            alert('My Orders page coming soon!');
+        }
+    </script>
+</body>
+</html>

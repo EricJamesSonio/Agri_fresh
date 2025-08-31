@@ -68,7 +68,8 @@
 
   <!-- 🔍 Filters -->
   <div class="filters">
-    <input id="search" type="text" placeholder="Search produce…" onkeyup="filterProducts()">
+    <input id="search" type="text" placeholder="Search produce…" onkeyup="filterProducts()" autocomplete="off">
+
     <select id="category" onchange="filterProducts()">
       <option value="all">All Categories</option>
       <option>Leafy Greens</option><option>Roots</option><option>Fruits</option><option>Herbs</option>
@@ -94,17 +95,6 @@
     </div>
     <button onclick="checkout()">Checkout</button>
   </aside>
-
-  <!-- 🔐 Login Modal (optional) -->
-  <div id="login-modal" class="modal">
-    <div class="modal-content">
-      <span onclick="closeModal()" class="close">&times;</span>
-      <h3>Login / Sign Up</h3>
-      <input placeholder="Email">
-      <input placeholder="Password" type="password">
-      <button>Go</button>
-    </div>
-  </div>
 
     <footer>
     <p style="text-align:center;padding:1.5rem 0;color:#666;">

@@ -21,6 +21,23 @@ switch ($request) {
         require_once(__DIR__ . '/../Routes/signup.php');
         break;
 
+    case 'cart':
+        require_once(__DIR__ . '/../Routes/cart.php');
+    break;
+
+    case 'address':
+        require_once(__DIR__ . '/../Routes/address.php');
+    break;
+
+    case 'orders':
+        require_once(__DIR__ . '/../Routes/order.php');
+    break;
+
+    case "orderUpdate":
+        require_once(__DIR__ . '/../Routes/orderUpdate.php');
+        break;
+
+
     default:
         echo json_encode([
             "status" => "error",

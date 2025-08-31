@@ -95,14 +95,8 @@ header nav a{
   cursor:pointer;
 }
 
-/* Floating Cart */
 #cart {
-  
-  z-index: 9999; /* <— makes it float above everything */
-  position: fixed;
-  bottom: 30px;
-  right: 30px;
-  width: 400px;
+  z-index: 9999;
   position: fixed;
   bottom: 30px;
   right: 30px;
@@ -117,10 +111,31 @@ header nav a{
   gap: .75rem;
   font-family: var(--font);
   transform: translateY(120%);
-  transition: transform .4s ease;
+  transition: transform .4s ease, opacity .4s ease;
   overflow: hidden;
+
+  /* Hardware acceleration for smooth animation in all browsers */
+  backface-visibility: hidden;
+  will-change: transform;
+  pointer-events: none; /* Prevent accidental click-through */
 }
-#cart.show { transform: translateY(0); }
+
+#cart.show {
+  transform: translateY(0);
+  pointer-events: auto;
+}
+.grid {
+  position: relative; /* establishes stacking context */
+  z-index: 1;
+}
+.hero-slides img {
+  will-change: opacity;
+}
+
+.dots-menu ul {
+  z-index: 10000; /* above everything but below cart if needed */
+}
+
 
 #cart h4 {
   font-size: 1.25rem;
