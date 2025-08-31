@@ -16,11 +16,24 @@ code/
 ---> ----> seed.php        # seeder of data to database
 
 ---> frontend/          # designs and structure
----> ----> Html/
----> ----> Css/
 
----> ----> Js/
+---> ----> admin/           # admin panel
+---> ----> ----> index.html
+---> ----> ----> sections/
+---> ----> ----> ----> orders.html
+---> ----> ----> ----> products.html
+---> ----> ----> ----> sales.html
+---> ----> ----> css/
+---> ----> ----> ---->  index.css
+---> ----> ----> js/
+---> ----> ----> ---->  index.js
+
+
+---> ----> html/
+---> ----> css/
+
+---> ----> js/
 ---> ----> --> config.js    # based helper for connecting backend to js
 
----> ----> Images/
+---> ----> images/
 

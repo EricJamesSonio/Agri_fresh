@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel</title>
+    <link rel="stylesheet" href="css/index.css">
+</head>
+<body>
+    <div class="admin-panel">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <h2>Admin Panel</h2>
+            <ul>
+                <li onclick="loadSection('orders')">Order Management</li>
+                <li onclick="loadSection('products')">Product Management</li>
+                <li onclick="loadSection('sales')">Sales Report</li>
+            </ul>
+        </aside>
+
+        <!-- Main content -->
+        <main class="main-content" id="main-content">
+            <p>Welcome to Admin Panel! Select a section from the sidebar.</p>
+        </main>
+    </div>
+
+    <!-- Load config.js first -->
+    <script src="../Js/config.js"></script>
+    <!-- Then load your admin JS -->
+    <script src="js/index.js"></script>
+</body>
+</html>
