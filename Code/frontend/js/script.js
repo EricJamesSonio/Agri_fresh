@@ -100,64 +100,46 @@ class ShoppingCart {
       }
     }
     
+    // If user is not logged in
     if (!this.customer_id || isNaN(this.customer_id)) {
-      console.log("No valid customer_id, using local cart");
-      this.addToLocalCart(product_id);
+      alert("You are not logged in yet. Please login to add items to your cart.");
+      window.location.href = 'login.html'; // redirect to login page
       return;
     }
 
     try {
-      // FIXED: Find existing item and calculate new quantity properly
-      const found = this.cart.find(i => parseInt(i.product_id, 10) === product_id);
-      const currentQty = found ? parseInt(found.qty, 10) : 0;
-      const totalQty = currentQty + 1;
+        // Existing code to add to cart if logged in...
+        const found = this.cart.find(i => parseInt(i.product_id, 10) === product_id);
+        const currentQty = found ? parseInt(found.qty, 10) : 0;
+        const totalQty = currentQty + 1;
 
-      const payload = { 
-        customer_id: parseInt(this.customer_id, 10), 
-        product_id: parseInt(product_id, 10),
-        quantity: totalQty 
-      };
-      
-      console.log("Final payload:", payload);
-      console.log("Payload validation:");
-      console.log("- customer_id valid?", Number.isInteger(payload.customer_id) && payload.customer_id > 0);
-      console.log("- product_id valid?", Number.isInteger(payload.product_id) && payload.product_id > 0);
-      console.log("- quantity valid?", Number.isInteger(payload.quantity) && payload.quantity > 0);
+        const payload = { 
+            customer_id: parseInt(this.customer_id, 10), 
+            product_id: parseInt(product_id, 10),
+            quantity: totalQty 
+        };
 
-      if (!Number.isInteger(payload.customer_id) || payload.customer_id <= 0) {
-        throw new Error("Invalid customer_id: " + payload.customer_id);
-      }
-      if (!Number.isInteger(payload.product_id) || payload.product_id <= 0) {
-        throw new Error("Invalid product_id: " + payload.product_id);
-      }
+        const response = await fetch(apiUrl('cart'), {
+            method: 'POST',
+            headers: { 
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify(payload)
+        });
 
-      console.log("Sending POST request to:", apiUrl('cart'));
-      console.log("Request payload:", JSON.stringify(payload));
+        const result = await response.json();
+        if (!response.ok || result.status === 'error') {
+            throw new Error(result.message || 'Failed to add to cart');
+        }
 
-      const response = await fetch(apiUrl('cart'), {
-        method: 'POST',
-        headers: { 
-          'Content-Type': 'application/json',
-          'Accept': 'application/json'
-        },
-        body: JSON.stringify(payload)
-      });
-
-      console.log("Response status:", response.status);
-
-      const result = await response.json();
-      console.log("Backend response:", result);
-
-      if (!response.ok || result.status === 'error') {
-        throw new Error(result.message || 'Failed to add to cart');
-      }
-
-      await this.fetchCart();
+        await this.fetchCart();
     } catch (err) {
-      console.error('Failed to sync cart:', err);
-      alert('Failed to add item to cart: ' + err.message);
+        console.error('Failed to sync cart:', err);
+        alert('Failed to add item to cart: ' + err.message);
     }
-  }
+}
+
 
   addToLocalCart(product_id) {
     const product = this.products.find(p => p.id === product_id);
@@ -290,6 +272,22 @@ class ShoppingCart {
       console.error(err);
     }
   }
+  logout() {
+    console.log("Logging out customer_id:", this.customer_id);
+    
+    // Remove customer identifier
+    localStorage.removeItem("customer_id");
+
+    // Reset internal cart
+    this.cart = [];
+    this.customer_id = null;
+
+    // Update UI
+    this.updateCart();
+
+    // Optionally redirect to homepage/login
+    window.location.href = "login.html"; // or "./index.html" if you want homepage
+  }
 
   filterProducts() {
     const search = document.getElementById('search').value.toLowerCase();
@@ -372,8 +370,12 @@ class ShoppingCart {
   }
 }
 
+
 // Create global instance to maintain compatibility with existing HTML
+
 const cartInstance = new ShoppingCart();
+// Expose logout globally so HTML can call it
+function logout() {cartInstance.logout();}window.logout = logout;
 
 // Keep original function names for HTML compatibility
 let products = cartInstance.products;
