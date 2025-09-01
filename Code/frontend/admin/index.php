@@ -1,3 +1,8 @@
+<?php
+// 🔒 Secure admin page
+require_once('../../backend/routes/authGuard.php');
+requireAdmin(); // redirects non-admins to frontend/html/index.php
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>

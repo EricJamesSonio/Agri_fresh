@@ -30,6 +30,7 @@ code/
 
 
 ---> ----> html/
+---> ----> ---->  index.php # home pagedefault
 ---> ----> css/
 
 ---> ----> js/

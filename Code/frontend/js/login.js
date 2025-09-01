@@ -40,7 +40,7 @@ document.getElementById("loginForm").addEventListener("submit", async (e) => {
       alert(`Welcome ${data.role}: ${data.name}`);
       
       if (data.role === "admin") {
-        window.location.href = "../admin/index.html";
+        window.location.href = "../admin/index.php";
       } else {
         window.location.href = "index.php";
       }

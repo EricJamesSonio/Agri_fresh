@@ -1,17 +1,14 @@
 <?php
-
 session_start();
 
+// ✅ Require login
 if (!isset($_SESSION['customer_id'])) {
     header("Location: login.html");
     exit();
 }
 
-
-if ($_SESSION['role'] !== 'admin') {
-    header("Location: index.html"); 
-    exit();
-}
+// Store role for later use
+$role = $_SESSION['role'] ?? 'customer';
 ?>
 <!doctype html>
 <html lang="en">
@@ -35,7 +32,12 @@ if ($_SESSION['role'] !== 'admin') {
     <label for="dots-toggle">⋮</label>
     <ul>
       <li><a href="signup.html">Sign up</a></li>
-      <li id="admin-link"><a href="../admin/">Admin</a></li>
+
+      <!-- ✅ Show only if admin -->
+      <?php if ($role === 'admin'): ?>
+        <li id="admin-link"><a href="../admin/">Admin</a></li>
+      <?php endif; ?>
+
       <li><a href="#" onclick="logout()">Logout</a></li>
     </ul>
   </nav>
@@ -113,18 +115,6 @@ if ($_SESSION['role'] !== 'admin') {
       &copy; 2025 AgriFresh Market – Freshness Delivered.
     </p>
   </footer>
-
-  <script>
-  document.addEventListener("DOMContentLoaded", () => {
-    const adminLink = document.getElementById("admin-link");
-    const role = localStorage.getItem("role");
-
-    // Hide if role is not admin
-    if (role !== "admin" && adminLink) {
-      adminLink.style.display = "none";
-    }
-  });
-  </script>
 
   <script src="../js/config.js"></script>
   <script src="../js/script.js"></script>

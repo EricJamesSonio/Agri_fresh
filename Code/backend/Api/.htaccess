@@ -1,6 +1,6 @@
 <IfModule mod_rewrite.c>
     RewriteEngine On
-    RewriteBase /agri_fresh/code/backend/api/
+    RewriteBase /agri/code/backend/api/
 
     # If the requested file or directory does not exist
     RewriteCond %{REQUEST_FILENAME} !-f
