@@ -436,12 +436,12 @@ toggleTag(btn) {
 
   
   // Instead of redirecting to checkout-address.html
-  window.location.href = 'my-orders.html';
+  window.location.href = 'my-cart.html';
 }
 
 goToCart() {
-  // Navigate to the full cart page (my-orders.html)
-  window.location.href = 'my-orders.html';
+
+  window.location.href = 'my-cart.html';
 }
 
   scrollToProducts() {

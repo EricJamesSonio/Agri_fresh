@@ -44,7 +44,8 @@ $role = $_SESSION['role'] ?? 'customer';
 
   <!-- existing horizontal nav -->
   <nav>
-    <a href="my-orders.html">My Orders</a>
+    <a href="my-orders.php">My Orders</a>
+<a href="my-cart.html">My Cart</a>
     <a href="about.html">About Us</a>
     <a href="#products">Products</a>
     <a href="#contact">Contact</a>
