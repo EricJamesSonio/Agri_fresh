@@ -53,7 +53,6 @@ $customer_name = $_SESSION['customer_name'] ?? 'Customer';
   <h1>Agri Fresh Market</h1>
   <nav>
     <a href="index.php">Home</a>
-    <a href="my-orders.html">My Orders</a>
     <a href="my-cart.html">My Cart</a>
     <a href="about.html">About Us</a>
   </nav>

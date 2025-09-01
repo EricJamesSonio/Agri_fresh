@@ -1,3 +1,33 @@
-<h2>Product Management</h2>
-<p>Manage all products here.</p>
-<!-- Later you can add a table like orders -->
+<div class="section-container">
+    <h2>Product Management</h2>
+
+    <!-- Add New Product Form -->
+    <form id="product-form">
+        <h3>Add / Update Product</h3>
+        <input type="hidden" id="product-id" />
+        <input type="text" id="product-name" placeholder="Name" required />
+        <input type="number" id="product-price" placeholder="Price" step="0.01" required />
+        <input type="number" id="product-stock" placeholder="Stock Quantity" required />
+        <input type="text" id="product-image" placeholder="Image URL" />
+        <select id="product-category"></select>
+        <label><input type="checkbox" id="product-organic" /> Organic</label>
+        <label><input type="checkbox" id="product-seasonal" /> Seasonal</label>
+        <button type="submit">Save Product</button>
+    </form>
+
+    <!-- Products Table -->
+    <table id="products-table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Price</th>
+                <th>Stock</th>
+                <th>Category</th>
+                <th>Tags</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+</div>
