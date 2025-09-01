@@ -6,14 +6,24 @@ class ShoppingCart {
     this.customer_id = this.initializeCustomerId();
   }
 
+  
   initializeCustomerId() {
     const rawCustomerId = localStorage.getItem("customer_id");
+    const customerName = localStorage.getItem("customer_name");
+
     console.log("Raw customer_id from localStorage:", rawCustomerId);
+    console.log("Customer name from localStorage:", customerName);
+
+    // 🚫 If the logged in user is admin, block cart
+    if (customerName && customerName.toLowerCase().includes("admin")) {
+      console.warn("Admin detected, disabling cart features.");
+      return null;
+    }
 
     if (rawCustomerId && rawCustomerId !== "null" && rawCustomerId !== "undefined") {
       const parsedId = parseInt(rawCustomerId, 10);
       console.log("Parsed customer_id:", parsedId);
-      
+
       if (isNaN(parsedId)) {
         console.warn("customer_id is not a valid number:", rawCustomerId);
         return null;
@@ -24,7 +34,6 @@ class ShoppingCart {
       return null;
     }
   }
-
   async fetchProducts() {
     try {
       console.log("Fetching products from:", apiUrl('products'));
@@ -83,61 +92,68 @@ class ShoppingCart {
   }
 
   async addToCart(product_id) {
-    console.log("=== ADD TO CART DEBUG ===");
-    console.log("addToCart called with product_id:", product_id, typeof product_id);
-    console.log("Current customer_id:", this.customer_id, typeof this.customer_id);
-    
-    // Ensure product_id is an integer
-    product_id = parseInt(product_id, 10);
-    
-    // Force refresh customer_id from localStorage
-    let fresh_customer_id = localStorage.getItem("customer_id");
-    if (fresh_customer_id && fresh_customer_id !== "null") {
-      fresh_customer_id = parseInt(fresh_customer_id, 10);
-      if (!isNaN(fresh_customer_id)) {
-        this.customer_id = fresh_customer_id;
-        console.log("Refreshed customer_id:", this.customer_id);
-      }
+  console.log("=== ADD TO CART DEBUG ===");
+  console.log("addToCart called with product_id:", product_id, typeof product_id);
+  console.log("Current customer_id:", this.customer_id, typeof this.customer_id);
+
+  // 🚫 Prevent admin from adding to cart
+  const customerName = localStorage.getItem("customer_name");
+  if (customerName && customerName.toLowerCase().includes("admin")) {
+    alert("Admins are not allowed to add items to the cart.");
+    return;
+  }
+
+  // Ensure product_id is an integer
+  product_id = parseInt(product_id, 10);
+
+  // Force refresh customer_id from localStorage
+  let fresh_customer_id = localStorage.getItem("customer_id");
+  if (fresh_customer_id && fresh_customer_id !== "null") {
+    fresh_customer_id = parseInt(fresh_customer_id, 10);
+    if (!isNaN(fresh_customer_id)) {
+      this.customer_id = fresh_customer_id;
+      console.log("Refreshed customer_id:", this.customer_id);
     }
-    
-    // If user is not logged in
-    if (!this.customer_id || isNaN(this.customer_id)) {
-      alert("You are not logged in yet. Please login to add items to your cart.");
-      window.location.href = 'login.html'; // redirect to login page
-      return;
+  }
+
+  // If user is not logged in
+  if (!this.customer_id || isNaN(this.customer_id)) {
+    alert("You are not logged in yet. Please login to add items to your cart.");
+    window.location.href = 'login.html'; // redirect to login page
+    return;
+  }
+
+  try {
+    // Existing code to add to cart if logged in...
+    const found = this.cart.find(i => parseInt(i.product_id, 10) === product_id);
+    const currentQty = found ? parseInt(found.qty, 10) : 0;
+    const totalQty = currentQty + 1;
+
+    const payload = {
+      customer_id: parseInt(this.customer_id, 10),
+      product_id: parseInt(product_id, 10),
+      quantity: totalQty
+    };
+
+    const response = await fetch(apiUrl('cart'), {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      },
+      body: JSON.stringify(payload)
+    });
+
+    const result = await response.json();
+    if (!response.ok || result.status === 'error') {
+      throw new Error(result.message || 'Failed to add to cart');
     }
 
-    try {
-        // Existing code to add to cart if logged in...
-        const found = this.cart.find(i => parseInt(i.product_id, 10) === product_id);
-        const currentQty = found ? parseInt(found.qty, 10) : 0;
-        const totalQty = currentQty + 1;
-
-        const payload = { 
-            customer_id: parseInt(this.customer_id, 10), 
-            product_id: parseInt(product_id, 10),
-            quantity: totalQty 
-        };
-
-        const response = await fetch(apiUrl('cart'), {
-            method: 'POST',
-            headers: { 
-                'Content-Type': 'application/json',
-                'Accept': 'application/json'
-            },
-            body: JSON.stringify(payload)
-        });
-
-        const result = await response.json();
-        if (!response.ok || result.status === 'error') {
-            throw new Error(result.message || 'Failed to add to cart');
-        }
-
-        await this.fetchCart();
-    } catch (err) {
-        console.error('Failed to sync cart:', err);
-        alert('Failed to add item to cart: ' + err.message);
-    }
+    await this.fetchCart();
+  } catch (err) {
+    console.error('Failed to sync cart:', err);
+    alert('Failed to add item to cart: ' + err.message);
+  }
 }
 
 
