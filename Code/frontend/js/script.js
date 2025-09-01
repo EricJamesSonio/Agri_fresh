@@ -35,32 +35,93 @@ class ShoppingCart {
     }
   }
   async fetchProducts() {
-    try {
-      console.log("Fetching products from:", apiUrl('products'));
-      const res = await fetch(apiUrl('products'));
-      if (!res.ok) throw new Error('Failed to fetch products');
+  try {
+    console.log("Fetching products from:", apiUrl('products'));
+    const res = await fetch(apiUrl('products'));
+    if (!res.ok) throw new Error('Failed to fetch products');
 
-      const rawProducts = await res.json();
-      console.log("Raw products from API:", rawProducts);
-      
-      this.products = rawProducts.map(p => {
-        console.log("Processing product:", p);
-        return {
-          ...p,
-          // Convert id to integer to prevent string concatenation issues
-          id: parseInt(p.id, 10),
-          img: `${CONFIG.IMAGE_PATH}/${p.img}`
-        };
-      });
+    const rawProducts = await res.json();
+    console.log("Raw products from API:", rawProducts);
 
-      console.log("Final products array:", this.products);
-      this.render(this.products);
-    } catch (err) {
-      console.error(err);
-      document.getElementById('products').innerHTML =
-        `<p style="color:red;">Failed to load products</p>`;
+    // Normalize products: ensure id, category, description, tags, img are present
+    this.products = rawProducts.map(p => {
+      console.log("Processing product:", p);
+      return {
+        ...p,
+        id: parseInt(p.id, 10),
+        // normalize category name (backend may provide 'category' or 'category_name')
+        category: (p.category ?? p.category_name ?? 'Uncategorized'),
+        description: p.description ?? '',
+        // normalize tags to lowercase array (backend returns array or may omit)
+        tags: Array.isArray(p.tags) ? p.tags.map(t => String(t).toLowerCase()) : [],
+        img: p.img ? `${CONFIG.IMAGE_PATH}/${p.img}` : (p.image_url || '../images/placeholder.jpg')
+      };
+    });
+
+    console.log("Final products array:", this.products);
+    this.render(this.products);
+  } catch (err) {
+    console.error(err);
+    const productsEl = document.getElementById('products');
+    if (productsEl) {
+      productsEl.innerHTML = `<p style="color:red;">Failed to load products</p>`;
     }
   }
+}
+
+ async populateCategories() {
+  const sel = document.getElementById('category');
+  if (!sel) return;
+
+  sel.innerHTML = `<option value="all">All Categories</option>`;
+
+  try {
+    // NOTE: use 'category' to match your index.php switch-case
+    console.log("Fetching categories from:", apiUrl('category'));
+    const res = await fetch(apiUrl('category'));
+    const text = await res.text();
+    console.log("Raw categories response text:", text);
+
+    if (!res.ok) throw new Error(`Status ${res.status}`);
+
+    let cats;
+    try {
+      cats = JSON.parse(text);
+    } catch (e) {
+      console.error('Failed to parse categories JSON', e);
+      cats = [];
+    }
+
+    if (!Array.isArray(cats) || cats.length === 0) {
+      const opt = document.createElement('option');
+      opt.value = 'none';
+      opt.textContent = '— No categories —';
+      opt.disabled = true;
+      sel.appendChild(opt);
+      return;
+    }
+
+    cats.forEach(c => {
+      const rawName = c.name ?? c.category_name ?? null;
+      if (!rawName) {
+        console.warn('Skipping category with no name field:', c);
+        return;
+      }
+      const opt = document.createElement('option');
+      opt.value = String(rawName).toLowerCase();
+      opt.textContent = rawName;
+      sel.appendChild(opt);
+    });
+  } catch (err) {
+    console.error('Could not load categories', err);
+    const opt = document.createElement('option');
+    opt.value = 'all';
+    opt.textContent = 'All Categories';
+    sel.appendChild(opt);
+  }
+}
+
+
 
   render(list = this.products) {
     const grid = document.getElementById('products');
@@ -302,28 +363,55 @@ class ShoppingCart {
     this.updateCart();
 
     // Optionally redirect to homepage/login
-    window.location.href = location.origin + "/agri/code/frontend/html/login.html";
+    window.location.href = location.origin + "/agrifresh/code/frontend/html/login.html";
 
   }
+filterProducts() {
+  const search = (document.getElementById('search').value || '').toLowerCase().trim();
+  const category = (document.getElementById('category').value || '').toLowerCase();
+  const activeTags = this.activeTags.map(t => t.toLowerCase());
 
-  filterProducts() {
-    const search = document.getElementById('search').value.toLowerCase();
-    const category = document.getElementById('category').value;
-    let filtered = this.products.filter(p => {
-      const matchSearch = p.name.toLowerCase().includes(search);
-      const matchCat = category === 'all' || p.category === category;
-      const matchTag = this.activeTags.length === 0 || this.activeTags.every(t => p.tags && p.tags.includes(t));
-      return matchSearch && matchCat && matchTag;
-    });
-    this.render(filtered);
-  }
+  const filtered = this.products.filter(p => {
+    const nameMatch = (p.name || '').toLowerCase().includes(search);
+    const descMatch = (p.description || '').toLowerCase().includes(search);
+    const searchMatch = nameMatch || descMatch;
 
-  toggleTag(btn, tag) {
-    btn.classList.toggle('active');
-    this.activeTags = [...document.querySelectorAll('.tags .active')]
-      .map(b => b.textContent.trim());
-    this.filterProducts();
-  }
+    const productCategory = (p.category || 'uncategorized').toLowerCase();
+    const categoryMatch = category === 'all' || productCategory === category;
+
+    const productTags = Array.isArray(p.tags) ? p.tags.map(t => t.toLowerCase()) : [];
+
+    // single-select behavior: activeTags is [] or [tag]
+    // but use some() to keep it flexible (works if you later allow multiselect)
+    const tagMatch = activeTags.length === 0 || activeTags.some(t => productTags.includes(t));
+
+    return searchMatch && categoryMatch && tagMatch;
+  });
+
+  this.render(filtered);
+}
+
+
+ // SINGLE-SELECT toggleTag: clicking a tag deactivates others; clicking same tag toggles it off
+toggleTag(btn) {
+  // read tag from data attribute or fallback to button text
+  const tag = (btn.dataset && btn.dataset.tag) ? String(btn.dataset.tag).toLowerCase() : btn.textContent.trim().toLowerCase();
+
+  // deactivate all other tag buttons
+  document.querySelectorAll('.tags button').forEach(b => {
+    if (b !== btn) b.classList.remove('active');
+  });
+
+  // toggle clicked button (this allows clicking again to clear)
+  btn.classList.toggle('active');
+
+  // set activeTags to either [] or [tag]
+  this.activeTags = btn.classList.contains('active') ? [tag] : [];
+
+  // re-apply filters
+  this.filterProducts();
+}
+
 
   closeCart() {
     document.getElementById('cart').classList.remove('show');
@@ -421,5 +509,6 @@ window.debugLocalStorage = debugLocalStorage;
 window.testCartAPI = testCartAPI;
 
 // Initialize the application
+cartInstance.populateCategories();
 cartInstance.fetchProducts();
 cartInstance.fetchCart();

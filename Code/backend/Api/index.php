@@ -37,6 +37,10 @@ switch ($request) {
         require_once(__DIR__ . '/../Routes/orderUpdate.php');
         break;
 
+    case 'category':
+        require_once(__DIR__ . '/../Routes/category.php');
+        break;
+
 
     default:
         echo json_encode([

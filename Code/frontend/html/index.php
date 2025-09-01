@@ -89,9 +89,10 @@ $role = $_SESSION['role'] ?? 'customer';
       <option>Herbs</option>
     </select>
     <div class="tags">
-      <button onclick="toggleTag(this,'organic')">Organic</button>
-      <button onclick="toggleTag(this,'seasonal')">Seasonal</button>
-    </div>
+  <button type="button" data-tag="organic" onclick="toggleTag(this)">Organic</button>
+  <button type="button" data-tag="seasonal" onclick="toggleTag(this)">Seasonal</button>
+</div>
+
   </div>
 
   <!-- 🛍️ Product Grid -->
