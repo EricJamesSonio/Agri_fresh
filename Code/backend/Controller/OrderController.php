@@ -133,22 +133,27 @@ class OrderController {
         }
     }
 
-    public function getCustomerOrders($customer_id) {
-        try {
-            $orders = $this->orderModel->getCustomerOrders($customer_id);
-            
-            return [
-                'status' => 'success',
-                'data' => $orders
-            ];
+  public function getCustomerOrders($customer_id) {
+    try {
+        $orders = $this->orderModel->getCustomerOrders($customer_id);
 
-        } catch (Exception $e) {
-            return [
-                'status' => 'error',
-                'message' => 'Error fetching orders: ' . $e->getMessage()
-            ];
+        // Add details for each order
+        foreach ($orders as &$order) {
+            $order['details'] = $this->orderModel->getOrderDetails($order['order_id']);
         }
+
+        return [
+            'status' => 'success',
+            'data' => $orders
+        ];
+
+    } catch (Exception $e) {
+        return [
+            'status' => 'error',
+            'message' => 'Error fetching orders: ' . $e->getMessage()
+        ];
     }
+}
 
     public function updateOrderStatus($order_id, $status) {
     try {
@@ -207,6 +212,29 @@ class OrderController {
         return [
             'status' => 'error',
             'message' => 'Error fetching all orders: ' . $e->getMessage()
+        ];
+    }
+}
+
+// Cancel a single product in an order
+public function cancelOrderItem($order_id, $product_id) {
+    try {
+        $success = $this->orderModel->deleteOrderItem($order_id, $product_id);
+        if ($success) {
+            return [
+                'status' => 'success',
+                'message' => 'Product removed from order'
+            ];
+        } else {
+            return [
+                'status' => 'error',
+                'message' => 'Failed to remove product'
+            ];
+        }
+    } catch (Exception $e) {
+        return [
+            'status' => 'error',
+            'message' => 'Error removing product: ' . $e->getMessage()
         ];
     }
 }

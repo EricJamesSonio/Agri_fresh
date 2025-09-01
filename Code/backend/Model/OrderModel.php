@@ -108,4 +108,39 @@ class OrderModel {
     return $orders;
 }
 
+// Delete/cancel a single product from an order
+public function deleteOrderItem($order_id, $product_id) {
+    $stmt = $this->con->prepare("
+        DELETE FROM order_detail 
+        WHERE order_id = ? AND product_id = ?
+    ");
+    $stmt->bind_param("ii", $order_id, $product_id);
+    $success = $stmt->execute();
+
+    if ($success) {
+        // Recalculate total
+        $stmt2 = $this->con->prepare("
+            SELECT SUM(quantity * price_each) as total 
+            FROM order_detail 
+            WHERE order_id = ?
+        ");
+        $stmt2->bind_param("i", $order_id);
+        $stmt2->execute();
+        $result = $stmt2->get_result()->fetch_assoc();
+        $newTotal = $result['total'] ?? 0;
+
+        $this->updateOrderTotal($order_id, $newTotal);
+
+        // If no items left, mark order as cancelled
+        if ($newTotal == 0) {
+            $this->updateOrderStatus($order_id, 'cancelled');
+        }
+
+        return true;
+    }
+
+    return false;
+}
+
+
 }

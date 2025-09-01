@@ -43,20 +43,25 @@ class ShoppingCart {
     const rawProducts = await res.json();
     console.log("Raw products from API:", rawProducts);
 
-    // Normalize products: ensure id, category, description, tags, img are present
-    this.products = rawProducts.map(p => {
-      console.log("Processing product:", p);
-      return {
-        ...p,
-        id: parseInt(p.id, 10),
-        // normalize category name (backend may provide 'category' or 'category_name')
-        category: (p.category ?? p.category_name ?? 'Uncategorized'),
-        description: p.description ?? '',
-        // normalize tags to lowercase array (backend returns array or may omit)
-        tags: Array.isArray(p.tags) ? p.tags.map(t => String(t).toLowerCase()) : [],
-        img: p.img ? `${CONFIG.IMAGE_PATH}/${p.img}` : (p.image_url || '../images/placeholder.jpg')
-      };
-    });
+this.products = rawProducts.map(p => {
+  let imgSrc = p.img || p.image_url || 'placeholder.jpg';
+
+  // Only prepend CONFIG.IMAGE_PATH if it’s a relative path (does NOT start with http)
+  if (!imgSrc.startsWith('http')) {
+    imgSrc = imageUrl(imgSrc);
+  }
+
+  return {
+    ...p,
+    id: parseInt(p.product_id || p.id, 10),
+    category: p.category ?? p.category_name ?? 'Uncategorized',
+    description: p.description ?? '',
+    tags: Array.isArray(p.tags) ? p.tags.map(t => t.toLowerCase()) : [],
+    img: imgSrc
+  };
+});
+
+
 
     console.log("Final products array:", this.products);
     this.render(this.products);
@@ -123,34 +128,26 @@ class ShoppingCart {
 
 
 
-  render(list = this.products) {
-    const grid = document.getElementById('products');
-    
-    if (!grid) {
-      console.error("Products grid element not found!");
-      return;
-    }
-    
-    grid.innerHTML = list.map(p => {
-      const productId = p.id;
-      
-      if (!productId) {
-        console.error("No id found for product:", p);
-        return '';
-      }
-      
-      return `
-      <div class="card">
-        <img src="${p.img || p.image_url}" alt="${p.name}" loading="lazy" onerror="this.src='../images/placeholder.jpg'">
-        <div class="card-body">
-          <h4>${p.name}</h4>
-          <span class="price">₱${p.price}</span>
-          <button class="add-to-cart-btn" data-product-id="${productId}" onclick="cartInstance.addToCart(${productId})">Add to Cart</button>
-        </div>
-      </div>
-    `;
-    }).join('');
+render(list = this.products) {
+  const grid = document.getElementById('products');
+
+  if (!grid) {
+    console.warn("Products grid element not found, skipping render.");
+    return; // exit gracefully
   }
+
+  grid.innerHTML = list.map(p => `
+    <div class="card">
+      <img src="${p.img}" alt="${p.name}" loading="lazy" onerror="this.src='../images/placeholder.jpg'">
+      <div class="card-body">
+        <h4>${p.name}</h4>
+        <span class="price">₱${p.price}</span>
+        <button class="add-to-cart-btn" onclick="addToCart(${p.id})">Add to Cart</button>
+      </div>
+    </div>
+  `).join('');
+}
+
 
   async addToCart(product_id) {
   console.log("=== ADD TO CART DEBUG ===");
@@ -229,17 +226,19 @@ class ShoppingCart {
         name: product.name, 
         price: product.price, 
         qty: 1, 
-        product_id: product_id 
+        product_id: product_id ,img: product.img ?? '../images/placeholder.jpg'
       });
     }
     this.updateCart();
   }
 
-  updateCart() {
-    const list = document.getElementById('cart-items');
-    const total = document.getElementById('cart-total');
-    const count = document.getElementById('cart-count');
+updateCart() {
+  // Floating cart (index.php)
+  const list = document.getElementById('cart-items');
+  const total = document.getElementById('cart-total');
+  const count = document.getElementById('cart-count');
 
+  if (list && total && count) {
     list.innerHTML = this.cart.map(
       (item, idx) =>
         `<li>
@@ -258,6 +257,11 @@ class ShoppingCart {
 
     document.getElementById('cart').classList.toggle('show', this.cart.length > 0);
   }
+
+  // Main cart table (my-orders.html)
+  if (typeof renderOrderTable === 'function') renderOrderTable();
+}
+
 
   async changeQty(idx, delta) {
     const item = this.cart[idx];
@@ -338,12 +342,18 @@ class ShoppingCart {
       const res = await fetch(apiUrl(`cart?customer_id=${this.customer_id}`));
       if (!res.ok) throw new Error('Failed to fetch cart');
       const data = await res.json();
-      this.cart = data.map(i => ({
-        name: i.name,
-        price: parseFloat(i.price_each),
-        qty: parseInt(i.quantity, 10), // FIXED: Ensure qty is integer
-        product_id: parseInt(i.product_id, 10) // FIXED: Ensure product_id is integer
-      }));
+this.cart = data.map(i => {
+  const prod = this.products.find(p => p.id === parseInt(i.product_id, 10));
+  return {
+    name: i.name,
+    price: parseFloat(i.price_each),
+    qty: parseInt(i.quantity, 10),
+    product_id: parseInt(i.product_id, 10),
+    img: prod ? prod.img : imageUrl('placeholder.jpg')
+  };
+});
+
+
       this.updateCart();
     } catch (err) {
       console.error(err);
@@ -417,21 +427,22 @@ toggleTag(btn) {
     document.getElementById('cart').classList.remove('show');
   }
 
-  checkout() {
-    if (this.cart.length === 0) {
-      alert('Your cart is empty!');
-      return;
-    }
-    
-    if (!this.customer_id) {
-      alert('Please login to checkout');
-      window.location.href = 'login.html';
-      return;
-    }
-    
-    // Redirect to checkout address page
-    window.location.href = 'checkout-address.html';
+ checkout() {
+  if (this.cart.length === 0) {
+    alert('Your cart is empty!');
+    return;
   }
+
+
+  
+  // Instead of redirecting to checkout-address.html
+  window.location.href = 'my-orders.html';
+}
+
+goToCart() {
+  // Navigate to the full cart page (my-orders.html)
+  window.location.href = 'my-orders.html';
+}
 
   scrollToProducts() {
     document.getElementById('products').scrollIntoView({ behavior: 'smooth' });
@@ -481,6 +492,7 @@ toggleTag(btn) {
 const cartInstance = new ShoppingCart();
 // Expose logout globally so HTML can call it
 function logout() {cartInstance.logout();}window.logout = logout;
+function goToCart() { return cartInstance.goToCart(); }
 
 // Keep original function names for HTML compatibility
 let products = cartInstance.products;
@@ -507,6 +519,7 @@ function testCartAPI() { return cartInstance.testCartAPI(); }
 // Make debug functions available globally
 window.debugLocalStorage = debugLocalStorage;
 window.testCartAPI = testCartAPI;
+window.goToCart = goToCart;
 
 // Initialize the application
 cartInstance.populateCategories();

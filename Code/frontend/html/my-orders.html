@@ -1,85 +1,214 @@
+<?php
+session_start();
+
+// ✅ Require login
+if (!isset($_SESSION['customer_id'])) {
+    header("Location: login.html");
+    exit();
+}
+
+// Store role for later use
+$role = $_SESSION['role'] ?? 'customer';
+?>
 <!doctype html>
 <html lang="en">
 <head>
   <meta charset="utf-8">
   <title>My Orders – AgriFresh</title>
-
-  <!-- global theme -->
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="../css/style.css">
   <link rel="stylesheet" href="../css/my_orders.css">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
 </head>
-
 <body>
-  <header>
-    <h1>Agri Fresh Market</h1>
-    <nav>
-      <a href="index.html">Home</a>
-      <a href="about.html">About&nbsp;Us</a>
-      <a href="index.html#products">Products</a>
-      <a href="index.html#contact">Contact</a>
-    </nav>
-  </header>
 
-  <main class="orders-wrapper">
-    <h1>Shopping cart</h1>
+<header>
+  <h1>Agri Fresh Market</h1>
+  <nav>
+    <a href="index.php">Home</a>
+    <a href="about.html">About&nbsp;Us</a>
+    <a href="index.php#products">Products</a>
+    <a href="index.php#contact">Contact</a>
+    <a href="#" onclick="logout()">Logout</a>
+  </nav>
+</header>
 
-    <div class="bulk-bar">
-      <label>
-        <input type="checkbox" id="selectAll" onchange="toggleAll(this)">
-        Select All
-      </label>
-      <button id="bulkDeleteBtn" onclick="bulkDelete()">Delete Selected</button>
+<main class="orders-wrapper">
+  <h1>Shopping Cart</h1>
+
+  <div class="bulk-bar">
+    <label>
+      <input type="checkbox" id="selectAll" onchange="toggleAll(this)">
+      Select All
+    </label>
+    <button id="bulkDeleteBtn" onclick="bulkDelete()">Delete Selected</button>
+  </div>
+
+  <table class="order-table">
+    <thead>
+      <tr>
+        <th style="width:30px"></th>
+        <th style="width:70px">Product</th>
+        <th></th>
+        <th>Unit Price</th>
+        <th>Quantity</th>
+        <th>Total Price</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody id="orderBody"></tbody>
+    <tfoot>
+      <tr id="grandTotalRow">
+        <td colspan="5">Grand Total</td>
+        <td id="grandTotal">₱0</td>
+        <td></td>
+      </tr>
+    </tfoot>
+  </table>
+
+  <div class="cart-footer">
+    <div class="voucher-line">
+      <label>Platform Voucher</label>
+      <input type="text" id="voucherCode" placeholder="Enter code">
+      <button onclick="applyVoucher()">Apply</button>
+      <span id="voucherDiscount">-₱0</span>
     </div>
 
-    <table class="order-table">
-      <thead>
-        <tr>
-          <th style="width:30px"></th>
-          <th style="width:70px">Product</th>
-          <th></th>
-          <th>Unit Price</th>
-          <th>Quantity</th>
-          <th>Total Price</th>
-          <th>Actions</th>
-        </tr>
-      </thead>
-      <tbody id="orderBody"></tbody>
-      <tfoot>
-        <tr id="grandTotalRow">
-          <td colspan="5">Grand Total</td>
-          <td id="grandTotal">₱0</td>
-          <td></td>
-        </tr>
-      </tfoot>
-    </table>
-
-    <!-- Voucher / checkout block -->
-    <div class="cart-footer">
-      <div class="voucher-line">
-        <label>Platform Voucher</label>
-        <input type="text" id="voucherCode" placeholder="Enter code">
-        <button onclick="applyVoucher()">Apply</button>
-        <span id="voucherDiscount">-₱0</span>
+    <div class="checkout-bar">
+      <div class="grand-total">
+        Total (<span id="itemCount">0</span> item): <span id="finalTotal">₱0</span>
       </div>
-
-      <div class="checkout-bar">
-        <div class="grand-total">
-          Total (<span id="itemCount">0</span> item): <span id="finalTotal">₱0</span>
-        </div>
-        <button class="checkout-btn" onclick="checkout()">Check Out</button>
-      </div>
+      <button class="checkout-btn" onclick="checkout()">Check Out</button>
     </div>
+  </div>
 
-    <div id="emptyState" class="empty-state">
-      <p>No orders yet. <a href="index.html" style="color:#2e7d32">Shop now</a></p>
-    </div>
-  </main>
+  <div id="emptyState" class="empty-state">
+    <p>No orders yet. <a href="index.php" style="color:#2e7d32">Shop now</a></p>
+  </div>
+</main>
 
-  <footer>
-    <p>&copy; 2025 AgriFresh Market – Freshness Delivered.</p>
-  </footer>
+<footer>
+  <p>&copy; 2025 AgriFresh Market – Freshness Delivered.</p>
+</footer>
 
-  <script src="../js/my_orders.js"></script>
+<script src="../js/config.js"></script>
+<script src="../js/script.js"></script>
+<script>
+/* === Helper to handle images consistently === */
+ShoppingCart.prototype.getImageSrc = function(img) {
+  if (!img) return '../images/placeholder.jpg';
+  return img.trim().toLowerCase().startsWith('http') ? img : imageUrl(img);
+};
+
+/* === Checkout function for selected items === */
+function checkout() {
+  if (cartInstance.cart.length === 0) {
+    alert('Your cart is empty!');
+    return;
+  }
+
+  const selectedItems = [];
+  const checkboxes = document.querySelectorAll('.selectItem:checked');
+
+  if (checkboxes.length === 0) {
+    // Checkout all if none selected
+    selectedItems.push(...cartInstance.cart);
+  } else {
+    checkboxes.forEach(cb => {
+      const idx = parseInt(cb.dataset.idx);
+      selectedItems.push(cartInstance.cart[idx]);
+    });
+  }
+
+  if (selectedItems.length === 0) {
+    alert('Please select items to checkout!');
+    return;
+  }
+
+  localStorage.setItem('checkout_items', JSON.stringify(selectedItems));
+  window.location.href = 'checkout-address.html';
+}
+
+/* === Toggle all checkboxes === */
+function toggleAll(checkbox) {
+  const itemCheckboxes = document.querySelectorAll('.selectItem');
+  itemCheckboxes.forEach(cb => cb.checked = checkbox.checked);
+  updateCheckoutButton();
+}
+
+/* === Update checkout button label === */
+function updateCheckoutButton() {
+  const checkoutBtn = document.querySelector('.checkout-btn');
+  const selectedCount = document.querySelectorAll('.selectItem:checked').length;
+  const totalItems = document.querySelectorAll('.selectItem').length;
+
+  if (selectedCount === 0) {
+    checkoutBtn.textContent = `Check Out All (${totalItems})`;
+  } else {
+    checkoutBtn.textContent = `Check Out (${selectedCount})`;
+  }
+}
+
+/* === Render main cart table (my-orders.html) === */
+function renderOrderTable() {
+  const tbody = document.getElementById('orderBody');
+  const grandTotalEl = document.getElementById('grandTotal');
+  const finalTotalEl = document.getElementById('finalTotal');
+  const itemCountEl = document.getElementById('itemCount');
+
+  if (!tbody) return;
+
+  if (cartInstance.cart.length === 0) {
+    document.getElementById('emptyState').style.display = 'block';
+    document.querySelector('.order-table').style.display = 'none';
+    document.querySelector('.cart-footer').style.display = 'none';
+    return;
+  } else {
+    document.getElementById('emptyState').style.display = 'none';
+    document.querySelector('.order-table').style.display = 'table';
+    document.querySelector('.cart-footer').style.display = 'block';
+  }
+
+  tbody.innerHTML = cartInstance.cart.map((item, idx) => {
+    const totalPrice = parseFloat(item.price) * parseInt(item.qty, 10);
+    const imgSrc = cartInstance.getImageSrc(item.img);
+
+    return `
+      <tr>
+        <td><input type="checkbox" class="selectItem" data-idx="${idx}" onchange="updateCheckoutButton()"></td>
+        <td><img src="${imgSrc}" alt="${item.name}" width="50"></td>
+        <td>${item.name}</td>
+        <td>₱${parseFloat(item.price).toFixed(2)}</td>
+        <td>
+          <button class="qty-btn" onclick="cartInstance.changeQty(${idx}, -1)">-</button>
+          ${item.qty}
+          <button class="qty-btn" onclick="cartInstance.changeQty(${idx}, 1)">+</button>
+        </td>
+        <td>₱${totalPrice.toFixed(2)}</td>
+        <td><button class="delete-btn" onclick="cartInstance.removeItem(${idx})">Remove</button></td>
+      </tr>
+    `;
+  }).join('');
+
+  const grandTotal = cartInstance.cart.reduce((sum, i) => sum + i.price * i.qty, 0);
+  grandTotalEl.textContent = `₱${grandTotal.toFixed(2)}`;
+  finalTotalEl.textContent = `₱${grandTotal.toFixed(2)}`;
+  itemCountEl.textContent = cartInstance.cart.reduce((c, i) => c + parseInt(i.qty, 10), 0);
+
+  updateCheckoutButton();
+}
+
+/* === Override cart update to re-render table automatically === */
+const originalUpdateCart = cartInstance.updateCart.bind(cartInstance);
+cartInstance.updateCart = function() {
+  originalUpdateCart();
+  renderOrderTable();
+};
+
+/* === Initialize cart table on page load === */
+cartInstance.fetchCart();
+</script>
+
+
 </body>
 </html>

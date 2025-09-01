@@ -39,22 +39,23 @@ switch($method) {
         echo json_encode($response);
         break;
 
-    case 'PUT':
-        // For updating order status (admin functionality)
-        $data = json_decode(file_get_contents('php://input'), true);
-        $order_id = $data['order_id'] ?? null;
-        $status = $data['status'] ?? null;
+case 'PUT':
+    $data = json_decode(file_get_contents('php://input'), true);
+    $order_id = $data['order_id'] ?? null;
+    $status = $data['status'] ?? null;
+    $product_id = $data['product_id'] ?? null;
 
-        if (!$order_id || !$status) {
-            echo json_encode(["status"=>"error","message"=>"Missing order_id or status"]);
-            exit;
-        }
-
+    if ($order_id && $product_id) {
+        // Cancel single product
+        $response = $controller->cancelOrderItem($order_id, $product_id);
+    } elseif ($order_id && $status) {
+        // Update entire order status
         $response = $controller->updateOrderStatus($order_id, $status);
-        echo json_encode($response);
-        break;
+    } else {
+        echo json_encode(["status"=>"error","message"=>"Missing order_id or status/product_id"]);
+        exit;
+    }
 
-    default:
-        echo json_encode(["status"=>"error","message"=>"Method not allowed"]);
-        break;
+    echo json_encode($response);
+    break;
 }

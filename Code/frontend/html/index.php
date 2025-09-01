@@ -44,7 +44,7 @@ $role = $_SESSION['role'] ?? 'customer';
 
   <!-- existing horizontal nav -->
   <nav>
-    <a href="#" onclick="openOrders()">My Orders</a>
+    <a href="my-orders.html">My Orders</a>
     <a href="about.html">About Us</a>
     <a href="#products">Products</a>
     <a href="#contact">Contact</a>
@@ -98,19 +98,19 @@ $role = $_SESSION['role'] ?? 'customer';
   <!-- 🛍️ Product Grid -->
   <main id="products" class="grid"></main>
 
-  <!-- 🧺 FIXED Floating Cart -->
+
   <aside id="cart" class="sidebar">
     <div style="display:flex;justify-content:space-between;align-items:center">
-      <h4>Your Cart&nbsp;&nbsp;&nbsp;&nbsp; --><span id="cart-count">0</span></h4>
+      <h4>Cart (<span id="cart-count">0</span>)</h4>
       <span onclick="closeCart()" style="cursor:pointer;font-size:1.3rem;">×</span>
     </div>
     <ul id="cart-items"></ul>
     <div class="cart-summary">
       <strong>Total:</strong> <span id="cart-total">₱0</span>
     </div>
-    <button onclick="checkout()">Checkout</button>
+   
+    <button onclick="goToCart()" class="go-to-cart-btn">Go to Cart</button>
   </aside>
-
   <footer>
     <p style="text-align:center;padding:1.5rem 0;color:#666;">
       &copy; 2025 AgriFresh Market – Freshness Delivered.
