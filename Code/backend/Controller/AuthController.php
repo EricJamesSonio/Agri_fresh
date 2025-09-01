@@ -12,11 +12,17 @@ class AuthController {
         $user = $this->userModel->findUser($email, $password);
 
         if ($user) {
+            // ✅ Start session and store role
+            session_start();
+            $_SESSION['customer_id'] = $user['id'];
+            $_SESSION['customer_name'] = $user['first_name'] . " " . $user['last_name'];
+            $_SESSION['role'] = $user['role'];
+
             return [
                 "status" => "success",
                 "role" => $user["role"],
                 "id" => $user["id"],
-                "name" => $user["first_name"] . " " . $user["last_name"],
+                "name" => $_SESSION['customer_name'],
                 "email" => $user["email"]
             ];
         } else {

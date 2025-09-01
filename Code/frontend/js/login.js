@@ -10,6 +10,7 @@ document.getElementById("loginForm").addEventListener("submit", async (e) => {
     const res = await fetch(apiUrl("login"), {
       method: "POST",
       headers: { "Content-Type": "application/json" },
+      credentials: "include",   // ✅ keep PHP session cookies
       body: JSON.stringify({ email, password })
     });
     
@@ -21,17 +22,17 @@ document.getElementById("loginForm").addEventListener("submit", async (e) => {
     console.log("Login response:", data); // 👀 Debug
     
     if (data.status === "success") {
-      // ✅ FIXED: Clear any existing localStorage first
+      // ✅ Clear old values
       localStorage.removeItem("customer_id");
       localStorage.removeItem("customer_name");
       localStorage.removeItem("role");
       
-      // ✅ Store values individually and validate they're being stored correctly
+      // ✅ Store new values
       localStorage.setItem("customer_id", data.id.toString());
       localStorage.setItem("customer_name", data.name);
       localStorage.setItem("role", data.role);
       
-      // ✅ Debug: Verify what was actually stored
+      // ✅ Debug check
       console.log("Stored customer_id:", localStorage.getItem("customer_id"));
       console.log("Stored customer_name:", localStorage.getItem("customer_name"));
       console.log("Stored role:", localStorage.getItem("role"));
@@ -41,7 +42,7 @@ document.getElementById("loginForm").addEventListener("submit", async (e) => {
       if (data.role === "admin") {
         window.location.href = "../admin/index.html";
       } else {
-        window.location.href = "index.html";
+        window.location.href = "index.php";
       }
     } else {
       alert(data.message || "Login failed");

@@ -1,3 +1,18 @@
+<?php
+
+session_start();
+
+if (!isset($_SESSION['customer_id'])) {
+    header("Location: login.html");
+    exit();
+}
+
+
+if ($_SESSION['role'] !== 'admin') {
+    header("Location: index.html"); 
+    exit();
+}
+?>
 <!doctype html>
 <html lang="en">
 <head>
@@ -37,15 +52,10 @@
   <!-- 🎞️ Hero with slideshow -->
   <section id="home" class="hero">
     <div class="hero-slides">
-      <!-- AVIF image from Unsplash (premium) -->
-      <img src="https://plus.unsplash.com/premium_photo-1724129050570-669724edcffc?q=80&w=687&auto=format&fit=crop"
-           alt="Slide 1">
-      <img src="https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=1600&q=80"
-           alt="Slide 2">
-      <img src="https://images.unsplash.com/photo-1597362925123-77861d3fbac7?auto=format&fit=crop&w=1170&q=80"
-           alt="Slide 3">
-      <img src="https://images.unsplash.com/photo-1557844352-761f2565b576?auto=format&fit=crop&w=2070&q=80"
-           alt="Slide 4">
+      <img src="https://plus.unsplash.com/premium_photo-1724129050570-669724edcffc?q=80&w=687&auto=format&fit=crop" alt="Slide 1">
+      <img src="https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=1600&q=80" alt="Slide 2">
+      <img src="https://images.unsplash.com/photo-1597362925123-77861d3fbac7?auto=format&fit=crop&w=1170&q=80" alt="Slide 3">
+      <img src="https://images.unsplash.com/photo-1557844352-761f2565b576?auto=format&fit=crop&w=2070&q=80" alt="Slide 4">
     </div>
 
     <!-- Right-aligned mega text -->
@@ -61,9 +71,7 @@
         to your kitchen.
         <small>No traffic, no hassle, just greens at one click!</small>
       </p>
-      <button class="mega-cta" onclick="scrollToProducts()">
-        🛒 SHOP NOW
-      </button>
+      <button class="mega-cta" onclick="scrollToProducts()">🛒 SHOP NOW</button>
     </div>
   </section>
 
@@ -73,7 +81,10 @@
 
     <select id="category" onchange="filterProducts()">
       <option value="all">All Categories</option>
-      <option>Leafy Greens</option><option>Roots</option><option>Fruits</option><option>Herbs</option>
+      <option>Leafy Greens</option>
+      <option>Roots</option>
+      <option>Fruits</option>
+      <option>Herbs</option>
     </select>
     <div class="tags">
       <button onclick="toggleTag(this,'organic')">Organic</button>
@@ -97,7 +108,7 @@
     <button onclick="checkout()">Checkout</button>
   </aside>
 
-    <footer>
+  <footer>
     <p style="text-align:center;padding:1.5rem 0;color:#666;">
       &copy; 2025 AgriFresh Market – Freshness Delivered.
     </p>
@@ -113,8 +124,7 @@
       adminLink.style.display = "none";
     }
   });
-</script>
-
+  </script>
 
   <script src="../js/config.js"></script>
   <script src="../js/script.js"></script>

@@ -286,7 +286,8 @@ class ShoppingCart {
     this.updateCart();
 
     // Optionally redirect to homepage/login
-    window.location.href = "login.html"; // or "./index.html" if you want homepage
+    window.location.href = location.origin + "/agri_fresh/code/frontend/html/login.html";
+
   }
 
   filterProducts() {
