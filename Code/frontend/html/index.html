@@ -20,7 +20,7 @@
     <label for="dots-toggle">⋮</label>
     <ul>
       <li><a href="signup.html">Sign up</a></li>
-      <li><a href="admin.html">Admin</a></li>
+      <li id="admin-link"><a href="../admin/">Admin</a></li>
       <li><a href="#" onclick="logout()">Logout</a></li>
     </ul>
   </nav>
@@ -102,6 +102,19 @@
       &copy; 2025 AgriFresh Market – Freshness Delivered.
     </p>
   </footer>
+
+  <script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const adminLink = document.getElementById("admin-link");
+    const role = localStorage.getItem("role");
+
+    // Hide if role is not admin
+    if (role !== "admin" && adminLink) {
+      adminLink.style.display = "none";
+    }
+  });
+</script>
+
 
   <script src="../js/config.js"></script>
   <script src="../js/script.js"></script>

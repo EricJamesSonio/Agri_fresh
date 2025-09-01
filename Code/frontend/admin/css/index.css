@@ -1,25 +1,16 @@
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: Arial, sans-serif;
-}
-
-body {
-    background: #f5f5f5;
-}
-
-.admin-panel {
-    display: flex;
-    height: 100vh;
-}
-
 /* Sidebar */
 .sidebar {
+    position: fixed;       /* keep sidebar fixed on the left */
+    left: 0;
+    top: 0;
+    bottom: 0;
     width: 220px;
     background-color: #2c3e50;
     color: #fff;
     padding: 20px;
+
+    display: flex;
+    flex-direction: column;
 }
 
 .sidebar h2 {
@@ -30,6 +21,7 @@ body {
 
 .sidebar ul {
     list-style: none;
+    flex-grow: 1; /* pushes back button down */
 }
 
 .sidebar ul li {
@@ -45,8 +37,10 @@ body {
 
 /* Main content */
 .main-content {
+    margin-left: 240px;
     flex: 1;
-    padding: 30px;
+    padding: 40px;
+    font-family: Arial, sans-serif; /* 👈 only content text */
 }
 
 .content-section {
@@ -55,4 +49,22 @@ body {
 
 .content-section.active {
     display: block;
+}
+
+/* Back button */
+.back-btn {
+    margin-top: auto;  /* stick to bottom */
+    padding: 12px;
+    background: #444;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    width: 100%;
+    text-align: center; /* centered text */
+    font-size: 14px;
+}
+
+.back-btn:hover {
+    background: #666;
 }
