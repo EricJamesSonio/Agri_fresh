@@ -44,12 +44,13 @@ class ShoppingCart {
     console.log("Raw products from API:", rawProducts);
 
 this.products = rawProducts.map(p => {
-  let imgSrc = p.img || p.image_url || 'placeholder.jpg';
-
-  // Only prepend CONFIG.IMAGE_PATH if it’s a relative path (does NOT start with http)
-  if (!imgSrc.startsWith('http')) {
+  let imgSrc = p.img || p.image_url;
+if (!imgSrc) {
+    imgSrc = '/agrifresh/code/frontend/images/placeholder.jpg'; // absolute safe path
+} else if (!imgSrc.startsWith('http')) {
     imgSrc = imageUrl(imgSrc);
-  }
+}
+
 
   return {
     ...p,
@@ -130,15 +131,18 @@ this.products = rawProducts.map(p => {
 
 render(list = this.products) {
   const grid = document.getElementById('products');
+  if (!grid) return;
 
-  if (!grid) {
-    console.warn("Products grid element not found, skipping render.");
-    return; // exit gracefully
-  }
+  // Filter out any products that no longer have an image
+  const safeList = list.map(p => {
+    const img = p.img && p.img.trim() ? p.img : '/agrifresh/code/frontend/images/placeholder.jpg';
+    return { ...p, img };
+  });
 
-  grid.innerHTML = list.map(p => `
+  grid.innerHTML = safeList.map(p => `
     <div class="card">
-      <img src="${p.img}" alt="${p.name}" loading="lazy" onerror="this.src='../images/placeholder.jpg'">
+      <img src="${p.img}" alt="${p.name}" loading="lazy"
+           onerror="this.onerror=null; this.src='/agrifresh/code/frontend/images/placeholder.jpg'">
       <div class="card-body">
         <h4>${p.name}</h4>
         <span class="price">₱${p.price}</span>
@@ -147,7 +151,6 @@ render(list = this.products) {
     </div>
   `).join('');
 }
-
 
   async addToCart(product_id) {
   console.log("=== ADD TO CART DEBUG ===");
@@ -440,7 +443,7 @@ toggleTag(btn) {
 }
 
 goToCart() {
-
+  // Navigate to the full cart page (my-orders.html)
   window.location.href = 'my-cart.html';
 }
 
