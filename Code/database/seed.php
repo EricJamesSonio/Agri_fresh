@@ -24,7 +24,7 @@ echo "<h3>🌾 Seeding Data</h3>";
 echo "<h4>👤 Seeding Users & Categories...</h4>";
 require_once(__DIR__ . '/scripts/data/admin_seed.php');
 require_once(__DIR__ . '/scripts/data/category_seed.php');
-//require_once(__DIR__ . '/scripts/data/customer_seed.php');
+require_once(__DIR__ . '/scripts/data/customer_seed.php');
 //require_once(__DIR__ . '/scripts/data/customer_address_seed.php');
 require_once(__DIR__ . '/scripts/data/product_seed.php');
 //require_once(__DIR__ . '/scripts/data/cart_seed.php');
