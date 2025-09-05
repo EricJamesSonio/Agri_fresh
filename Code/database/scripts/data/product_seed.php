@@ -3,17 +3,38 @@
 require_once(__DIR__ . '/../../db.php');
 require_once(__DIR__ . '/../../function.php');
 
+/**
+ * Helper function to get category ID by name safely
+ */
+function getCategoryId($con, $categoryName) {
+    $result = mysqli_query($con, "SELECT category_id FROM category WHERE category_name = '$categoryName'");
+    $row = mysqli_fetch_assoc($result);
+    if (!$row) die("Error: Category '$categoryName' not found in database!<br>");
+    return $row['category_id'];
+}
+
+/**
+ * Helper function to get admin ID safely
+ */
+function getAdminId($con, $email) {
+    $result = mysqli_query($con, "SELECT admin_id FROM admin WHERE email = '$email'");
+    $row = mysqli_fetch_assoc($result);
+    if (!$row) die("Error: Admin with email '$email' not found in database!<br>");
+    return $row['admin_id'];
+}
+
 // Get category IDs
-$vegetableId = mysqli_fetch_assoc(mysqli_query($con, "SELECT category_id FROM category WHERE category_name = 'Vegetables'"))['category_id'];
-$fruitId = mysqli_fetch_assoc(mysqli_query($con, "SELECT category_id FROM category WHERE category_name = 'Fruits'"))['category_id'];
-$herbId = mysqli_fetch_assoc(mysqli_query($con, "SELECT category_id FROM category WHERE category_name = 'Herbs'"))['category_id'];
-$grainId = mysqli_fetch_assoc(mysqli_query($con, "SELECT category_id FROM category WHERE category_name = 'Grains'"))['category_id'];
-$dairyId = mysqli_fetch_assoc(mysqli_query($con, "SELECT category_id FROM category WHERE category_name = 'Dairy'"))['category_id'];
-$seafoodId = mysqli_fetch_assoc(mysqli_query($con, "SELECT category_id FROM category WHERE category_name = 'Seafood'"))['category_id'];
+$vegetableId = getCategoryId($con, 'Vegetables');
+$fruitId     = getCategoryId($con, 'Fruits');
+$herbId      = getCategoryId($con, 'Herbs');
+$grainId     = getCategoryId($con, 'Grains');
+$dairyId     = getCategoryId($con, 'Dairy');
+$seafoodId   = getCategoryId($con, 'Seafood');
 
 // Get admin ID for created_by
-$adminId = mysqli_fetch_assoc(mysqli_query($con, "SELECT admin_id FROM admin WHERE email = 'admin@farmfresh.com'"))['admin_id'];
+$adminId = getAdminId($con, 'admin@agrifresh.com'); // Matches your admin seeder
 
+// Insert products
 insertDataSmart($con, 'product', 
     ['name', 'description', 'category_id', 'price', 'stock_quantity', 'image_url', 'is_seasonal', 'is_organic', 'created_by'], 
     [
@@ -54,6 +75,6 @@ insertDataSmart($con, 'product',
     ['name'] // Unique column to check duplicates
 );
 
-echo "Product seeding completed including Seafood.<br>";
+echo "✅ Product seeding completed including Seafood.<br>";
 
 ?>
