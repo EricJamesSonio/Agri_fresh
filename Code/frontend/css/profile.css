@@ -1,0 +1,90 @@
+/* Container */
+.profile-container {
+  max-width: 600px;
+  margin: 2rem auto;
+  padding: 2rem;
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  font-family: Arial, sans-serif;
+}
+
+/* Form labels */
+#profileForm label {
+  display: block;
+  margin-bottom: 0.4rem;
+  font-weight: bold;
+  color: #333;
+}
+
+/* Input fields */
+#profileForm input {
+  width: 100%;
+  padding: 0.7rem;
+  margin-bottom: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 1rem;
+  transition: border-color 0.3s;
+}
+
+#profileForm input:focus {
+  border-color: #28a745;
+  outline: none;
+}
+
+/* Submit button */
+#profileForm button {
+  background: #28a745;
+  color: #fff;
+  padding: 0.8rem 1.5rem;
+  border: none;
+  border-radius: 6px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+#profileForm button:hover {
+  background: #218838;
+}
+
+/* Address section */
+#addresses {
+  margin-top: 2rem;
+  padding-top: 1rem;
+  border-top: 1px solid #eee;
+}
+
+#addresses h2 {
+  margin-bottom: 1rem;
+  color: #444;
+}
+
+#address-list div {
+  padding: 0.7rem;
+  margin-bottom: 0.6rem;
+  background: #f9f9f9;
+  border-radius: 6px;
+  border: 1px solid #ddd;
+}
+
+/* Add address button */
+#addAddressBtn {
+  background: #007bff;
+  color: #fff;
+  padding: 0.7rem 1.2rem;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+#addAddressBtn:hover {
+  background: #0069d9;
+}
+
+/* Hidden utility */
+.hidden {
+  display: none;
+}

@@ -41,6 +41,9 @@ switch ($request) {
         require_once(__DIR__ . '/../Routes/category.php');
         break;
 
+    case 'profile':
+        require_once(__DIR__ . '/../Routes/profile.php');
+        break;
 
     default:
         echo json_encode([

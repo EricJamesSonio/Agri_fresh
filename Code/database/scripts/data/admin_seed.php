@@ -6,7 +6,7 @@ require_once(__DIR__ . '/../../function.php');
 insertDataSmart($con, 'admin', 
     ['first_name', 'last_name', 'email', 'password', 'contact'], 
     [
-        ['John', 'Admin', 'admin@farmfresh.com', password_hash('admin123', PASSWORD_DEFAULT), '+639123456789'],
+        ['Admin', 'FreshCorp', 'admin@agrifresh.com', password_hash('admin123', PASSWORD_DEFAULT), '+639123456789'],
     ],
     ['email'] // Unique column to check duplicates
 );

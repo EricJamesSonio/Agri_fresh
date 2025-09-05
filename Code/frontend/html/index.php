@@ -32,6 +32,7 @@ $role = $_SESSION['role'] ?? 'customer';
     <label for="dots-toggle">⋮</label>
     <ul>
       <li><a href="signup.html">Sign up</a></li>
+      <li><a href="profile.html">Profile</a></li>
 
       <!-- ✅ Show only if admin -->
       <?php if ($role === 'admin'): ?>
