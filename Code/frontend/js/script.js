@@ -46,7 +46,7 @@ class ShoppingCart {
       this.products = rawProducts.map(p => {
         let imgSrc = p.img || p.image_url;
         if (!imgSrc) {
-          imgSrc = '/agrifresh/code/frontend/images/placeholder.jpg'; // absolute safe path
+          imgSrc = '/agri_fresh/code/frontend/images/placeholder.jpg'; // absolute safe path
         } else if (!imgSrc.startsWith('http')) {
           imgSrc = imageUrl(imgSrc);
         }
@@ -131,7 +131,7 @@ class ShoppingCart {
 
     // Filter out any products that no longer have an image
     const safeList = list.map(p => {
-      const img = p.img && p.img.trim() ? p.img : '/agrifresh/code/frontend/images/placeholder.jpg';
+      const img = p.img && p.img.trim() ? p.img : '/agri_fresh/code/frontend/images/placeholder.jpg';
       return { ...p, img };
     });
 
@@ -142,7 +142,7 @@ class ShoppingCart {
         <div class="card ${isOutOfStock ? 'out-of-stock' : ''}">
           <div class="card-image-container">
             <img src="${p.img}" alt="${p.name}" loading="lazy"
-                 onerror="this.onerror=null; this.src='/agrifresh/code/frontend/images/placeholder.jpg'">
+                 onerror="this.onerror=null; this.src='/agri_fresh/code/frontend/images/placeholder.jpg'">
             ${isOutOfStock ? '<div class="out-of-stock-overlay"><span>OUT OF STOCK</span></div>' : ''}
           </div>
           <div class="card-body">
@@ -493,7 +493,7 @@ class ShoppingCart {
     this.updateCart();
 
     // Optionally redirect to homepage/login
-    window.location.href = location.origin + "/agrifresh/code/frontend/html/login.html";
+    window.location.href = location.origin + "/agri_fresh/code/frontend/html/login.html";
   }
 
   filterProducts() {

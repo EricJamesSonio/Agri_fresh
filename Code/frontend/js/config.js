@@ -1,6 +1,6 @@
 const CONFIG = {
-  BASE_URL: "http://localhost/agrifresh/code/backend/api",
-  IMAGE_PATH: "http://localhost/agrifresh/code/frontend/images" // full URL to images folder
+  BASE_URL: "http://localhost/agri_fresh/code/backend/api",
+  IMAGE_PATH: "http://localhost/agri_fresh/code/frontend/images" // full URL to images folder
 };
 
 function apiUrl(endpoint) {
