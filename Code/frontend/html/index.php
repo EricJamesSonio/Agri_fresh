@@ -19,6 +19,7 @@ $role = $_SESSION['role'] ?? 'customer';
   <!-- Google Font -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../css/style.css">
+  <link rel="stylesheet" href="../css/modal.css">
 </head>
 <body>
 
@@ -137,20 +138,6 @@ $role = $_SESSION['role'] ?? 'customer';
     <button id="confirmAddBtn">Add to Cart</button>
   </div>
 </div>
-
-<style>
-  .modal { 
-    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-    background: rgba(0,0,0,0.6); display: flex; align-items: center; justify-content: center;
-    z-index: 1000;
-  }
-  .modal.hidden { display: none; }
-  .modal-content {
-    background: #fff; padding: 20px; border-radius: 8px; text-align: center;
-    width: 90%; max-width: 400px;
-  }
-  .close-btn { position: absolute; top: 10px; right: 20px; cursor: pointer; font-size: 20px; }
-</style>
 
 
   <script src="../js/config.js"></script>

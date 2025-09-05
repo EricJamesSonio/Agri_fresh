@@ -34,6 +34,8 @@ class ShoppingCart {
     }
   }
 
+  
+
   async fetchProducts() {
     try {
       console.log("Fetching products from:", apiUrl('products'));
@@ -524,6 +526,7 @@ this.cart = data.map(i => {
     
     // Remove customer identifier
     localStorage.removeItem("customer_id");
+    
 
     // Reset internal cart
     this.cart = [];
@@ -648,6 +651,13 @@ const cartInstance = new ShoppingCart();
 function logout() {cartInstance.logout();}
 window.logout = logout;
 function goToCart() { return cartInstance.goToCart(); }
+
+// Make closeSizeModal globally accessible
+function closeSizeModal() {
+    cartInstance.closeSizeModal();
+}
+window.closeSizeModal = closeSizeModal;
+
 
 // Keep original function names for HTML compatibility
 let products = cartInstance.products;
