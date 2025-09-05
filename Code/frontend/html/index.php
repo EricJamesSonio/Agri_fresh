@@ -119,6 +119,40 @@ $role = $_SESSION['role'] ?? 'customer';
     </p>
   </footer>
 
+
+  <!-- Product Size Modal -->
+<div id="sizeModal" class="modal hidden">
+  <div class="modal-content">
+    <span class="close-btn" onclick="closeSizeModal()">&times;</span>
+    <h3 id="modalProductName"></h3>
+    <img id="modalProductImg" src="" alt="" style="max-width:120px; margin:10px 0;">
+    <p id="modalProductDesc"></p>
+
+    <label for="sizeSelect">Choose size:</label>
+    <select id="sizeSelect"></select>
+
+    <label for="modalQty">Quantity:</label>
+    <input type="number" id="modalQty" value="1" min="1" style="width:60px;">
+
+    <button id="confirmAddBtn">Add to Cart</button>
+  </div>
+</div>
+
+<style>
+  .modal { 
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.6); display: flex; align-items: center; justify-content: center;
+    z-index: 1000;
+  }
+  .modal.hidden { display: none; }
+  .modal-content {
+    background: #fff; padding: 20px; border-radius: 8px; text-align: center;
+    width: 90%; max-width: 400px;
+  }
+  .close-btn { position: absolute; top: 10px; right: 20px; cursor: pointer; font-size: 20px; }
+</style>
+
+
   <script src="../js/config.js"></script>
   <script src="../js/script.js"></script>
 

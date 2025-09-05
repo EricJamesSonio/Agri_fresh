@@ -1,5 +1,4 @@
 <?php
-
 require_once(__DIR__ . '/../Controller/CartController.php');
 
 $method = $_SERVER['REQUEST_METHOD'];
@@ -21,14 +20,16 @@ switch($method) {
         $data = json_decode(file_get_contents('php://input'), true);
         $customer_id = $data['customer_id'] ?? null;
         $product_id  = $data['product_id'] ?? null;
+        $size_value  = $data['size_value'] ?? null;
+        $size_unit   = $data['size_unit'] ?? null;
         $quantity    = $data['quantity'] ?? 1;
 
-        if (!$customer_id || !$product_id) {
-            echo json_encode(["status"=>"error","message"=>"Missing customer_id or product_id"]);
+        if (!$customer_id || !$product_id || !$size_value || !$size_unit) {
+            echo json_encode(["status"=>"error","message"=>"Missing required fields"]);
             exit;
         }
 
-        $controller->addToCart($customer_id, $product_id, $quantity);
+        $controller->addToCart($customer_id, $product_id, $size_value, $size_unit, $quantity);
         echo json_encode(["status"=>"success","message"=>"Cart updated"]);
         break;
 

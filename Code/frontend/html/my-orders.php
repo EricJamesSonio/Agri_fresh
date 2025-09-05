@@ -92,32 +92,33 @@ async function fetchOrders() {
         }
 
         container.innerHTML = '';
-        orders.forEach(order => {
-            const orderCard = document.createElement('div');
-            orderCard.className = 'order-card';
+       orders.forEach(order => {
+    const orderCard = document.createElement('div');
+    orderCard.className = 'order-card';
 
-            const statusClass = 'status-' + order.order_status.toLowerCase();
+    const statusClass = 'status-' + order.order_status.toLowerCase();
 
-            orderCard.innerHTML = `
-                <div class="order-header">
-                    <div>
-                        <strong>Order #${order.order_id}</strong> 
-                        - <span class="${statusClass}">${order.order_status}</span>
-                    </div>
-                    <div>Total: ₱${parseFloat(order.total_amount).toFixed(2)}</div>
+    orderCard.innerHTML = `
+        <div class="order-header">
+            <div>
+                <strong>Order #${order.order_id}</strong> 
+                - <span class="${statusClass}">${order.order_status}</span>
+            </div>
+            <div>Total: ${parseFloat(order.total_amount).toLocaleString('en-PH', { style: 'currency', currency: 'PHP' })}</div>
+        </div>
+        <div><small>Ordered on: ${new Date(order.created_at).toLocaleString()}</small></div>
+        <div><strong>Shipping Address:</strong> ${order.street}, ${order.city}, ${order.state || ''}, ${order.country}</div>
+        <div class="order-details">
+            ${order.details.map(item => `
+                <div class="order-item">
+                    ${item.product_name} - Qty: ${item.quantity} - ${parseFloat(item.price_each).toLocaleString('en-PH', { style: 'currency', currency: 'PHP' })}
                 </div>
-                <div><small>Ordered on: ${new Date(order.created_at).toLocaleString()}</small></div>
-                <div><strong>Shipping Address:</strong> ${order.street}, ${order.city}, ${order.state || ''}, ${order.country}</div>
-                <div class="order-details">
-                    ${order.details.map(item => `
-                        <div class="order-item">
-                            ${item.product_name} - Qty: ${item.quantity} - ₱${parseFloat(item.price_each).toFixed(2)}
-                        </div>
-                    `).join('')}
-                </div>
-            `;
-            container.appendChild(orderCard);
-        });
+            `).join('')}
+        </div>
+    `;
+    container.appendChild(orderCard);
+});
+
 
     } catch (error) {
         container.innerHTML = `<p>Error fetching orders: ${error.message}</p>`;

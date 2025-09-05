@@ -9,6 +9,8 @@ createTable($con, 'product', "
         name VARCHAR(100) NOT NULL,
         description TEXT,
         category_id INT,
+        size_value DECIMAL(10,2) NOT NULL, 
+        size_unit ENUM('kg','g','liter','ml','bunch') NOT NULL, 
         price DECIMAL(10,2) NOT NULL,
         stock_quantity INT DEFAULT 0,
         image_url VARCHAR(255),

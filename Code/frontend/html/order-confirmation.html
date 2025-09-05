@@ -154,64 +154,69 @@
         }
 
         function displayOrderDetails(data) {
-            const order = data.order;
-            const details = data.details;
-            
-            const orderDate = new Date(order.created_at).toLocaleDateString();
-            const total = parseFloat(order.total_amount);
-            
-            document.getElementById('order-details').innerHTML = `
-                <h3>Order Details</h3>
-                
-                <div class="detail-row">
-                    <span>Order ID:</span>
-                    <span>#${order.order_id}</span>
-                </div>
-                
-                <div class="detail-row">
-                    <span>Order Date:</span>
-                    <span>${orderDate}</span>
-                </div>
-                
-                <div class="detail-row">
-                    <span>Status:</span>
-                    <span style="text-transform: capitalize; color: #4CAF50;">${order.order_status}</span>
-                </div>
-                
-                <div class="detail-row">
-                    <span>Payment Method:</span>
-                    <span>${order.payment_method}</span>
-                </div>
-                
-                <div class="address-info">
-                    <strong>Delivery Address:</strong><br>
-                    ${order.street}<br>
-                    ${order.city}${order.state ? ', ' + order.state : ''} ${order.postal_code || ''}<br>
-                    ${order.country}
-                </div>
-                
-                <h4>Items Ordered:</h4>
-                <div class="item-list">
-                    ${details.map(item => `
-                        <div class="item">
-                            <div>
-                                <strong>${item.product_name}</strong><br>
-                                <small>₱${parseFloat(item.price_each).toFixed(2)} each</small>
-                            </div>
-                            <div>
-                                ${item.quantity} × ₱${parseFloat(item.price_each).toFixed(2)} = 
-                                ₱${(item.quantity * parseFloat(item.price_each)).toFixed(2)}
-                            </div>
+    const order = data.order;
+    const details = data.details;
+
+    const orderDate = new Date(order.created_at).toLocaleDateString();
+    const total = parseFloat(order.total_amount);
+
+    document.getElementById('order-details').innerHTML = `
+        <h3>Order Details</h3>
+        
+        <div class="detail-row">
+            <span>Order ID:</span>
+            <span>#${order.order_id}</span>
+        </div>
+        
+        <div class="detail-row">
+            <span>Order Date:</span>
+            <span>${orderDate}</span>
+        </div>
+        
+        <div class="detail-row">
+            <span>Status:</span>
+            <span style="text-transform: capitalize; color: #4CAF50;">${order.order_status}</span>
+        </div>
+        
+        <div class="detail-row">
+            <span>Payment Method:</span>
+            <span>${order.payment_method}</span>
+        </div>
+        
+        <div class="address-info">
+            <strong>Delivery Address:</strong><br>
+            ${order.street}<br>
+            ${order.city}${order.state ? ', ' + order.state : ''} ${order.postal_code || ''}<br>
+            ${order.country}
+        </div>
+        
+        <h4>Items Ordered:</h4>
+        <div class="item-list">
+            ${details.map(item => {
+                const priceEach = parseFloat(item.price_each);
+                const itemTotal = priceEach * item.quantity;
+                return `
+                    <div class="item">
+                        <div>
+                            <strong>${item.product_name}</strong><br>
+                            <small>${priceEach.toLocaleString('en-PH', { style: 'currency', currency: 'PHP' })} each</small>
                         </div>
-                    `).join('')}
-                </div>
-                
-                <div class="detail-row">
-                    <span>Total Amount:</span>
-                    <span>₱${total.toFixed(2)}</span>
-                </div>
-            `;
-        }
+                        <div>
+                            ${item.quantity} × ${priceEach.toLocaleString('en-PH', { style: 'currency', currency: 'PHP' })} = 
+                            ${itemTotal.toLocaleString('en-PH', { style: 'currency', currency: 'PHP' })}
+                        </div>
+                    </div>
+                `;
+            }).join('')}
+        </div>
+        
+        <div class="detail-row">
+            <span>Total Amount:</span>
+            <span>${total.toLocaleString('en-PH', { style: 'currency', currency: 'PHP' })}</span>
+        </div>
+    `;
+}
+
 
         function viewOrders() {
     

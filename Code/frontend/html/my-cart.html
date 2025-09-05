@@ -158,6 +158,7 @@ function renderOrderTable() {
 
   if (!tbody) return;
 
+  // Handle empty cart
   if (cartInstance.cart.length === 0) {
     document.getElementById('emptyState').style.display = 'block';
     document.querySelector('.order-table').style.display = 'none';
@@ -173,30 +174,36 @@ function renderOrderTable() {
     const totalPrice = parseFloat(item.price) * parseInt(item.qty, 10);
     const imgSrc = cartInstance.getImageSrc(item.img);
 
+    // Format prices with thousand separators
+    const priceFormatted = parseFloat(item.price).toLocaleString('en-PH', { style: 'currency', currency: 'PHP' });
+    const totalPriceFormatted = totalPrice.toLocaleString('en-PH', { style: 'currency', currency: 'PHP' });
+
     return `
       <tr>
         <td><input type="checkbox" class="selectItem" data-idx="${idx}" onchange="updateCheckoutButton()"></td>
         <td><img src="${imgSrc}" alt="${item.name}" width="50"></td>
         <td>${item.name}</td>
-        <td>₱${parseFloat(item.price).toFixed(2)}</td>
+        <td>${priceFormatted}</td>
         <td>
           <button class="qty-btn" onclick="cartInstance.changeQty(${idx}, -1)">-</button>
           ${item.qty}
           <button class="qty-btn" onclick="cartInstance.changeQty(${idx}, 1)">+</button>
         </td>
-        <td>₱${totalPrice.toFixed(2)}</td>
+        <td>${totalPriceFormatted}</td>
         <td><button class="delete-btn" onclick="cartInstance.removeItem(${idx})">Remove</button></td>
       </tr>
     `;
   }).join('');
 
+  // Calculate and display grand total
   const grandTotal = cartInstance.cart.reduce((sum, i) => sum + i.price * i.qty, 0);
-  grandTotalEl.textContent = `₱${grandTotal.toFixed(2)}`;
-  finalTotalEl.textContent = `₱${grandTotal.toFixed(2)}`;
+  grandTotalEl.textContent = grandTotal.toLocaleString('en-PH', { style: 'currency', currency: 'PHP' });
+  finalTotalEl.textContent = grandTotal.toLocaleString('en-PH', { style: 'currency', currency: 'PHP' });
   itemCountEl.textContent = cartInstance.cart.reduce((c, i) => c + parseInt(i.qty, 10), 0);
 
   updateCheckoutButton();
 }
+
 
 /* === Override cart update to re-render table automatically === */
 const originalUpdateCart = cartInstance.updateCart.bind(cartInstance);

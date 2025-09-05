@@ -255,23 +255,26 @@
         });
 
         async function loadOrderSummary() {
-            try {
-                const response = await fetch(apiUrl(`cart?customer_id=${customer_id}`));
-                const data = await response.json();
-                cartData = data;
-                
-                const itemsHtml = data.map(item => 
-                    `<div>${item.name} × ${item.quantity} - ₱${(item.price_each * item.quantity).toFixed(2)}</div>`
-                ).join('');
-                
-                const total = data.reduce((sum, item) => sum + (item.price_each * item.quantity), 0);
-                
-                document.getElementById('order-items').innerHTML = itemsHtml;
-                document.getElementById('order-total').textContent = `₱${total.toFixed(2)}`;
-            } catch (error) {
-                console.error('Failed to load order summary:', error);
-            }
-        }
+    try {
+        const response = await fetch(apiUrl(`cart?customer_id=${customer_id}`));
+        const data = await response.json();
+        cartData = data;
+
+        const itemsHtml = data.map(item => {
+            const total = item.price_each * item.quantity;
+            return `<div>${item.name} × ${item.quantity} - ${total.toLocaleString('en-PH', { style: 'currency', currency: 'PHP' })}</div>`;
+        }).join('');
+
+        const totalAmount = data.reduce((sum, item) => sum + (item.price_each * item.quantity), 0);
+
+        document.getElementById('order-items').innerHTML = itemsHtml;
+        document.getElementById('order-total').textContent = totalAmount.toLocaleString('en-PH', { style: 'currency', currency: 'PHP' });
+    } catch (error) {
+        console.error('Failed to load order summary:', error);
+        document.getElementById('order-items').innerHTML = '<p class="error">Failed to load order summary.</p>';
+        document.getElementById('order-total').textContent = '₱0.00';
+    }
+}
 
         async function loadAddresses() {
             try {
