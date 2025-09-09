@@ -47,4 +47,3 @@ insertDataSmart($con, 'order_detail',
 
 echo "Order details seeding completed.<br>";
 
-?>

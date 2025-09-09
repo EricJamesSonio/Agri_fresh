@@ -39,4 +39,3 @@ insertDataSmart($con, 'admin_logs',
 
 echo "Admin logs seeding completed.<br>";
 
-?>

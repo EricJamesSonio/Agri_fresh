@@ -254,27 +254,104 @@
             loadAddresses();
         });
 
-        async function loadOrderSummary() {
+    async function loadOrderSummary() {
+  try {
+    const response = await fetch(apiUrl(`cart?customer_id=${customer_id}`));
+    const data = await response.json();
+    cartData = data || [];
+
+    // Build item lines
+    const itemsHtml = (Array.isArray(data) && data.length > 0)
+      ? data.map(item => {
+          const total = (item.price_each || 0) * (item.quantity || 0);
+          return `<div>${escapeHtml(item.name)} × ${item.quantity} - ${total.toLocaleString('en-PH', { style: 'currency', currency: 'PHP' })}</div>`;
+        }).join('')
+      : '<div>No items in cart.</div>';
+
+    // Compute subtotal
+    const subtotal = (Array.isArray(data) ? data.reduce((sum, item) => {
+      return sum + ((item.price_each || 0) * (item.quantity || 0));
+    }, 0) : 0);
+
+    // Try to get applied voucher from localStorage
+    let discountAmount = 0;
+    let voucherCode = null;
+    let voucherType = null;
     try {
-        const response = await fetch(apiUrl(`cart?customer_id=${customer_id}`));
-        const data = await response.json();
-        cartData = data;
-
-        const itemsHtml = data.map(item => {
-            const total = item.price_each * item.quantity;
-            return `<div>${item.name} × ${item.quantity} - ${total.toLocaleString('en-PH', { style: 'currency', currency: 'PHP' })}</div>`;
-        }).join('');
-
-        const totalAmount = data.reduce((sum, item) => sum + (item.price_each * item.quantity), 0);
-
-        document.getElementById('order-items').innerHTML = itemsHtml;
-        document.getElementById('order-total').textContent = totalAmount.toLocaleString('en-PH', { style: 'currency', currency: 'PHP' });
-    } catch (error) {
-        console.error('Failed to load order summary:', error);
-        document.getElementById('order-items').innerHTML = '<p class="error">Failed to load order summary.</p>';
-        document.getElementById('order-total').textContent = '₱0.00';
+      const raw = localStorage.getItem("applied_voucher");
+      if (raw) {
+        const v = JSON.parse(raw);
+        voucherCode = v.code || null;
+        voucherType = v.type || null;
+        // if previous applyVoucher saved discount_amount and final_total, prefer those values
+        if (typeof v.discount_amount === 'number') {
+          discountAmount = v.discount_amount;
+        } else if (v.type === "discount") {
+          const dv = parseFloat(v.discount_value || 0);
+          if (v.discount_type === "percent") discountAmount = subtotal * (dv / 100);
+          else discountAmount = dv;
+        } else if (v.type === "free_shipping") {
+          // default shipping assumption (same as your other logic)
+          discountAmount = 50;
+        }
+      }
+    } catch (e) {
+      console.warn('Invalid applied_voucher in localStorage', e);
+      discountAmount = 0;
+      voucherCode = null;
     }
+
+    // sanitize discount and totals
+    if (!isFinite(discountAmount) || discountAmount < 0) discountAmount = 0;
+    if (discountAmount > subtotal) discountAmount = subtotal;
+    const payable = Math.max(0, subtotal - discountAmount);
+
+    // Format currency strings
+    const subtotalFmt = subtotal.toLocaleString('en-PH', { style: 'currency', currency: 'PHP' });
+    const discountFmt = (-discountAmount).toLocaleString('en-PH', { style: 'currency', currency: 'PHP' });
+    const payableFmt = payable.toLocaleString('en-PH', { style: 'currency', currency: 'PHP' });
+
+    // Replace order-summary content so we show Subtotal, Voucher, and Payable clearly
+    const orderSummaryEl = document.querySelector('.order-summary');
+    orderSummaryEl.innerHTML = `
+      <h3>Order Summary</h3>
+      <div id="order-items">${itemsHtml}</div>
+      <div style="margin-top: 1rem; line-height: 1.6;">
+        <div>Subtotal: <strong>${subtotalFmt}</strong></div>
+        <div>Voucher: ${voucherCode ? `<strong>${escapeHtml(voucherCode)}</strong> <span style="color:#2e7d32">(${voucherType || ''})</span> — <strong>${discountFmt}</strong>` : '<em>None</em>'}</div>
+        <div style="font-weight: bold; margin-top: 0.5rem;">Payable: <strong id="order-total">${payableFmt}</strong></div>
+      </div>
+    `;
+
+  } catch (error) {
+    console.error('Failed to load order summary:', error);
+    document.getElementById('order-items').innerHTML = '<p class="error">Failed to load order summary.</p>';
+    // keep the visible total zeroed
+    const orderSummaryEl = document.querySelector('.order-summary');
+    if (orderSummaryEl) {
+      orderSummaryEl.innerHTML = `
+        <h3>Order Summary</h3>
+        <div id="order-items"><p class="error">Failed to load order summary.</p></div>
+        <div style="font-weight:bold; margin-top:1rem;">Total: <span id="order-total">₱0.00</span></div>
+      `;
+    }
+  }
 }
+
+/**
+ * Small helper to avoid XSS when inserting product names / voucher codes
+ * (safe to include in this file).
+ */
+function escapeHtml(str) {
+  if (!str) return '';
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;');
+}
+
 
         async function loadAddresses() {
             try {
@@ -396,46 +473,64 @@
             }
         });
 
-        async function placeOrder() {
-            if (!selectedAddressId) {
-                alert('Please select a delivery address');
-                return;
-            }
+async function placeOrder() {
+  if (!selectedAddressId) {
+    alert("Please select a delivery address");
+    return;
+  }
 
-            const paymentMethod = document.querySelector('input[name="payment_method"]:checked').value;
-            const orderBtn = document.getElementById('place-order-btn');
-            
-            orderBtn.disabled = true;
-            orderBtn.textContent = 'Placing Order...';
+  const paymentMethod = document.querySelector('input[name="payment_method"]:checked').value;
+  const appliedVoucher = localStorage.getItem("applied_voucher");
 
-            try {
-                const response = await fetch(apiUrl('orders'), {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        customer_id: customer_id,
-                        address_id: selectedAddressId,
-                        payment_method: paymentMethod
-                    })
-                });
+  // Calculate total
+  let totalAmount = cartData.reduce((sum, item) => sum + item.price_each * item.quantity, 0);
 
-                const result = await response.json();
-                
-                if (result.status === 'success') {
-                    alert(`Order placed successfully! Order ID: ${result.order_id}`);
-                    window.location.href = `order-confirmation.html?order_id=${result.order_id}`;
-                } else {
-                    alert(`Order failed: ${result.message}`);
-                    orderBtn.disabled = false;
-                    orderBtn.textContent = 'Place Order';
-                }
-            } catch (error) {
-                console.error('Failed to place order:', error);
-                alert('Failed to place order. Please try again.');
-                orderBtn.disabled = false;
-                orderBtn.textContent = 'Place Order';
-            }
-        }
+  let voucherCode = null;
+  if (appliedVoucher) {
+    const v = JSON.parse(appliedVoucher);
+    voucherCode = v.code;
+
+    if (v.type === "discount") {
+      if (v.discount_type === "percent") {
+        totalAmount -= totalAmount * (v.discount_value / 100);
+      } else if (v.discount_type === "fixed") {
+        totalAmount -= v.discount_value;
+      }
+      if (totalAmount < 0) totalAmount = 0;
+    } else if (v.type === "free_shipping") {
+      totalAmount -= 50; // Adjust for shipping if needed
+    }
+  }
+
+  try {
+    const response = await fetch(apiUrl("orders"), {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        customer_id: customer_id,
+        address_id: selectedAddressId,
+        payment_method: paymentMethod,
+        voucher_code: voucherCode,
+        total_amount: totalAmount.toFixed(2)  // send discounted total
+      })
+    });
+
+    const result = await response.json();
+
+    if (result.status === "success") {
+      localStorage.removeItem("applied_voucher");
+      alert(`Order placed successfully! Order ID: ${result.order_id}`);
+      window.location.href = `order-confirmation.html?order_id=${result.order_id}`;
+    } else {
+      alert(`Order failed: ${result.message}`);
+    }
+  } catch (err) {
+    console.error("Failed to place order:", err);
+    alert("Failed to place order. Please try again.");
+  }
+}
+
+
 
         function goBack() {
             window.location.href = 'index.php';

@@ -1,4 +1,7 @@
 <?php
+error_reporting(E_ALL & ~E_NOTICE & ~E_WARNING);
+ini_set('display_errors', 0);
+
 header("Content-Type: application/json");
 header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Methods: POST, GET, OPTIONS");
@@ -44,6 +47,11 @@ switch ($request) {
     case 'profile':
         require_once(__DIR__ . '/../Routes/profile.php');
         break;
+
+    case 'voucher':
+        require_once(__DIR__ . '/../Routes/voucher.php');
+        break;
+
 
     default:
         echo json_encode([

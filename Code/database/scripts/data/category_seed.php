@@ -19,4 +19,3 @@ insertDataSmart($con, 'category',
 
 echo "Category seeding completed.<br>";
 
-?>

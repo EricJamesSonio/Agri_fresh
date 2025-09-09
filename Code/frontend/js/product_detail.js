@@ -75,16 +75,7 @@ function updateControls() {
   recalcGrandTotal();
 }
 
-/* ---------- voucher / coins ---------- */
-let voucherValue = 0;
-function applyVoucher() {
-  const code = document.getElementById('voucherCode').value.trim().toUpperCase();
-  if (code === 'AGRI10') voucherValue = 10;
-  else if (code === 'AGRI20') voucherValue = 20;
-  else { alert('Invalid voucher'); voucherValue = 0; }
-  document.getElementById('voucherDiscount').textContent = '-₱' + voucherValue;
-  recalcGrandTotal();
-}
+
 
 function recalcGrandTotal() {
   const checked = [...document.querySelectorAll('.rowCheck:checked')];

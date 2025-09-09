@@ -15,6 +15,7 @@ require_once(__DIR__ . '/model/cart.php');
 require_once(__DIR__ . '/model/cart_item.php');
 require_once(__DIR__ . '/model/orders.php');
 require_once(__DIR__ . '/model/order_detail.php');
+require_once(__DIR__ . '/model/voucher.php');
 
 echo "<hr>";
 
@@ -27,6 +28,7 @@ require_once(__DIR__ . '/scripts/data/category_seed.php');
 require_once(__DIR__ . '/scripts/data/customer_seed.php');
 //require_once(__DIR__ . '/scripts/data/customer_address_seed.php');
 require_once(__DIR__ . '/scripts/data/product_seed.php');
+require_once(__DIR__ . '/scripts/data/voucher_seed.php');
 //require_once(__DIR__ . '/scripts/data/cart_seed.php');
 //require_once(__DIR__ . '/scripts/data/cart_item_seed.php');
 //require_once(__DIR__ . '/scripts/data/order_seed.php');
@@ -49,4 +51,3 @@ echo "<li>✅ Order details added </li>";
 echo "<li>✅ Admin activity logs added</li>";
 echo "</ul>";
 
-?>

@@ -1,129 +1,85 @@
 <?php
 require_once(__DIR__ . '/../Model/OrderModel.php');
 require_once(__DIR__ . '/../Model/AddressModel.php');
+require_once(__DIR__ . '/../Model/VoucherModel.php');
 require_once(__DIR__ . '/CartController.php');
 
 class OrderController {
     private $orderModel;
     private $addressModel;
+    private $voucherModel;
     private $cartController;
 
     public function __construct() {
         global $con;
         $this->orderModel = new OrderModel($con);
         $this->addressModel = new AddressModel($con);
+        $this->voucherModel = new VoucherModel($con);
         $this->cartController = new CartController();
     }
 
-    public function createOrder($customer_id, $address_id, $payment_method = 'COD') {
-    global $con;
-    try {
-        // Validate customer has items in cart
-        $cartItems = $this->cartController->getCart($customer_id);
-        if (empty($cartItems)) {
-            return [
-                'status' => 'error',
-                'message' => 'Your cart is empty.'
-            ];
-        }
+    public function createOrder($customer_id, $address_id, $payment_method = 'COD', $voucher_code = null) {
+        global $con;
+        try {
+            $cartItems = $this->cartController->getCart($customer_id);
+            if (empty($cartItems)) throw new Exception('Your cart is empty.');
 
-        // Validate address belongs to customer
-        $address = $this->addressModel->getAddress($address_id);
-        if (!$address || $address['customer_id'] != $customer_id) {
-            return [
-                'status' => 'error',
-                'message' => 'Invalid address selected.'
-            ];
-        }
-
-        // Start transaction
-        $con->begin_transaction();
-
-        // Check stock for each item first
-        foreach ($cartItems as $item) {
-            $stmt = $con->prepare("SELECT stock_quantity, name FROM product WHERE product_id = ?");
-            $stmt->bind_param("i", $item['product_id']);
-            $stmt->execute();
-            $prod = $stmt->get_result()->fetch_assoc();
-
-            if (!$prod) {
-                $con->rollback();
-                return [
-                    'status' => 'error',
-                    'message' => "Product not found: {$item['name']}"
-                ];
+            $address = $this->addressModel->getAddress($address_id);
+            if (!$address || $address['customer_id'] != $customer_id) {
+                throw new Exception('Invalid address selected.');
             }
 
-            if ($prod['stock_quantity'] < $item['quantity']) {
-                $con->rollback();
-                return [
-                    'status' => 'error',
-                    'message' => "Insufficient stock for product: {$prod['name']}. Available: {$prod['stock_quantity']}"
-                ];
+            $con->begin_transaction();
+
+            // Stock check
+            foreach ($cartItems as $item) {
+                $stmt = $con->prepare("SELECT stock_quantity, name FROM product WHERE product_id = ?");
+                $stmt->bind_param("i", $item['product_id']);
+                $stmt->execute();
+                $prod = $stmt->get_result()->fetch_assoc();
+
+                if (!$prod) throw new Exception("Product not found: {$item['name']}");
+                if ($prod['stock_quantity'] < $item['quantity']) {
+                    throw new Exception("Insufficient stock for {$prod['name']}. Available: {$prod['stock_quantity']}");
+                }
             }
-        }
 
-        // Calculate total
-        $total_amount = 0;
-        foreach ($cartItems as $item) {
-            $total_amount += $item['price_each'] * $item['quantity'];
-        }
+            // Calculate total
+            $total_amount = 0;
+            foreach ($cartItems as $item) $total_amount += $item['price_each'] * $item['quantity'];
 
-        // Create order
-        $order_id = $this->orderModel->createOrder($customer_id, $address_id, $total_amount, $payment_method);
-        if (!$order_id) {
+            // Apply voucher
+            if ($voucher_code) {
+                $voucherCheck = $this->voucherModel->validateVoucher($voucher_code, $customer_id, $total_amount);
+                if ($voucherCheck['valid']) $total_amount = $voucherCheck['new_total'];
+                else throw new Exception($voucherCheck['message']);
+            }
+
+            $order_id = $this->orderModel->createOrder($customer_id, $address_id, $total_amount, $payment_method, $voucher_code);
+            if (!$order_id) throw new Exception('Failed to create order.');
+
+            // Add order details & update stock
+            foreach ($cartItems as $item) {
+                $success = $this->orderModel->addOrderDetail($order_id, $item['product_id'], $item['quantity'], $item['price_each']);
+                if (!$success) throw new Exception('Failed to add order details.');
+
+                $stmt = $con->prepare("UPDATE product SET stock_quantity = stock_quantity - ? WHERE product_id = ?");
+                $stmt->bind_param("ii", $item['quantity'], $item['product_id']);
+                $stmt->execute();
+            }
+
+            if ($voucher_code) $this->voucherModel->markUsed($voucher_code, $customer_id);
+
+            $this->clearCart($customer_id);
+            $con->commit();
+
+            return ['status'=>'success','message'=>'Order created successfully!','order_id'=>$order_id,'total_amount'=>$total_amount,'voucher_applied'=>$voucher_code];
+
+        } catch (Exception $e) {
             $con->rollback();
-            return [
-                'status' => 'error',
-                'message' => 'Failed to create order.'
-            ];
+            return ['status'=>'error','message'=>$e->getMessage()];
         }
-
-        // Add order details and reduce stock
-        foreach ($cartItems as $item) {
-            $success = $this->orderModel->addOrderDetail(
-                $order_id,
-                $item['product_id'],
-                $item['quantity'],
-                $item['price_each']
-            );
-
-            if (!$success) {
-                $con->rollback();
-                return [
-                    'status' => 'error',
-                    'message' => 'Failed to add order details.'
-                ];
-            }
-
-            // Reduce stock
-            $stmt = $con->prepare("UPDATE product SET stock_quantity = stock_quantity - ? WHERE product_id = ?");
-            $stmt->bind_param("ii", $item['quantity'], $item['product_id']);
-            $stmt->execute();
-        }
-
-        // Clear cart
-        $this->clearCart($customer_id);
-
-        // Commit transaction
-        $con->commit();
-
-        return [
-            'status' => 'success',
-            'message' => 'Order created successfully!',
-            'order_id' => $order_id,
-            'total_amount' => $total_amount
-        ];
-
-    } catch (Exception $e) {
-        $con->rollback();
-        return [
-            'status' => 'error',
-            'message' => 'Order creation failed: ' . $e->getMessage()
-        ];
     }
-}
-
     public function getOrder($order_id, $customer_id = null) {
         try {
             $order = $this->orderModel->getOrder($order_id);

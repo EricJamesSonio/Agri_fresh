@@ -18,4 +18,4 @@ createTable($con, 'cart_item', "
         UNIQUE(cart_id, product_id, size_value, size_unit) -- allow same product with different sizes
     )
 ");
-?>
+

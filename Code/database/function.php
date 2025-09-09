@@ -308,4 +308,3 @@ function buildTypesAndParams(array $params): array {
     return [$types, $flat];
 }
 
-?>

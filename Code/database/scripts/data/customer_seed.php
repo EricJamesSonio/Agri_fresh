@@ -13,4 +13,3 @@ insertDataSmart($con, 'customer',
 
 echo "Customer seeding completed.<br>";
 
-?>

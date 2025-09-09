@@ -12,4 +12,3 @@ createTable($con, 'category', "
     )
 ");
 
-?>

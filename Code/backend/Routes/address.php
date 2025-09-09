@@ -48,4 +48,3 @@ switch($method) {
         echo json_encode(["status"=>"error","message"=>"Method not allowed"]);
         break;
 }
-?>

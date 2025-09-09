@@ -8,13 +8,13 @@ class OrderModel {
         $this->con = $con;
     }
 
-    public function createOrder($customer_id, $address_id, $total_amount, $payment_method = 'COD') {
+    public function createOrder($customer_id, $address_id, $total_amount, $payment_method = 'COD', $voucher_code = null) {
         $stmt = $this->con->prepare("
-            INSERT INTO `orders` (customer_id, address_id, total_amount, payment_method, order_status) 
-            VALUES (?, ?, ?, ?, 'pending')
+            INSERT INTO `orders` (customer_id, address_id, total_amount, payment_method, voucher_code, order_status) 
+            VALUES (?, ?, ?, ?, ?, 'pending')
         ");
-        $stmt->bind_param("iids", $customer_id, $address_id, $total_amount, $payment_method);
-        
+        $stmt->bind_param("iidss", $customer_id, $address_id, $total_amount, $payment_method, $voucher_code);
+
         if ($stmt->execute()) {
             return $this->con->insert_id;
         }
@@ -54,7 +54,7 @@ class OrderModel {
         $stmt->bind_param("i", $order_id);
         $stmt->execute();
         $result = $stmt->get_result();
-        
+
         $details = [];
         while ($row = $result->fetch_assoc()) {
             $details[] = $row;
@@ -73,7 +73,7 @@ class OrderModel {
         $stmt->bind_param("i", $customer_id);
         $stmt->execute();
         $result = $stmt->get_result();
-        
+
         $orders = [];
         while ($row = $result->fetch_assoc()) {
             $orders[] = $row;
@@ -82,8 +82,7 @@ class OrderModel {
     }
 
     public function updateOrderStatus($order_id, $status) {
-        // allow statuses including refunded/returned
-        $valid_statuses = ['pending', 'processing', 'shipped', 'delivered', 'cancelled', 'completed', 'refunded', 'returned'];
+        $valid_statuses = ['pending','processing','shipped','delivered','cancelled','completed','refunded','returned'];
         if (!in_array($status, $valid_statuses)) {
             return false;
         }
@@ -100,47 +99,35 @@ class OrderModel {
     }
 
     public function getAllOrders() {
-    $result = $this->con->query("SELECT * FROM orders ORDER BY created_at DESC");
-    $orders = [];
-    while ($row = $result->fetch_assoc()) {
-        $orders[] = $row;
+        $result = $this->con->query("SELECT * FROM orders ORDER BY created_at DESC");
+        $orders = [];
+        while ($row = $result->fetch_assoc()) {
+            $orders[] = $row;
+        }
+        return $orders;
     }
-    return $orders;
-}
 
-// Delete/cancel a single product from an order
-public function deleteOrderItem($order_id, $product_id) {
-    $stmt = $this->con->prepare("
-        DELETE FROM order_detail 
-        WHERE order_id = ? AND product_id = ?
-    ");
-    $stmt->bind_param("ii", $order_id, $product_id);
-    $success = $stmt->execute();
+    public function deleteOrderItem($order_id, $product_id) {
+        $stmt = $this->con->prepare("DELETE FROM order_detail WHERE order_id = ? AND product_id = ?");
+        $stmt->bind_param("ii", $order_id, $product_id);
+        $success = $stmt->execute();
 
-    if ($success) {
-        // Recalculate total
-        $stmt2 = $this->con->prepare("
-            SELECT SUM(quantity * price_each) as total 
-            FROM order_detail 
-            WHERE order_id = ?
-        ");
-        $stmt2->bind_param("i", $order_id);
-        $stmt2->execute();
-        $result = $stmt2->get_result()->fetch_assoc();
-        $newTotal = $result['total'] ?? 0;
+        if ($success) {
+            $stmt2 = $this->con->prepare("SELECT SUM(quantity * price_each) as total FROM order_detail WHERE order_id = ?");
+            $stmt2->bind_param("i", $order_id);
+            $stmt2->execute();
+            $result = $stmt2->get_result()->fetch_assoc();
+            $newTotal = $result['total'] ?? 0;
 
-        $this->updateOrderTotal($order_id, $newTotal);
+            $this->updateOrderTotal($order_id, $newTotal);
 
-        // If no items left, mark order as cancelled
-        if ($newTotal == 0) {
-            $this->updateOrderStatus($order_id, 'cancelled');
+            if ($newTotal == 0) {
+                $this->updateOrderStatus($order_id, 'cancelled');
+            }
+
+            return true;
         }
 
-        return true;
+        return false;
     }
-
-    return false;
-}
-
-
 }

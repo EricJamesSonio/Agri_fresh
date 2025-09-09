@@ -13,4 +13,4 @@ insertDataSmart($con, 'admin',
 
 echo "Admin seeding completed.<br>";
 
-?>
+

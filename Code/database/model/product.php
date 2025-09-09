@@ -23,4 +23,4 @@ createTable($con, 'product', "
         FOREIGN KEY (created_by) REFERENCES admin(admin_id) ON DELETE SET NULL
     )
 ");
-?>
+

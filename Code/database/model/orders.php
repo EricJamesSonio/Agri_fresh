@@ -8,6 +8,7 @@ createTable($con, 'orders', "
         order_id INT AUTO_INCREMENT PRIMARY KEY,
         customer_id INT NOT NULL,
         address_id INT NOT NULL,
+        voucher_code VARCHAR(50) DEFAULT NULL, 
         total_amount DECIMAL(10,2) NOT NULL,
         order_status ENUM(
             'pending', 
@@ -27,4 +28,4 @@ createTable($con, 'orders', "
     )
 ");
 
-?>
+

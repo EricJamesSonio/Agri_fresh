@@ -71,4 +71,4 @@ insertDataSmart($con, 'product',
 
 echo "✅ Product seeding completed with all size variants.<br>";
 
-?>
+

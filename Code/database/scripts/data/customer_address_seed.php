@@ -22,4 +22,3 @@ insertDataSmart($con, 'customer_address',
 
 echo "Customer addresses seeding completed.<br>";
 
-?>

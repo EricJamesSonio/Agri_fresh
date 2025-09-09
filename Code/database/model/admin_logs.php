@@ -13,4 +13,3 @@ createTable($con, 'admin_logs', "
     )
 ");
 
-?>

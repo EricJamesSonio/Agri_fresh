@@ -18,4 +18,3 @@ insertDataSmart($con, 'cart',
 
 echo "Cart seeding completed.<br>";
 
-?>
