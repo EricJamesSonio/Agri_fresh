@@ -1,39 +1,193 @@
-<div class="section-container">
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Product Management</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f8f9fa;
+      margin: 0;
+      padding: 20px;
+    }
+
+    .section-container {
+      background: #fff;
+      border-radius: 8px;
+      padding: 20px;
+      max-width: 1200px;
+      margin: auto;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    h2 {
+      margin-bottom: 15px;
+      color: #2e7d32;
+    }
+
+    #add-new-product {
+      margin-bottom: 15px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      padding: 10px 15px;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    #add-new-product:hover {
+      background-color: #45a049;
+    }
+
+    /* Form styling */
+    form {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    form h3 {
+      grid-column: 1 / -1; /* span all columns */
+      margin-bottom: 10px;
+    }
+
+    input, select, button, label {
+      font-size: 1rem;
+    }
+
+    input, select {
+      padding: 8px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      width: 100%;
+      box-sizing: border-box;
+    }
+
+    label {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    #save-product-btn {
+      grid-column: 1 / -1;
+      background-color: #28a745;
+      color: white;
+      border: none;
+      padding: 10px;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    #save-product-btn:hover {
+      background-color: #218838;
+    }
+
+    /* Table styling */
+    .table-responsive {
+      width: 100%;
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 700px;
+    }
+
+    thead {
+      background-color: #28a745;
+      color: white;
+    }
+
+    th, td {
+      padding: 12px;
+      border-bottom: 1px solid #ddd;
+      text-align: left;
+      white-space: nowrap;
+    }
+
+    tbody tr:nth-child(even) {
+      background-color: #f9f9f9;
+    }
+
+    /* Responsive tweaks */
+    @media (max-width: 768px) {
+      body {
+        padding: 10px;
+      }
+
+      form {
+        grid-template-columns: 1fr; /* single column form */
+      }
+
+      #save-product-btn {
+        width: 100%;
+      }
+    }
+
+    @media (max-width: 480px) {
+      h2 {
+        font-size: 1.2rem;
+        text-align: center;
+      }
+
+      form h3 {
+        font-size: 1rem;
+        text-align: center;
+      }
+
+      table {
+        font-size: 0.9rem;
+        min-width: 500px;
+      }
+
+      th, td {
+        padding: 8px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="section-container">
     <h2>Product Management</h2>
 
     <!-- Add New Product Button -->
-    <button type="button" id="add-new-product" 
-        style="margin-bottom: 15px; background-color:#4CAF50; color:white; border:none; padding:8px 12px; border-radius:5px; cursor:pointer;">
-      + Add New Product
-    </button>
+    <button type="button" id="add-new-product">+ Add New Product</button>
 
     <!-- Product Form -->
     <form id="product-form">
-        <h3 id="form-title">Update Product</h3>
-        <input type="hidden" id="product-id" />
-        <input type="text" id="product-name" placeholder="Name" required />
-        <input type="number" id="product-price" placeholder="Price" step="0.01" required />
-        <input type="number" id="product-stock" placeholder="Stock Quantity" required />
-        <input type="text" id="product-image" placeholder="Image URL" />
-        <select id="product-category"></select>
-        <label><input type="checkbox" id="product-organic" /> Organic</label>
-        <label><input type="checkbox" id="product-seasonal" /> Seasonal</label>
-        <button type="submit" id="save-product-btn">Save Product</button>
+      <h3 id="form-title">Update Product</h3>
+      <input type="hidden" id="product-id" />
+      <input type="text" id="product-name" placeholder="Name" required />
+      <input type="number" id="product-price" placeholder="Price" step="0.01" required />
+      <input type="number" id="product-stock" placeholder="Stock Quantity" required />
+      <input type="text" id="product-image" placeholder="Image URL" />
+      <select id="product-category"></select>
+      <label><input type="checkbox" id="product-organic" /> Organic</label>
+      <label><input type="checkbox" id="product-seasonal" /> Seasonal</label>
+      <button type="submit" id="save-product-btn">Save Product</button>
     </form>
 
     <!-- Products Table -->
-    <table id="products-table">
+    <div class="table-responsive">
+      <table id="products-table">
         <thead>
-            <tr>
-                <th>ID</th>
-                <th>Name</th>
-                <th>Price</th>
-                <th>Stock</th>
-                <th>Category</th>
-                <th>Tags</th>
-                <th>Actions</th>
-            </tr>
+          <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Price</th>
+            <th>Stock</th>
+            <th>Category</th>
+            <th>Tags</th>
+            <th>Actions</th>
+          </tr>
         </thead>
         <tbody></tbody>
-    </table>
-</div>
+      </table>
+    </div>
+  </div>
+</body>
+</html>

@@ -1,3 +1,9 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Manage Orders</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -12,6 +18,9 @@
       padding: 16px;
       margin-bottom: 20px;
       box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      max-width: 1200px;
+      margin-left: auto;
+      margin-right: auto;
     }
 
     .card-title {
@@ -20,9 +29,16 @@
       margin-bottom: 15px;
     }
 
+    /* Make table scrollable on small screens */
+    .table-responsive {
+      width: 100%;
+      overflow-x: auto;
+    }
+
     .table {
       width: 100%;
       border-collapse: collapse;
+      min-width: 600px; /* prevents table from shrinking too much */
     }
 
     .table thead {
@@ -34,6 +50,7 @@
       padding: 12px;
       border-bottom: 1px solid #ddd;
       text-align: left;
+      white-space: nowrap; /* prevent text from breaking awkwardly */
     }
 
     .table tbody tr:nth-child(even) {
@@ -43,23 +60,70 @@
     select {
       padding: 4px;
     }
+
+    /* Tablet adjustments */
+    @media (max-width: 768px) {
+      body {
+        padding: 10px;
+      }
+
+      .card-title {
+        font-size: 1.2rem;
+        text-align: center;
+      }
+
+      .table th, .table td {
+        padding: 8px;
+        font-size: 0.9rem;
+      }
+
+      select {
+        width: 100%;
+      }
+    }
+
+    /* Mobile adjustments */
+    @media (max-width: 480px) {
+      .card {
+        padding: 12px;
+      }
+
+      .card-title {
+        font-size: 1rem;
+      }
+
+      .table {
+        font-size: 0.85rem;
+        min-width: 500px; /* allow horizontal scroll */
+      }
+
+      .table th, .table td {
+        padding: 6px;
+      }
+    }
   </style>
-<div class="card">
-  <div class="card-body">
-    <h2 class="card-title">Manage Orders</h2>
-    <table id="orders-table" class="table">
-      <thead>
-        <tr>
-          <th>Order ID</th>
-          <th>Customer ID</th>
-          <th>Total Amount</th>
-          <th>Status</th>
-          <th>Update</th>
-        </tr>
-      </thead>
-      <tbody>
-        <!-- Orders will load here -->
-      </tbody>
-    </table>
+</head>
+<body>
+  <div class="card">
+    <div class="card-body">
+      <h2 class="card-title">Manage Orders</h2>
+      <div class="table-responsive">
+        <table id="orders-table" class="table">
+          <thead>
+            <tr>
+              <th>Order ID</th>
+              <th>Customer ID</th>
+              <th>Total Amount</th>
+              <th>Status</th>
+              <th>Update</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- Orders will load here -->
+          </tbody>
+        </table>
+      </div>
+    </div>
   </div>
-</div>
+</body>
+</html>

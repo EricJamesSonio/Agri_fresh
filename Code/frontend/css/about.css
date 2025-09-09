@@ -1,5 +1,11 @@
 /* about.css - page-specific styles for About Us */
 
+body {
+  margin: 0;
+  font-family: 'Inter', sans-serif;
+}
+
+/* Main wrapper */
 .about-wrapper {
   max-width: 900px;
   margin: 3rem auto;
@@ -12,6 +18,7 @@
   color: #2e7d32;
 }
 
+/* Team grid layout */
 .team-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -21,11 +28,74 @@
 
 .team-card {
   text-align: center;
+  background: #f9f9f9;
+  padding: 1rem;
+  border-radius: 0.75rem;
+  transition: transform 0.2s ease;
+}
+
+.team-card:hover {
+  transform: translateY(-5px);
 }
 
 .team-card img {
   width: 100%;
   aspect-ratio: 1 / 1;
   object-fit: cover;
-  border-radius: 0.75rem;
+  border-radius: 50%;
+  max-width: 150px;
+  margin: 0 auto 1rem;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  header {
+    text-align: center;
+    padding: 1rem;
+  }
+
+  nav {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+  }
+
+  .about-wrapper {
+    margin: 2rem auto;
+    padding: 0 1rem;
+  }
+
+  .about-wrapper h1 {
+    font-size: 1.8rem;
+    text-align: center;
+  }
+
+  .about-wrapper h2 {
+    font-size: 1.3rem;
+  }
+
+  .team-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  nav {
+    flex-direction: column;
+    gap: 5px;
+  }
+
+  .team-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .about-wrapper h1 {
+    font-size: 1.5rem;
+  }
+
+  .about-wrapper h2 {
+    font-size: 1.1rem;
+  }
 }
