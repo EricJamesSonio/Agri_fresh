@@ -33,6 +33,30 @@ class ProductController {
     }
 }
 
+    public function delete($id) {
+    $success = $this->model->delete($id);
+    header("Content-Type: application/json");
+    if ($success) {
+        echo json_encode(["status" => "success", "message" => "Product deleted"]);
+    } else {
+        http_response_code(500);
+        echo json_encode(["status" => "error", "message" => "Failed to delete product"]);
+    }
+}
+
+    public function deleteByName($name) {
+    $success = $this->model->deleteByName($name);
+    header("Content-Type: application/json");
+    if ($success) {
+        echo json_encode(["status" => "success", "message" => "All products with name '$name' deleted"]);
+    } else {
+        http_response_code(500);
+        echo json_encode(["status" => "error", "message" => "Failed to delete products"]);
+    }
+}
+
+
+
     
 
 

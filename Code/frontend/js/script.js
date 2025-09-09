@@ -521,23 +521,21 @@ this.cart = data.map(i => {
     }
   }
 
-  logout() {
-    console.log("Logging out customer_id:", this.customer_id);
-    
-    // Remove customer identifier
-    localStorage.removeItem("customer_id");
-    
+logout() {
+  console.log("Logging out customer_id:", this.customer_id);
 
-    // Reset internal cart
-    this.cart = [];
-    this.customer_id = null;
+  localStorage.clear();
 
-    // Update UI
-    this.updateCart();
 
-    // Optionally redirect to homepage/login
-    window.location.href = location.origin + "/agri_fresh/code/frontend/html/login.html";
-  }
+  this.cart = [];
+  this.customer_id = null;
+
+  this.updateCart();
+
+
+  window.location.href = `${location.origin}/agri_fresh/code/frontend/html/login.html`;
+}
+
 
   filterProducts() {
     const search = (document.getElementById('search').value || '').toLowerCase().trim();

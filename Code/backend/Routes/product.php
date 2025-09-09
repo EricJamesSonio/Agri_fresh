@@ -8,22 +8,25 @@ $controller = new ProductController($con);
 $method = $_SERVER['REQUEST_METHOD'];
 
 if ($method === 'GET') {
-    // Handle GET requests (fetch products)
     $request_id = $_GET['id'] ?? null;
-    
     if ($request_id) {
         $controller->get(intval($request_id));
     } else {
         $controller->index();
     }
 } elseif ($method === 'POST' || $method === 'PUT') {
-    // Handle POST/PUT requests (create/update products)
     $controller->createOrUpdate();
-} else {
-    // Handle unsupported methods
-    http_response_code(405);
-    echo json_encode([
-        "status" => "error",
-        "message" => "Method not allowed"
-    ]);
+} elseif ($method === 'DELETE') {
+    $request_id = $_GET['id'] ?? null;
+    $request_name = $_GET['name'] ?? null;
+
+    if ($request_id) {
+        $controller->delete(intval($request_id));
+    } elseif ($request_name) {
+        $controller->deleteByName($request_name);
+    } else {
+        http_response_code(400);
+        echo json_encode(["status" => "error", "message" => "Product ID or name required"]);
+    }
 }
+

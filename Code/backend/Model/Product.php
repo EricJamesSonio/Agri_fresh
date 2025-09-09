@@ -190,4 +190,18 @@ if (isset($data['size_unit'])) {
     ];
 }
 
+    public function delete($id) {
+    $stmt = $this->con->prepare("DELETE FROM product WHERE product_id = ?");
+    $stmt->bind_param("i", $id);
+    return $stmt->execute();
+}
+
+    public function deleteByName($name) {
+    $stmt = $this->con->prepare("DELETE FROM product WHERE name = ?");
+    $stmt->bind_param("s", $name);
+    return $stmt->execute();
+}
+
+
+
 }

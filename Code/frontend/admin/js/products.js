@@ -17,10 +17,7 @@ export async function initPage() {
     }
   }
 
-  // -------------------------
-  // Load products
-  // -------------------------
-  // -------------------------
+// -------------------------
 // Load products
 // -------------------------
 async function loadProducts() {
@@ -29,6 +26,7 @@ async function loadProducts() {
     const products = await res.json();
     const tbody = document.querySelector("#products-table tbody");
     if (!tbody) return;
+
     tbody.innerHTML = products.map(p => `
       <tr ${p.stock_quantity === 0 ? 'style="opacity:0.5;"' : ''}>
         <td>${p.id}</td>
@@ -39,11 +37,39 @@ async function loadProducts() {
         <td>${p.tags.join(', ')}</td>
         <td>
           <button type="button" onclick="editProduct(${p.id})">Edit</button>
+          <button type="button" onclick="deleteProduct(${p.id})" style="margin-left:5px; color:red;">Remove</button>
         </td>
       </tr>
     `).join('');
-  } catch {}
+  } catch {
+    console.error("Failed to load products.");
+  }
 }
+
+
+async function deleteProduct(id) {
+  try {
+    // First fetch product details by id
+    const res = await fetch(apiUrl("products") + `&id=${id}`);
+    const product = await res.json();
+    if (!product) return alert("Product not found.");
+
+    if (!confirm(`Remove all items with name "${product.name}" (including all sizes)?`)) return;
+
+    // Call backend delete by name
+    const delRes = await fetch(apiUrl("products") + `&name=${encodeURIComponent(product.name)}`, {
+      method: "DELETE"
+    });
+    const result = await delRes.json();
+    alert(result.message);
+    await loadProducts(); // refresh table
+  } catch {
+    alert("Failed to delete product(s).");
+  }
+}
+
+window.deleteProduct = deleteProduct;
+
 
 
   // -------------------------

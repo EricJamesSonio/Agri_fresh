@@ -49,8 +49,8 @@ insertDataSmart($con, 'product',
         ['Mangoes', 'Philippine mangoes', $fruitId, 0.50, 'kg', 65.00, 60, 'mangoes2.jpg', 1, 1, $adminId],
         ['Apples', 'Red delicious apples', $fruitId, 1.00, 'kg', 180.00, 75, 'apples.jpg', 0, 0, $adminId],
         ['Apples', 'Red delicious apples', $fruitId, 0.50, 'kg', 95.00, 90, 'apples2.jpg', 0, 0, $adminId],
-        ['Oranges', 'Fresh citrus oranges', $fruitId, 1.00, 'kg', 160.00, 90, 'oranges.jpg', 1, 1, $adminId],
-        ['Oranges', 'Fresh citrus oranges', $fruitId, 0.50, 'kg', 85.00, 100, 'oranges2.jpg', 1, 1, $adminId],
+        ['Oranges', 'Fresh citrus oranges', $fruitId, 1.00, 'kg', 160.00, 90, 'oranges.jpg', 1, 0, $adminId],
+        ['Oranges', 'Fresh citrus oranges', $fruitId, 0.50, 'kg', 85.00, 100, 'oranges2.jpg', 1, 0, $adminId],
 
         // Herbs
         ['Basil', 'Fresh basil leaves', $herbId, 1.00, 'bunch', 50.00, 40, 'basil.jpg', 0, 1, $adminId],
@@ -65,22 +65,6 @@ insertDataSmart($con, 'product',
         ['Brown Rice', 'Organic brown rice', $grainId, 0.50, 'kg', 40.00, 250, 'brown-rice2.jpg', 0, 1, $adminId],
         ['Quinoa', 'Premium quinoa grains', $grainId, 1.00, 'kg', 100.00, 30, 'quinoa.jpg', 0, 1, $adminId],
         ['Quinoa', 'Premium quinoa grains', $grainId, 0.50, 'kg', 55.00, 40, 'quinoa2.jpg', 0, 1, $adminId],
-
-        // Dairy
-        ['Fresh Milk', 'Farm fresh cow milk', $dairyId, 1.00, 'liter', 120.00, 80, 'fresh-milk.jpg', 0, 1, $adminId],
-        ['Fresh Milk', 'Farm fresh cow milk', $dairyId, 0.50, 'liter', 65.00, 80, 'fresh-milk2.jpg', 0, 1, $adminId],
-        ['Cheese', 'Local cheese', $dairyId, 1.00, 'kg', 150.00, 45, 'cheese.jpg', 0, 0, $adminId],
-        ['Cheese', 'Local cheese', $dairyId, 0.50, 'kg', 80.00, 45, 'cheese2.jpg', 0, 0, $adminId],
-
-        // Seafood
-        ['Shrimp', 'Juicy prawns, medium size', $seafoodId, 1.00, 'kg', 180.00, 60, 'shrimp.jpg', 0, 1, $adminId],
-        ['Shrimp', 'Juicy prawns, medium size', $seafoodId, 0.50, 'kg', 100.00, 70, 'shrimp2.jpg', 0, 1, $adminId],
-        ['Tilapia', 'Locally sourced tilapia', $seafoodId, 1.00, 'kg', 100.00, 80, 'tilapia.jpg', 0, 1, $adminId],
-        ['Tilapia', 'Locally sourced tilapia', $seafoodId, 0.50, 'kg', 55.00, 90, 'tilapia2.jpg', 0, 1, $adminId],
-        ['Crab', 'Fresh blue crabs', $seafoodId, 1.00, 'kg', 120.00, 30, 'crab.jpg', 1, 0, $adminId],
-        ['Crab', 'Fresh blue crabs', $seafoodId, 0.50, 'kg', 65.00, 40, 'crab2.jpg', 1, 0, $adminId],
-        ['Squid', 'Fresh squid, cleaned', $seafoodId, 1.00, 'kg', 150.00, 50, 'squid.jpg', 0, 1, $adminId],
-        ['Squid', 'Fresh squid, cleaned', $seafoodId, 0.50, 'kg', 80.00, 60, 'squid2.jpg', 0, 1, $adminId],
     ],
     ['name', 'size_value', 'size_unit'] // composite unique check
 );
