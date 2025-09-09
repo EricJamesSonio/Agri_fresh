@@ -36,8 +36,12 @@ async function loadProducts() {
         <td>${p.category || "Uncategorized"}</td>
         <td>${p.tags.join(', ')}</td>
         <td>
-          <button type="button" onclick="editProduct(${p.id})">Edit</button>
-          <button type="button" onclick="deleteProduct(${p.id})" style="margin-left:5px; color:red;">Remove</button>
+<button type="button" onclick="editProduct(${p.id})">Edit</button>
+<button type="button" onclick="deleteProduct(${p.id})" 
+        style="margin-left:5px; background-color:red; color:white; border:none; padding:5px 10px; border-radius:4px;">
+  Remove
+</button>
+
         </td>
       </tr>
     `).join('');

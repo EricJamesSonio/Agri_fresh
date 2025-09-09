@@ -10,9 +10,6 @@ insertDataSmart($con, 'category',
         ['Fruits'],
         ['Herbs'],
         ['Grains'],
-        ['Dairy'],
-        ['Meat'],
-        ['Seafood']
     ],
     ['category_name'] // Unique column to check duplicates
 );

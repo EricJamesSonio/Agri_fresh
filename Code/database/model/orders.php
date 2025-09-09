@@ -9,7 +9,10 @@ createTable($con, 'orders', "
         customer_id INT NOT NULL,
         address_id INT NOT NULL,
         voucher_code VARCHAR(50) DEFAULT NULL, 
-        total_amount DECIMAL(10,2) NOT NULL,
+        subtotal DECIMAL(10,2) NOT NULL,         -- total of items only
+        shipping_fee DECIMAL(10,2) NOT NULL,    -- usually 50, or 0 if free shipping
+        discount_amount DECIMAL(10,2) DEFAULT 0,-- applied discount from voucher
+        total_amount DECIMAL(10,2) NOT NULL,    -- final payable (subtotal + shipping - discount)
         order_status ENUM(
             'pending', 
             'processing', 

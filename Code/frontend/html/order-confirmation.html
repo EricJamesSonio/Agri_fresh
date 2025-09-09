@@ -153,15 +153,18 @@
             }
         }
 
-        function displayOrderDetails(data) {
+   function displayOrderDetails(data) {
     const order = data.order;
     const details = data.details;
 
     const orderDate = new Date(order.created_at).toLocaleDateString();
+    const subtotal = parseFloat(order.subtotal);
+    const shipping = parseFloat(order.shipping_fee);
+    const discount = parseFloat(order.discount_amount);
     const total = parseFloat(order.total_amount);
 
     document.getElementById('order-details').innerHTML = `
-        <h3>Order Details</h3>
+        <h3>Order Confirmation</h3>
         
         <div class="detail-row">
             <span>Order ID:</span>
@@ -182,6 +185,12 @@
             <span>Payment Method:</span>
             <span>${order.payment_method}</span>
         </div>
+
+        ${order.voucher_code ? `
+        <div class="detail-row">
+            <span>Voucher Used:</span>
+            <span>${order.voucher_code}</span>
+        </div>` : ""}
         
         <div class="address-info">
             <strong>Delivery Address:</strong><br>
@@ -189,7 +198,7 @@
             ${order.city}${order.state ? ', ' + order.state : ''} ${order.postal_code || ''}<br>
             ${order.country}
         </div>
-        
+
         <h4>Items Ordered:</h4>
         <div class="item-list">
             ${details.map(item => {
@@ -211,11 +220,24 @@
         </div>
         
         <div class="detail-row">
-            <span>Total Amount:</span>
+            <span>Subtotal:</span>
+            <span>${subtotal.toLocaleString('en-PH', { style: 'currency', currency: 'PHP' })}</span>
+        </div>
+        <div class="detail-row">
+            <span>Shipping Fee:</span>
+            <span>${shipping.toLocaleString('en-PH', { style: 'currency', currency: 'PHP' })}</span>
+        </div>
+        <div class="detail-row">
+            <span>Discount:</span>
+            <span>- ${discount.toLocaleString('en-PH', { style: 'currency', currency: 'PHP' })}</span>
+        </div>
+        <div class="detail-row">
+            <span>Grand Total:</span>
             <span>${total.toLocaleString('en-PH', { style: 'currency', currency: 'PHP' })}</span>
         </div>
     `;
 }
+
 
 
         function viewOrders() {

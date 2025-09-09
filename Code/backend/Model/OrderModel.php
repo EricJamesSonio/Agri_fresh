@@ -8,12 +8,34 @@ class OrderModel {
         $this->con = $con;
     }
 
-    public function createOrder($customer_id, $address_id, $total_amount, $payment_method = 'COD', $voucher_code = null) {
-        $stmt = $this->con->prepare("
-            INSERT INTO `orders` (customer_id, address_id, total_amount, payment_method, voucher_code, order_status) 
-            VALUES (?, ?, ?, ?, ?, 'pending')
-        ");
-        $stmt->bind_param("iidss", $customer_id, $address_id, $total_amount, $payment_method, $voucher_code);
+    public function createOrder(
+        $customer_id,
+        $address_id,
+        $subtotal,
+        $shipping_fee,
+        $discount_amount,
+        $total_amount,
+        $payment_method = 'COD',
+        $voucher_code = null
+    ) {
+       $stmt = $this->con->prepare("
+    INSERT INTO `orders` 
+    (customer_id, address_id, subtotal, shipping_fee, discount_amount, total_amount, payment_method, voucher_code, order_status) 
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'pending')
+");
+
+$stmt->bind_param(
+    "iiddddss",
+    $customer_id,
+    $address_id,
+    $subtotal,
+    $shipping_fee,
+    $discount_amount,
+    $total_amount,
+    $payment_method,
+    $voucher_code
+);
+
 
         if ($stmt->execute()) {
             return $this->con->insert_id;
@@ -92,11 +114,16 @@ class OrderModel {
         return $stmt->execute();
     }
 
-    public function updateOrderTotal($order_id, $newTotal) {
-        $stmt = $this->con->prepare("UPDATE orders SET total_amount = ? WHERE order_id = ?");
-        $stmt->bind_param("di", $newTotal, $order_id);
-        return $stmt->execute();
-    }
+    public function updateOrderTotal($order_id, $subtotal = 0, $shipping_fee = 0, $discount_amount = 0, $total_amount = 0) {
+    $stmt = $this->con->prepare("
+        UPDATE orders 
+        SET subtotal = ?, shipping_fee = ?, discount_amount = ?, total_amount = ? 
+        WHERE order_id = ?
+    ");
+    $stmt->bind_param("dddii", $subtotal, $shipping_fee, $discount_amount, $total_amount, $order_id);
+    return $stmt->execute();
+}
+
 
     public function getAllOrders() {
         $result = $this->con->query("SELECT * FROM orders ORDER BY created_at DESC");
@@ -113,15 +140,26 @@ class OrderModel {
         $success = $stmt->execute();
 
         if ($success) {
-            $stmt2 = $this->con->prepare("SELECT SUM(quantity * price_each) as total FROM order_detail WHERE order_id = ?");
+            // recalc subtotal
+            $stmt2 = $this->con->prepare("SELECT SUM(quantity * price_each) as subtotal FROM order_detail WHERE order_id = ?");
             $stmt2->bind_param("i", $order_id);
             $stmt2->execute();
             $result = $stmt2->get_result()->fetch_assoc();
-            $newTotal = $result['total'] ?? 0;
+            $subtotal = $result['subtotal'] ?? 0;
 
-            $this->updateOrderTotal($order_id, $newTotal);
+            // fetch current shipping & discount
+            $stmt3 = $this->con->prepare("SELECT shipping_fee, discount_amount FROM orders WHERE order_id = ?");
+            $stmt3->bind_param("i", $order_id);
+            $stmt3->execute();
+            $row = $stmt3->get_result()->fetch_assoc();
+            $shipping_fee = $row['shipping_fee'] ?? 0;
+            $discount_amount = $row['discount_amount'] ?? 0;
 
-            if ($newTotal == 0) {
+            $total_amount = $subtotal + $shipping_fee - $discount_amount;
+
+            $this->updateOrderTotal($order_id, $subtotal, $shipping_fee, $discount_amount, $total_amount);
+
+            if ($subtotal == 0) {
                 $this->updateOrderStatus($order_id, 'cancelled');
             }
 

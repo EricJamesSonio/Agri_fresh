@@ -19,67 +19,108 @@ class OrderController {
     }
 
     public function createOrder($customer_id, $address_id, $payment_method = 'COD', $voucher_code = null) {
-        global $con;
-        try {
-            $cartItems = $this->cartController->getCart($customer_id);
-            if (empty($cartItems)) throw new Exception('Your cart is empty.');
+    global $con;
+    try {
+        $cartItems = $this->cartController->getCart($customer_id);
+        if (empty($cartItems)) throw new Exception('Your cart is empty.');
 
-            $address = $this->addressModel->getAddress($address_id);
-            if (!$address || $address['customer_id'] != $customer_id) {
-                throw new Exception('Invalid address selected.');
-            }
-
-            $con->begin_transaction();
-
-            // Stock check
-            foreach ($cartItems as $item) {
-                $stmt = $con->prepare("SELECT stock_quantity, name FROM product WHERE product_id = ?");
-                $stmt->bind_param("i", $item['product_id']);
-                $stmt->execute();
-                $prod = $stmt->get_result()->fetch_assoc();
-
-                if (!$prod) throw new Exception("Product not found: {$item['name']}");
-                if ($prod['stock_quantity'] < $item['quantity']) {
-                    throw new Exception("Insufficient stock for {$prod['name']}. Available: {$prod['stock_quantity']}");
-                }
-            }
-
-            // Calculate total
-            $total_amount = 0;
-            foreach ($cartItems as $item) $total_amount += $item['price_each'] * $item['quantity'];
-
-            // Apply voucher
-            if ($voucher_code) {
-                $voucherCheck = $this->voucherModel->validateVoucher($voucher_code, $customer_id, $total_amount);
-                if ($voucherCheck['valid']) $total_amount = $voucherCheck['new_total'];
-                else throw new Exception($voucherCheck['message']);
-            }
-
-            $order_id = $this->orderModel->createOrder($customer_id, $address_id, $total_amount, $payment_method, $voucher_code);
-            if (!$order_id) throw new Exception('Failed to create order.');
-
-            // Add order details & update stock
-            foreach ($cartItems as $item) {
-                $success = $this->orderModel->addOrderDetail($order_id, $item['product_id'], $item['quantity'], $item['price_each']);
-                if (!$success) throw new Exception('Failed to add order details.');
-
-                $stmt = $con->prepare("UPDATE product SET stock_quantity = stock_quantity - ? WHERE product_id = ?");
-                $stmt->bind_param("ii", $item['quantity'], $item['product_id']);
-                $stmt->execute();
-            }
-
-            if ($voucher_code) $this->voucherModel->markUsed($voucher_code, $customer_id);
-
-            $this->clearCart($customer_id);
-            $con->commit();
-
-            return ['status'=>'success','message'=>'Order created successfully!','order_id'=>$order_id,'total_amount'=>$total_amount,'voucher_applied'=>$voucher_code];
-
-        } catch (Exception $e) {
-            $con->rollback();
-            return ['status'=>'error','message'=>$e->getMessage()];
+        $address = $this->addressModel->getAddress($address_id);
+        if (!$address || $address['customer_id'] != $customer_id) {
+            throw new Exception('Invalid address selected.');
         }
+
+        $con->begin_transaction();
+
+        // Stock check
+        foreach ($cartItems as $item) {
+            $stmt = $con->prepare("SELECT stock_quantity, name FROM product WHERE product_id = ?");
+            $stmt->bind_param("i", $item['product_id']);
+            $stmt->execute();
+            $prod = $stmt->get_result()->fetch_assoc();
+
+            if (!$prod) throw new Exception("Product not found: {$item['name']}");
+            if ($prod['stock_quantity'] < $item['quantity']) {
+                throw new Exception("Insufficient stock for {$prod['name']}. Available: {$prod['stock_quantity']}");
+            }
+        }
+
+        // 1️⃣ Subtotal (items only)
+        $subtotal = 0;
+        foreach ($cartItems as $item) {
+            $subtotal += $item['price_each'] * $item['quantity'];
+        }
+
+        // 2️⃣ Shipping fee (fixed 50 for example, could also depend on rules)
+        $shipping_fee = 50.00;
+
+        // 3️⃣ Discount
+        $discount_amount = 0;
+        if ($voucher_code) {
+    $voucherCheck = $this->voucherModel->validateVoucher($voucher_code, $customer_id, $subtotal + $shipping_fee);
+    if ($voucherCheck['valid']) {
+        $discount_amount = $voucherCheck['discount'];
+    } else {
+        throw new Exception($voucherCheck['message']);
     }
+}
+if ($voucher_code) {
+            $voucherCheck = $this->voucherModel->validateVoucher($voucher_code, $customer_id, $subtotal);
+            if ($voucherCheck['valid']) {
+                $discount_amount = $voucherCheck['discount'];
+            } else {
+                throw new Exception($voucherCheck['message']);
+            }
+        }
+
+        // 4️⃣ Final total
+        $total_amount = $subtotal + $shipping_fee - $discount_amount;
+
+        // 5️⃣ Create order
+        $order_id = $this->orderModel->createOrder(
+            $customer_id,
+            $address_id,
+            $subtotal,
+            $shipping_fee,
+            $discount_amount,
+            $total_amount,
+            $payment_method,
+            $voucher_code
+        );
+
+        if (!$order_id) throw new Exception('Failed to create order.');
+
+        // Add order details & update stock
+        foreach ($cartItems as $item) {
+            $success = $this->orderModel->addOrderDetail($order_id, $item['product_id'], $item['quantity'], $item['price_each']);
+            if (!$success) throw new Exception('Failed to add order details.');
+
+            $stmt = $con->prepare("UPDATE product SET stock_quantity = stock_quantity - ? WHERE product_id = ?");
+            $stmt->bind_param("ii", $item['quantity'], $item['product_id']);
+            $stmt->execute();
+        }
+
+        if ($voucher_code) $this->voucherModel->markUsed($voucher_code, $customer_id);
+
+        $this->clearCart($customer_id);
+        $con->commit();
+
+        return [
+            'status' => 'success',
+            'message' => 'Order created successfully!',
+            'order_id' => $order_id,
+            'subtotal' => $subtotal,
+            'shipping_fee' => $shipping_fee,
+            'discount_amount' => $discount_amount,
+            'total_amount' => $total_amount,
+            'voucher_applied' => $voucher_code
+        ];
+
+    } catch (Exception $e) {
+        $con->rollback();
+        return ['status'=>'error','message'=>$e->getMessage()];
+    }
+}
+
     public function getOrder($order_id, $customer_id = null) {
         try {
             $order = $this->orderModel->getOrder($order_id);
@@ -185,9 +226,15 @@ class OrderController {
         }
     }
 
-    public function getAllOrders() {
+   public function getAllOrders() {
     try {
         $orders = $this->orderModel->getAllOrders();
+
+        // Add details (items) for each order
+        foreach ($orders as &$order) {
+            $order['details'] = $this->orderModel->getOrderDetails($order['order_id']);
+        }
+
         return [
             'status' => 'success',
             'data' => $orders

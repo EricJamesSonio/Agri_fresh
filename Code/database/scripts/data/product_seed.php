@@ -21,8 +21,7 @@ $vegetableId = getCategoryId($con, 'Vegetables');
 $fruitId     = getCategoryId($con, 'Fruits');
 $herbId      = getCategoryId($con, 'Herbs');
 $grainId     = getCategoryId($con, 'Grains');
-$dairyId     = getCategoryId($con, 'Dairy');
-$seafoodId   = getCategoryId($con, 'Seafood');
+
 
 $adminId = getAdminId($con, 'admin@agrifresh.com');
 
