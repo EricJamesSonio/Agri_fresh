@@ -1,17 +1,65 @@
-<div class="container">
-  <h1>Manage Orders</h1>
-  <table border="1" width="100%" cellpadding="8" id="orders-table">
-    <thead>
-      <tr>
-        <th>Order ID</th>
-        <th>Customer ID</th>
-        <th>Total Amount</th>
-        <th>Status</th>
-        <th>Update</th>
-      </tr>
-    </thead>
-    <tbody>
-      <!-- Orders will load here -->
-    </tbody>
-  </table>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f8f9fa;
+      margin: 0;
+      padding: 20px;
+    }
+
+    .card {
+      background: #fff;
+      border-radius: 8px;
+      padding: 16px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    .card-title {
+      font-size: 1.5rem;
+      font-weight: bold;
+      margin-bottom: 15px;
+    }
+
+    .table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .table thead {
+      background-color: #28a745;
+      color: white;
+    }
+
+    .table th, .table td {
+      padding: 12px;
+      border-bottom: 1px solid #ddd;
+      text-align: left;
+    }
+
+    .table tbody tr:nth-child(even) {
+      background-color: #f9f9f9;
+    }
+
+    select {
+      padding: 4px;
+    }
+  </style>
+<div class="card">
+  <div class="card-body">
+    <h2 class="card-title">Manage Orders</h2>
+    <table id="orders-table" class="table">
+      <thead>
+        <tr>
+          <th>Order ID</th>
+          <th>Customer ID</th>
+          <th>Total Amount</th>
+          <th>Status</th>
+          <th>Update</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- Orders will load here -->
+      </tbody>
+    </table>
+  </div>
 </div>
