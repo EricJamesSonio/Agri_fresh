@@ -17,6 +17,7 @@ export async function initOrders() {
           <td>
             <select onchange="updateOrder(${order.order_id}, this.value)">
               <option value="">-- Select --</option>
+              <option value="approved">Approved</option>
               <option value="completed">Completed</option>
               <option value="refunded">Refunded</option>
               <option value="returned">Returned</option>

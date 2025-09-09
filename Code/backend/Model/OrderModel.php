@@ -104,7 +104,7 @@ $stmt->bind_param(
     }
 
     public function updateOrderStatus($order_id, $status) {
-        $valid_statuses = ['pending','processing','shipped','delivered','cancelled','completed','refunded','returned'];
+        $valid_statuses = ['pending','approved','processing','shipped','delivered','cancelled','completed','refunded','returned'];
         if (!in_array($status, $valid_statuses)) {
             return false;
         }

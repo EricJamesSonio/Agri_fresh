@@ -456,3 +456,23 @@ header nav a{
       color: #2e7d32;
       text-decoration: none;
     }
+
+.notification-wrapper {
+    position: relative;
+    display: inline-block;
+    cursor: pointer;
+    font-size: 1.3rem; /* bigger bell */
+    margin-left: 15px; /* spacing from other nav items */
+}
+
+.notification-wrapper #notifCount {
+    position: absolute;
+    top: -6px;
+    right: -8px;
+    background: red;
+    color: white;
+    font-size: 0.75rem;
+    padding: 2px 5px;
+    border-radius: 50%;
+    font-weight: bold;
+}

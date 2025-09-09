@@ -52,6 +52,15 @@ switch ($request) {
         require_once(__DIR__ . '/../Routes/voucher.php');
         break;
 
+    case 'get-notifications':
+        require_once(__DIR__ . '/../Routes/get-notifications.php');
+        break;
+
+    case 'mark-notifications-read':
+        require_once(__DIR__ . '/../Routes/mark-notif-read.php');
+        break;
+
+
 
     default:
         echo json_encode([

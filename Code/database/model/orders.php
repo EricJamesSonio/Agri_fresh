@@ -15,6 +15,7 @@ createTable($con, 'orders', "
         total_amount DECIMAL(10,2) NOT NULL,    -- final payable (subtotal + shipping - discount)
         order_status ENUM(
             'pending', 
+            'approved',       
             'processing', 
             'shipped', 
             'delivered', 

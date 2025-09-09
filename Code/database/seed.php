@@ -16,6 +16,7 @@ require_once(__DIR__ . '/model/cart_item.php');
 require_once(__DIR__ . '/model/orders.php');
 require_once(__DIR__ . '/model/order_detail.php');
 require_once(__DIR__ . '/model/voucher.php');
+require_once(__DIR__ . '/model/notification.php');
 
 echo "<hr>";
 

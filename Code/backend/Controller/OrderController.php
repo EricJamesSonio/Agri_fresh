@@ -180,28 +180,43 @@ if ($voucher_code) {
     }
 }
 
-    public function updateOrderStatus($order_id, $status) {
+   public function updateOrderStatus($order_id, $status) {
+    global $con;
+
     try {
         $status = strtolower($status);
 
-        $success = $this->orderModel->updateOrderStatus($order_id, $status);
-
-        if ($success) {
-            // if refunded or returned, zero out total
-            if ($status === 'refunded' || $status === 'returned') {
-                $this->orderModel->updateOrderTotal($order_id, 0);
-            }
-
-            return [
-                'status' => 'success',
-                'message' => 'Order status updated'
-            ];
-        } else {
+        // 1️⃣ Get customer_id for this order
+        $orderRes = mysqli_query($con, "SELECT customer_id FROM orders WHERE order_id = " . intval($order_id));
+        $order = mysqli_fetch_assoc($orderRes);
+        if (!$order) {
             return [
                 'status' => 'error',
-                'message' => 'Failed to update order status'
+                'message' => 'Order not found'
             ];
         }
+        $customer_id = $order['customer_id'];
+
+        // 2️⃣ Update order status
+        $success = $this->orderModel->updateOrderStatus($order_id, $status);
+
+        // 3️⃣ If refunded or returned, zero out total
+        if ($success && ($status === 'refunded' || $status === 'returned')) {
+            $this->orderModel->updateOrderTotal($order_id, 0);
+        }
+
+        // 4️⃣ Insert notification for the customer
+        if ($success) {
+            $message = "Your order #$order_id status has been updated to $status.";
+            $stmt = $con->prepare("INSERT INTO notifications (customer_id, order_id, message) VALUES (?, ?, ?)");
+            $stmt->bind_param("iis", $customer_id, $order_id, $message);
+            $stmt->execute();
+            $stmt->close();
+        }
+
+        return $success
+            ? ['status' => 'success', 'message' => 'Order status updated and notification sent.']
+            : ['status' => 'error', 'message' => 'Failed to update order status'];
 
     } catch (Exception $e) {
         return [
