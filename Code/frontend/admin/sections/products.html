@@ -1,9 +1,15 @@
 <div class="section-container">
     <h2>Product Management</h2>
 
-    <!-- Add New Product Form -->
+    <!-- Add New Product Button -->
+    <button type="button" id="add-new-product" 
+        style="margin-bottom: 15px; background-color:#4CAF50; color:white; border:none; padding:8px 12px; border-radius:5px; cursor:pointer;">
+      + Add New Product
+    </button>
+
+    <!-- Product Form -->
     <form id="product-form">
-        <h3>Add / Update Product</h3>
+        <h3 id="form-title">Update Product</h3>
         <input type="hidden" id="product-id" />
         <input type="text" id="product-name" placeholder="Name" required />
         <input type="number" id="product-price" placeholder="Price" step="0.01" required />
@@ -12,7 +18,7 @@
         <select id="product-category"></select>
         <label><input type="checkbox" id="product-organic" /> Organic</label>
         <label><input type="checkbox" id="product-seasonal" /> Seasonal</label>
-        <button type="submit">Save Product</button>
+        <button type="submit" id="save-product-btn">Save Product</button>
     </form>
 
     <!-- Products Table -->
