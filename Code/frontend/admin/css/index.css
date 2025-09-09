@@ -228,3 +228,33 @@
     font-style: italic;
     color: #555;
 }
+
+/* Filter & Export buttons */
+.filter-btn {
+    padding: 10px 18px;
+    margin-right: 8px;
+    background-color: #4CAF50; /* green to match table header or customize */
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-weight: 600;
+    transition: background 0.3s, transform 0.2s;
+}
+
+.filter-btn:hover {
+    background-color: #45a049; /* slightly darker green on hover */
+    transform: translateY(-1px);
+}
+
+.filter-btn:active {
+    transform: translateY(0);
+}
+
+/* Optional: space the buttons nicely in the container */
+.sales-controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}

@@ -1,59 +1,193 @@
+// sales.js
 export async function initSales() {
+  // helper: wait for element after HTML injection
+  async function waitFor(selector, timeout = 2000) {
+    const interval = 50;
+    const maxTries = Math.ceil(timeout / interval);
+    let tries = 0;
+    while (tries++ < maxTries) {
+      const el = document.querySelector(selector);
+      if (el) return el;
+      await new Promise(res => setTimeout(res, interval));
+    }
+    return null;
+  }
+
+  const tbodySelector = "#sales-table tbody";
+  const exportSelector = "#export-btn";
+
+  const tbody = await waitFor(tbodySelector, 1500);
+  if (!tbody) {
+    console.warn("initSales: sales table not found — aborting.");
+    return;
+  }
+
+  const exportBtn = document.querySelector(exportSelector);
+
+  // track state
+  let currentFilter = "all";
+  let currentSales = [];
+
   async function loadSalesReport() {
     try {
       const response = await fetch(apiUrl("orders"));
       const result = await response.json();
 
-      if (result.status !== "success") throw new Error(result.message);
+      if (result.status !== "success") throw new Error(result.message || "Failed to fetch orders");
 
-      const tbody = document.querySelector("#sales-table tbody");
-      const sales = result.data.filter(order => order.order_status === "completed");
+      // Completed orders only
+      let sales = Array.isArray(result.data)
+        ? result.data.filter(o => o.order_status === "completed")
+        : [];
 
-      tbody.innerHTML = sales.map(order => `
-        <tr>
-          <td>${order.order_id}</td>
-          <td>${order.customer_id}</td>
-          <td>₱${order.total_amount}</td>
-          <td>${order.order_status}</td>
-          <td>${new Date(order.created_at).toLocaleDateString()}</td>
-        </tr>
-      `).join('');
+      const now = new Date();
 
-      // ---- Totals ----
-      const totalRevenue = sales.reduce((sum, o) => sum + parseFloat(o.total_amount), 0);
-      const totalDiscounts = sales.reduce((sum, o) => sum + (parseFloat(o.discount_amount) || 0), 0);
+      // filtering
+      if (currentFilter === "daily") {
+        const today = new Date();
+        sales = sales.filter(o => {
+          const d = new Date(o.created_at);
+          return (
+            d.getDate() === today.getDate() &&
+            d.getMonth() === today.getMonth() &&
+            d.getFullYear() === today.getFullYear()
+          );
+        });
+      } else if (currentFilter === "weekly") {
+        const startOfWeek = new Date(now);
+        startOfWeek.setHours(0, 0, 0, 0);
+        startOfWeek.setDate(now.getDate() - now.getDay());
+        const endOfWeek = new Date(startOfWeek);
+        endOfWeek.setDate(startOfWeek.getDate() + 7);
+        sales = sales.filter(o => {
+          const d = new Date(o.created_at);
+          return d >= startOfWeek && d < endOfWeek;
+        });
+      } else if (currentFilter === "monthly") {
+        sales = sales.filter(o => {
+          const d = new Date(o.created_at);
+          return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
+        });
+      }
+
+      currentSales = sales;
+
+      // render rows
+      tbody.innerHTML = sales.map(order => {
+        const created = order.created_at ? new Date(order.created_at).toLocaleDateString() : "";
+        const amt = Number(order.total_amount || 0).toFixed(2);
+        return `
+          <tr>
+            <td>${order.order_id}</td>
+            <td>${order.customer_id}</td>
+            <td>₱${amt}</td>
+            <td style="text-transform:capitalize">${order.order_status}</td>
+            <td>${created}</td>
+          </tr>
+        `;
+      }).join("");
+
+      // summary rows
+      const totalRevenue = sales.reduce((s, o) => s + (parseFloat(o.total_amount) || 0), 0);
+      const totalDiscounts = sales.reduce((s, o) => s + (parseFloat(o.discount_amount) || 0), 0);
       const totalItemsSold = sales.reduce((sum, o) => {
-  if (o.details && Array.isArray(o.details)) {
-    return sum + o.details.reduce((s, item) => s + (parseInt(item.quantity) || 0), 0);
-  }
-  return sum;
-}, 0);
+        if (o.details && Array.isArray(o.details)) {
+          return sum + o.details.reduce((is, it) => is + (parseInt(it.quantity) || 0), 0);
+        }
+        return sum;
+      }, 0);
 
+      const summaryHTML = `
+        <tr class="summary"><td colspan="5">Total Revenue: ₱${totalRevenue.toFixed(2)}</td></tr>
+        <tr class="summary"><td colspan="5">Total Discounts: ₱${totalDiscounts.toFixed(2)}</td></tr>
+        <tr class="summary"><td colspan="5">Total Items Sold: ${totalItemsSold}</td></tr>
+      `;
+      tbody.insertAdjacentHTML("beforeend", summaryHTML);
 
-      // ---- Summary Rows ----
-      const revenueRow = document.createElement("tr");
-      revenueRow.innerHTML = `<td colspan="5" style="text-align:right;font-weight:bold;">
-        Total Revenue: ₱${totalRevenue.toFixed(2)}
-      </td>`;
-      tbody.appendChild(revenueRow);
-
-      const discountRow = document.createElement("tr");
-      discountRow.innerHTML = `<td colspan="5" style="text-align:right;font-weight:bold;">
-        Total Discounts: ₱${totalDiscounts.toFixed(2)}
-      </td>`;
-      tbody.appendChild(discountRow);
-
-      const itemsRow = document.createElement("tr");
-      itemsRow.innerHTML = `<td colspan="5" style="text-align:right;font-weight:bold;">
-        Total Items Sold: ${totalItemsSold}
-      </td>`;
-      tbody.appendChild(itemsRow);
-
-    } catch (error) {
-      console.error("Failed to load sales report:", error);
+    } catch (err) {
+      console.error("Failed to load sales report:", err);
+      tbody.innerHTML = `<tr><td colspan="5" class="error">Failed to load sales report.</td></tr>`;
     }
   }
 
-  await loadSalesReport();
+  function exportCSV(sales) {
+  if (!Array.isArray(sales) || sales.length === 0) {
+    alert("No sales data to export.");
+    return;
+  }
+
+  const headers = ["Order ID", "Customer ID", "Subtotal", "Shipping Fee", "Discount", "Total Amount", "Status", "Created At"];
+  
+  const currency = (val) => "₱" + Number(val || 0).toLocaleString("en-PH", { minimumFractionDigits: 2 });
+
+  const rows = sales.map(o => {
+    const date = o.created_at ? new Date(o.created_at).toLocaleDateString("en-PH") : "";
+    const status = o.order_status ? o.order_status.charAt(0).toUpperCase() + o.order_status.slice(1) : "";
+
+    return [
+      o.order_id,
+      o.customer_id,
+      currency(o.subtotal),
+      currency(o.shipping_fee),
+      currency(o.discount_amount),
+      currency(o.total_amount),
+      status,
+      date
+    ];
+  });
+
+  // create separator row
+  const separator = headers.map(() => "----------");
+
+  // compute summary
+  const totalRevenue = sales.reduce((s, o) => s + (parseFloat(o.total_amount) || 0), 0);
+  const totalDiscounts = sales.reduce((s, o) => s + (parseFloat(o.discount_amount) || 0), 0);
+  const totalItemsSold = sales.reduce((sum, o) => {
+    if (o.details && Array.isArray(o.details)) {
+      return sum + o.details.reduce((is, it) => is + (parseInt(it.quantity) || 0), 0);
+    }
+    return sum;
+  }, 0);
+
+  const summary = [
+    ["", "", "", "", "", "", "", ""],
+    ["Total Revenue", currency(totalRevenue)],
+    ["Total Discounts", currency(totalDiscounts)],
+    ["Total Items Sold", totalItemsSold]
+  ];
+
+  // join everything with separators
+  let csvContent = [
+    headers,
+    separator,
+    ...rows,
+    separator,
+    ...summary
+  ]
+  .map(r => r.map(cell => `"${String(cell).replace(/"/g, '""')}"`).join("|")) // pipe-separated
+  .join("\n");
+
+  const blob = new Blob([csvContent], { type: "text/csv" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `sales_report_${new Date().toISOString().slice(0,10)}.csv`;
+  a.click();
+  URL.revokeObjectURL(url);
 }
 
+
+  // wire up filter buttons
+  document.querySelectorAll(".filter-btn").forEach(btn => {
+    btn.addEventListener("click", () => {
+      currentFilter = btn.dataset.filter;
+      loadSalesReport();
+    });
+  });
+
+  // export button
+  if (exportBtn) exportBtn.addEventListener("click", () => exportCSV(currentSales));
+
+  // initial load
+  await loadSalesReport();
+}

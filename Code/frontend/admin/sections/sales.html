@@ -1,18 +1,29 @@
-<div class="section-container">
-  <h2>Sales Report</h2>
+<div class="card">
+  <div class="card-body">
+    <h2 class="card-title">Sales Report</h2>
 
-  <table id="sales-table">
-    <thead>
-      <tr>
-        <th>Order ID</th>
-        <th>Customer ID</th>
-        <th>Total Amount</th>
-        <th>Status</th>
-        <th>Date</th>
-      </tr>
-    </thead>
-    <tbody>
-      <!-- Sales data injected here -->
-    </tbody>
-  </table>
+    <div class="sales-controls" style="margin-bottom: 15px;">
+  <button class="filter-btn" data-filter="all">All</button>
+  <button class="filter-btn" data-filter="daily">Daily</button>
+  <button class="filter-btn" data-filter="weekly">Weekly</button>
+  <button class="filter-btn" data-filter="monthly">Monthly</button>
+  <button class="filter-btn" id="export-btn">Export CSV</button> 
+</div>
+
+
+    <table id="sales-table" class="table">
+      <thead>
+        <tr>
+          <th>Order ID</th>
+          <th>Customer ID</th>
+          <th>Total Amount</th>
+          <th>Status</th>
+          <th>Date</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- Sales data injected here -->
+      </tbody>
+    </table>
+  </div>
 </div>
