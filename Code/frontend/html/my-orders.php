@@ -53,8 +53,11 @@ $customer_name = $_SESSION['customer_name'] ?? 'Customer';
   <h1>Agri Fresh Market</h1>
   <nav>
     <a href="index.php">Home</a>
-    <a href="my-cart.html">My Cart</a>
     <a href="about.html">About Us</a>
+    <a href="my-cart.html" style="display: inline-block; margin-left: 10px;">
+        <img src="../images/cart.jpg" alt="Cart" style="width:32px; height:32px;">
+    </a>
+
   </nav>
 </header>
 
