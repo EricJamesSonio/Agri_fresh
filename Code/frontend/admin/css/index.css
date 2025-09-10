@@ -258,3 +258,6 @@
     flex-wrap: wrap;
     gap: 10px;
 }
+.low-stock {
+    background-color: #ffcccc; /* light red for low stock */
+}

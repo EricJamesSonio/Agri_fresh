@@ -21,6 +21,7 @@ requireAdmin(); // redirects non-admins to frontend/html/index.php
                 <li onclick="loadSection('products')">Product Management</li>
                 <li onclick="loadSection('sales')">Sales Report</li>
                 <li onclick="loadSection('vouchers')">Voucher Management</li>
+                 <li onclick="loadSection('stock')">Stock Management</li>
 
             </ul>
 

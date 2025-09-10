@@ -19,7 +19,11 @@ async function loadSection(section) {
     }else if(section === 'vouchers') {
   const vouchersModule = await import('./vouchers.js');
   if(vouchersModule.initVouchers) await vouchersModule.initVouchers();
+} else if(section === 'stock') {
+  const stockModule = await import('./stock.js');
+  if(stockModule.initStock) await stockModule.initStock();
 }
+
 
 
   } catch (err) {
