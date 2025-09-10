@@ -60,6 +60,27 @@ switch ($request) {
         require_once(__DIR__ . '/../Routes/mark-notif-read.php');
         break;
 
+    case 'voucherAdd':
+    require_once(__DIR__ . '/../Routes/voucherAdd.php');
+    break;
+
+case 'voucherDelete':
+    require_once(__DIR__ . '/../Routes/voucherDelete.php');
+    break;
+
+case 'voucherUpdate':
+    require_once(__DIR__ . '/../Routes/voucherUpdate.php');
+    break;
+
+case 'voucherList':
+    require_once(__DIR__ . '/../Routes/voucherList.php');
+    break;
+
+case 'voucherValidate':
+    require_once(__DIR__ . '/../Routes/voucherValidate.php');
+    break;
+
+
 
 
     default:

@@ -16,7 +16,11 @@ async function loadSection(section) {
     } else if(section === 'products') {
       const productsModule = await import('./products.js');
       if(productsModule.initPage) await productsModule.initPage();
-    }
+    }else if(section === 'vouchers') {
+  const vouchersModule = await import('./vouchers.js');
+  if(vouchersModule.initVouchers) await vouchersModule.initVouchers();
+}
+
 
   } catch (err) {
     console.error("Failed to load section:", err);

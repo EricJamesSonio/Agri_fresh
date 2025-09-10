@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Voucher Management</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f8f9fa;
+      margin: 0;
+      padding: 20px;
+    }
+
+    .section-container {
+      background: #fff;
+      border-radius: 8px;
+      padding: 20px;
+      max-width: 1200px;
+      margin: auto;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    h2 {
+      margin-bottom: 15px;
+      color: #2e7d32;
+    }
+
+    /* Form styling */
+    form {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    form h3 {
+      grid-column: 1 / -1;
+      margin-bottom: 10px;
+    }
+
+    input, select, button, label {
+      font-size: 1rem;
+    }
+
+    input, select {
+      padding: 8px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      width: 100%;
+      box-sizing: border-box;
+    }
+
+    label {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    button[type="submit"] {
+      grid-column: 1 / -1;
+      background-color: #28a745;
+      color: white;
+      border: none;
+      padding: 10px;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    button[type="submit"]:hover {
+      background-color: #218838;
+    }
+
+    /* Table styling */
+    .table-responsive {
+      width: 100%;
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 700px;
+    }
+
+    thead {
+      background-color: #28a745;
+      color: white;
+    }
+
+    th, td {
+      padding: 12px;
+      border-bottom: 1px solid #ddd;
+      text-align: left;
+      white-space: nowrap;
+    }
+
+    tbody tr:nth-child(even) {
+      background-color: #f9f9f9;
+    }
+
+    /* Responsive tweaks */
+    @media (max-width: 768px) {
+      body {
+        padding: 10px;
+      }
+
+      form {
+        grid-template-columns: 1fr;
+      }
+
+      button[type="submit"] {
+        width: 100%;
+      }
+    }
+
+    @media (max-width: 480px) {
+      h2 {
+        font-size: 1.2rem;
+        text-align: center;
+      }
+
+      form h3 {
+        font-size: 1rem;
+        text-align: center;
+      }
+
+      table {
+        font-size: 0.9rem;
+        min-width: 500px;
+      }
+
+      th, td {
+        padding: 8px;
+      }
+    }
+
+    .modal {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(0,0,0,0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  width: 400px;
+  max-width: 90%;
+  position: relative;
+}
+
+.close {
+  position: absolute;
+  top: 10px;
+  right: 15px;
+  cursor: pointer;
+  font-size: 20px;
+}
+
+.modal-content {
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  width: 400px;
+  max-width: 90%;
+  max-height: 80vh;       /* Limit height to 80% of viewport */
+  overflow-y: auto;       /* Enable vertical scrolling */
+  position: relative;
+}
+
+  </style>
+</head>
+<body>
+  <div class="section-container">
+    <h2>Voucher Management</h2>
+
+    <!-- Add New Voucher Form -->
+    <form id="add-voucher-form">
+      <h3>Add New Voucher</h3>
+      <input type="text" name="code" placeholder="Voucher Code" required>
+      
+      <select name="type" id="voucher-type" required>
+        <option value="">Select Type</option>
+        <option value="discount">Discount</option>
+        <option value="free_shipping">Free Shipping</option>
+      </select>
+
+      <select name="discount_type" id="discount-type">
+        <option value="">Discount Type</option>
+        <option value="percent">Percent</option>
+        <option value="fixed">Fixed</option>
+      </select>
+
+      <input type="number" step="0.01" name="discount_value" id="discount-value" placeholder="Discount Value">
+
+      <input type="number" name="usage_limit" placeholder="Usage Limit">
+      <input type="date" name="start_date" placeholder="Start Date">
+      <input type="date" name="end_date" placeholder="End Date">
+
+      <button type="submit">Add Voucher</button>
+    </form>
+
+    <!-- Voucher Table -->
+    <div class="table-responsive">
+      <table id="voucher-table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Code</th>
+            <th>Type</th>
+            <th>Discount</th>
+            <th>Usage</th>
+            <th>Active</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+    <!-- Edit Voucher Modal -->
+<div id="edit-voucher-modal" class="modal" style="display:none;">
+  <div class="modal-content">
+    <span id="close-modal" class="close">&times;</span>
+    <h3>Edit Voucher</h3>
+    <form id="edit-voucher-form">
+      <input type="hidden" name="voucher_id" id="edit-voucher-id">
+      
+      <label>Code:</label>
+      <input type="text" name="code" id="edit-code" required>
+
+      <label>Type:</label>
+      <select name="type" id="edit-type" required>
+        <option value="discount">Discount</option>
+        <option value="free_shipping">Free Shipping</option>
+      </select>
+
+      <label>Discount Type:</label>
+      <select name="discount_type" id="edit-discount-type">
+        <option value="">Discount Type</option>
+        <option value="percent">Percent</option>
+        <option value="fixed">Fixed</option>
+      </select>
+
+      <label>Discount Value:</label>
+      <input type="number" step="0.01" name="discount_value" id="edit-discount-value">
+
+      <label>Usage Limit:</label>
+      <input type="number" name="usage_limit" id="edit-usage-limit">
+
+      <label>Start Date:</label>
+      <input type="date" name="start_date" id="edit-start-date">
+
+      <label>End Date:</label>
+      <input type="date" name="end_date" id="edit-end-date">
+
+      <label>Active:</label>
+      <input type="checkbox" name="is_active" id="edit-is-active">
+
+      <button type="submit">Save Changes</button>
+    </form>
+  </div>
+</div>
+
+
+  <script>
+    // Hide discount fields if type is free_shipping
+    const voucherType = document.getElementById("voucher-type");
+    const discountType = document.getElementById("discount-type");
+    const discountValue = document.getElementById("discount-value");
+
+    voucherType.addEventListener("change", () => {
+      if (voucherType.value === "free_shipping") {
+        discountType.disabled = true;
+        discountValue.disabled = true;
+        discountType.value = "";
+        discountValue.value = "";
+      } else {
+        discountType.disabled = false;
+        discountValue.disabled = false;
+      }
+    });
+  </script>
+</body>
+</html>
