@@ -22,7 +22,11 @@ async function loadSection(section) {
 } else if(section === 'stock') {
   const stockModule = await import('./stock.js');
   if(stockModule.initStock) await stockModule.initStock();
+} else if(section === 'customers') {
+    const customersModule = await import('./customers.js');
+    if(customersModule.initCustomers) await customersModule.initCustomers();
 }
+
 
 
 

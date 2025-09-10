@@ -52,6 +52,9 @@ switch ($request) {
         require_once(__DIR__ . '/../Routes/voucher.php');
         break;
 
+    case 'customer':
+        require_once(__DIR__ . '/../Routes/customer.php');
+        break;
     case 'get-notifications':
         require_once(__DIR__ . '/../Routes/get-notifications.php');
         break;
