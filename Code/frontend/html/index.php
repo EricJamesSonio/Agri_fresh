@@ -63,16 +63,16 @@ $notifCount = $notifCountRow['cnt'] ?? 0;
     <a href="my-orders.php">My Orders</a>
     <a href="about.html">About Us</a>
 
-    
+    <a href="my-cart.html" style="display: inline-block; margin-left: 10px;">
+        <img src="../images/cart.jpg" alt="Cart" style="width:32px; height:32px;">
+    </a>
     
    <div class="notification-wrapper" id="notifWrapper" style="position: relative; display: inline-block; cursor: pointer;">
     🔔
     <span id="notifCount" style="position: absolute; top: -5px; right: -10px; 
          background: red; color: white; font-size: 0.8rem; padding: 2px 6px; 
          border-radius: 50%; display:none;"></span>
-    <a href="my-cart.html" style="display: inline-block; margin-left: 10px;">
-        <img src="../images/cart.jpg" alt="Cart" style="width:24px; height:24px;">
-    </a>
+    
 </div>
 
   <a href="#"></a>
