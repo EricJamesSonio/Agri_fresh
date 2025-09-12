@@ -2,67 +2,56 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <title>Profile - Agri Fresh</title>
+  <title>My Profile - Agri Fresh</title>
 
   <link rel="stylesheet" href="../css/style.css">
   <link rel="stylesheet" href="../css/profile.css">
 
   <style>
-    /* Borrowed from checkout.css */
-    .address-card {
-      border: 2px solid #e0e0e0;
-      border-radius: 8px;
-      padding: 1rem;
-      margin-bottom: 1rem;
-      cursor: pointer;
-      transition: all 0.3s ease;
+    body {
+      font-family: Arial, sans-serif;
     }
-    .address-card:hover {
-      border-color: #4CAF50;
-      background: #f8fff8;
-    }
-    .address-card.selected {
-      border-color: #4CAF50;
-      background: #e8f5e8;
-    }
-    .address-card .default-badge {
-      background: #4CAF50;
-      color: white;
-      padding: 0.2rem 0.5rem;
-      border-radius: 4px;
-      font-size: 0.8rem;
-      margin-left: 0.5rem;
-    }
-    .add-address-form {
-      background: #f9f9f9;
-      padding: 1.5rem;
-      border-radius: 8px;
-      margin-top: 1rem;
-      display: none;
-    }
-    .add-address-form.show {
-      display: block;
-    }
-    .form-group {
+    header h1 {
       margin-bottom: 1rem;
     }
-    .form-group label {
+    .profile-container {
+      max-width: 600px;
+      margin: 2rem auto;
+      background: #fff;
+      padding: 2rem;
+      border-radius: 8px;
+      border: 1px solid #e0e0e0;
+    }
+    label {
       display: block;
-      margin-bottom: 0.5rem;
       font-weight: 500;
+      margin-bottom: 0.3rem;
+      margin-top: 1rem;
     }
-    .form-group input, .form-group select {
+    input[type="text"], 
+    input[type="email"], 
+    input[type="password"], 
+    select {
       width: 100%;
       padding: 0.75rem;
       border: 1px solid #ddd;
       border-radius: 4px;
       font-size: 1rem;
     }
-    .form-row {
+    .radio-group {
+      margin-top: 0.5rem;
+    }
+    .radio-group label {
+      display: inline-block;
+      margin-right: 1rem;
+      font-weight: normal;
+    }
+    .dob-row {
       display: flex;
       gap: 1rem;
+      margin-top: 0.5rem;
     }
-    .form-row .form-group {
+    .dob-row select {
       flex: 1;
     }
     .btn {
@@ -73,34 +62,17 @@
       border-radius: 4px;
       cursor: pointer;
       font-size: 1rem;
-      margin-right: 0.5rem;
+      margin-top: 1.5rem;
     }
     .btn:hover {
       background: #45a049;
     }
-    .btn-secondary {
-      background: #6c757d;
-    }
-    .btn-secondary:hover {
-      background: #545b62;
-    }
-    .btn-outline {
-      background: transparent;
-      color: #4CAF50;
-      border: 2px solid #4CAF50;
-    }
-    .btn-outline:hover {
-      background: #4CAF50;
-      color: white;
-    }
-    .success { color: #28a745; margin-top: 0.5rem; }
-    .error { color: #dc3545; margin-top: 0.5rem; }
   </style>
 </head>
 <body>
 <header>
   <h1>My Profile</h1>
-    <button onclick="window.location.href='index.php'" class="btn btn-secondary" style="margin-top:1rem;">
+  <button onclick="window.location.href='index.php'" class="btn btn-secondary" style="margin-top:1rem;">
     ← Back
   </button>
 </header>
@@ -111,80 +83,54 @@
     <input type="hidden" name="role" id="role">
     <input type="hidden" name="id" id="id">
 
-    <label>First Name</label>
-    <input type="text" name="first_name" id="first_name">
+    <label for="name">Name</label>
+    <input type="text" id="name" name="name" value="">
 
-    <label>Last Name</label>
-    <input type="text" name="last_name" id="last_name">
+    <label for="email">Email</label>
+    <input type="email" id="email" name="email" value="">
 
-    <label>Email</label>
-    <input type="email" name="email" id="email">
+    <label for="phone">Phone Number</label>
+    <input type="text" id="phone" name="phone">
 
-    <div id="contactWrapper" class="hidden">
-      <label>Contact</label>
-      <input type="text" name="contact" id="contact">
+    <label>Gender</label>
+    <div class="radio-group">
+      <label><input type="radio" name="gender" value="male"> Male</label>
+      <label><input type="radio" name="gender" value="female"> Female</label>
+      <label><input type="radio" name="gender" value="other"> Other</label>
     </div>
 
-    <label>New Password (leave blank to keep current)</label>
-    <input type="password" name="password" id="password">
+    <label>Date of Birth</label>
+    <div class="dob-row">
+      <select name="day" id="day">
+        <option value="">Date</option>
+        <!-- 1–31 -->
+        <script>
+          for (let i=1; i<=31; i++) {
+            document.write(`<option value="${i}">${i}</option>`);
+          }
+        </script>
+      </select>
+      <select name="month" id="month">
+        <option value="">Month</option>
+        <option>January</option><option>February</option><option>March</option>
+        <option>April</option><option>May</option><option>June</option>
+        <option>July</option><option>August</option><option>September</option>
+        <option>October</option><option>November</option><option>December</option>
+      </select>
+      <select name="year" id="year">
+        <option value="">Year</option>
+        <script>
+          const yearNow = new Date().getFullYear();
+          for (let y = yearNow; y >= 1900; y--) {
+            document.write(`<option value="${y}">${y}</option>`);
+          }
+        </script>
+      </select>
+    </div>
 
-    <button type="submit" class="btn">Update Profile</button>
+    <button type="submit" class="btn">Save</button>
   </form>
-
-  <!-- Addresses -->
-  <div id="addresses" class="hidden" style="margin-top:2rem;">
-    <h2>My Addresses</h2>
-    <div id="address-list">
-      <p class="loading">Loading addresses...</p>
-    </div>
-
-    <button type="button" id="addAddressBtn" class="btn-outline btn">➕ Add Address</button>
-
-    <!-- Add Address Form -->
-    <div id="add-address-form" class="add-address-form">
-      <h4>Add New Address</h4>
-      <form id="addressForm">
-        <div class="form-group">
-          <label for="street">Street Address *</label>
-          <input type="text" id="street" name="street" required>
-        </div>
-        <div class="form-row">
-          <div class="form-group">
-            <label for="city">City *</label>
-            <input type="text" id="city" name="city" required>
-          </div>
-          <div class="form-group">
-            <label for="state">State/Province</label>
-            <input type="text" id="state" name="state">
-          </div>
-        </div>
-        <div class="form-row">
-          <div class="form-group">
-            <label for="postal_code">Postal Code</label>
-            <input type="text" id="postal_code" name="postal_code">
-          </div>
-          <div class="form-group">
-            <label for="country">Country *</label>
-            <select id="country" name="country" required>
-              <option value="Philippines">Philippines</option>
-              <option value="Other">Other</option>
-            </select>
-          </div>
-        </div>
-        <div class="form-group">
-          <label>
-            <input type="checkbox" id="is_default" name="is_default">
-            Set as default address
-          </label>
-        </div>
-        <button type="submit" class="btn">Save Address</button>
-        <button type="button" class="btn btn-secondary" onclick="toggleAddressForm()">Cancel</button>
-      </form>
-      <div id="address-message"></div>
-    </div>
-  </div>
 </main>
-
 
 <script src="../js/config.js"></script>
 <script src="../js/profile.js"></script>

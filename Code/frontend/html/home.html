@@ -6,6 +6,234 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght:300;400;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../css/style.css">
+
+  <style>
+    body {
+      margin: 0;
+      font-family: "Inter", sans-serif;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem 2rem;
+      background: #4CAF50;
+      color: white;
+    }
+
+    header h1 {
+      margin: 0;
+    }
+
+    header nav a {
+      margin-left: 1rem;
+      color: white;
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    header nav a:hover {
+      text-decoration: underline;
+    }
+
+    /* Hero section */
+    .hero {
+      position: relative;
+      height: 70vh;
+      overflow: hidden;
+    }
+
+    .hero-slides img {
+      width: 100%;
+      height: 70vh;
+      object-fit: cover;
+      display: none;
+    }
+
+    .hero-slides img:first-child {
+      display: block;
+    }
+
+    .hero-text {
+      position: absolute;
+      top: 50%;
+      left: 10%;
+      transform: translateY(-50%);
+      color: white;
+      text-shadow: 0 2px 6px rgba(0,0,0,0.6);
+    }
+
+    .mega-title {
+      font-size: 3rem;
+      line-height: 1.2;
+    }
+
+    .mega-cta {
+      margin-top: 1rem;
+      padding: 0.7rem 1.5rem;
+      background: #4CAF50;
+      border: none;
+      border-radius: 6px;
+      color: white;
+      font-size: 1rem;
+      cursor: pointer;
+    }
+
+    .mega-cta:hover {
+      background: #45a049;
+    }
+
+    /* Filters */
+    .filters {
+      background: #f8f8f8;
+      padding: 1rem;
+    }
+
+    .filters-inner {
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+    }
+
+    .filters input,
+    .filters select {
+      padding: 0.6rem;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+    }
+
+    .filters .tags button {
+      padding: 0.5rem 1rem;
+      border: none;
+      border-radius: 20px;
+      background: #eee;
+      cursor: pointer;
+    }
+
+    .filters .tags button.active {
+      background: #4CAF50;
+      color: white;
+    }
+
+    /* Product Grid */
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill,minmax(220px,1fr));
+      gap: 1.5rem;
+      padding: 2rem;
+    }
+
+    .card {
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      overflow: hidden;
+      background: #fff;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+    }
+
+    .card img {
+      width: 100%;
+      height: 150px;
+      object-fit: cover;
+    }
+
+    .card-body {
+      padding: 1rem;
+    }
+
+    .card-body h4 {
+      margin: 0 0 0.5rem;
+    }
+
+    .price {
+      display: block;
+      margin-bottom: 0.5rem;
+      color: #4CAF50;
+      font-weight: 600;
+    }
+
+    .card-body button {
+      padding: 0.5rem 1rem;
+      border: none;
+      background: #4CAF50;
+      color: white;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    .card-body button:hover {
+      background: #45a049;
+    }
+
+    /* Floating Cart */
+    .sidebar {
+      position: fixed;
+      top: 0;
+      right: -320px;
+      width: 300px;
+      height: 100%;
+      background: #fff;
+      box-shadow: -3px 0 8px rgba(0,0,0,0.2);
+      transition: right 0.3s ease;
+      padding: 1rem;
+      z-index: 4000;
+    }
+
+    .sidebar.open {
+      right: 0;
+    }
+
+    /* Sidebar Trigger + Menu */
+    .sidebar-trigger {
+      position: fixed;
+      top: 0;
+      right: 0;
+      width: 20px;   /* manipis na hover zone */
+      height: 100%;
+      background: transparent;
+      z-index: 3000;
+    }
+
+    .sidebar-menu {
+      position: fixed;
+      top: 0;
+      right: -220px;
+      width: 220px;
+      height: 100%;
+      background: #4CAF50;
+      padding-top: 60px;
+      transition: right 0.3s ease;
+      z-index: 2999;
+      color: white;
+      box-shadow: -2px 0 6px rgba(0,0,0,0.2);
+    }
+
+    /* Show on hover */
+    .sidebar-trigger:hover + .sidebar-menu,
+    .sidebar-menu:hover {
+      right: 0;
+    }
+
+    .sidebar-menu a {
+      padding: 12px 20px;
+      text-decoration: none;
+      display: block;
+      color: white;
+      font-size: 1rem;
+      transition: background 0.2s;
+    }
+
+    .sidebar-menu a:hover {
+      background: #45a049;
+    }
+
+    footer {
+      text-align: center;
+      padding: 1.5rem 0;
+      color: #666;
+    }
+  </style>
 </head>
 <body>
 
@@ -13,13 +241,7 @@
   <header>
     <h1>Agri Fresh Market</h1>
     <nav>
-      <a href="#" onclick="openOrders()" title="Cart">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
-             xmlns="http://www.w3.org/2000/svg" style="vertical-align:middle">
-          <path d="M9 2C7.89543 2 7 2.89543 7 4C7 5.10457 7.89543 6 9 6H15C16.1046 6 17 5.10457 17 4C17 2.89543 16.1046 2 15 2H9Z" fill="currentColor"/>
-          <path d="M3 8C2.44772 8 2 8.44772 2 9C2 9.55228 2.44772 10 3 10H4.24844L5.99219 18.5769C6.2019 19.6342 7.12542 20.4231 8.20703 20.4231H15.793C16.8746 20.4231 17.7981 19.6342 18.0078 18.5769L19.7516 10H21C21.5523 10 22 9.55228 22 9C22 8.44772 21.5523 8 21 8H3Z" fill="currentColor"/>
-        </svg>
-      </a>
+      <a href="#" onclick="openOrders()" title="Cart">🛒</a>
       <a href="about.html">About Us</a>
       <a href="#products">Products</a>
     </nav>
@@ -35,13 +257,13 @@
     </div>
     <div class="hero-text">
       <h2 class="mega-title">
-        <span class="line-1">Organic</span>
-        <span class="line-2">Food</span>
+        <span class="line-1">Organic</span><br>
+        <span class="line-2">Food</span><br>
         <span class="line-3">Everyday</span>
       </h2>
       <p class="mega-desc">
         Handpicked daily,<br>
-        From local farms to your kitchen.
+        From local farms to your kitchen.<br>
         <small>No traffic, no hassle, just greens at one click!</small>
       </p>
       <button class="mega-cta" onclick="scrollToProducts()">SHOP NOW</button>
@@ -60,6 +282,7 @@
         <option>Fruits</option>
         <option>Herbs</option>
       </select>
+
       <div class="tags">
         <button onclick="toggleTag(this,'organic')">Organic</button>
         <button onclick="toggleTag(this,'seasonal')">Seasonal</button>
@@ -73,7 +296,7 @@
   <!-- Floating Cart -->
   <aside id="cart" class="sidebar">
     <div style="display:flex;justify-content:space-between;align-items:center">
-      <h4>Your Cart&nbsp;&nbsp;&nbsp;&nbsp; --><span id="cart-count">0</span></h4>
+      <h4>Your Cart&nbsp;&nbsp;&nbsp;&nbsp; → <span id="cart-count">0</span></h4>
       <span onclick="closeCart()" style="cursor:pointer;font-size:1.3rem;">×</span>
     </div>
     <ul id="cart-items"></ul>
@@ -83,25 +306,28 @@
     <button onclick="checkout()">Checkout</button>
   </aside>
 
+  <!-- Sidebar Trigger + Menu -->
+  <div class="sidebar-trigger"></div>
+  <div class="sidebar-menu">
+    <a href="profile.html">👤 Profile</a>
+    <a href="orders.html">📦 Orders</a>
+    <a href="settings.html">⚙️ Settings</a>
+    <a href="logout.php">🚪 Logout</a>
+  </div>
+
   <footer>
-    <p style="text-align:center;padding:1.5rem 0;color:#666;">
-      &copy; 2025 AgriFresh Market – Freshness Delivered.
-    </p>
+    <p>&copy; 2025 AgriFresh Market – Freshness Delivered.</p>
   </footer>
 
   <script src="../js/script.js"></script>
   <script>
-    /* ======  CLICKABLE PHOTOS  ====== */
-    // Replace the render() function with this one
     function render(list = products) {
       const grid = document.getElementById('products');
       grid.innerHTML = list.map(p => `
         <div class="card">
-          <!-- image now links to product-detail -->
           <a href="product-detail.html?name=${encodeURIComponent(p.name)}">
             <img src="${p.img}" alt="${p.name}" loading="lazy">
           </a>
-
           <div class="card-body">
             <h4>${p.name}</h4>
             <span class="price">₱${p.price}</span>
@@ -110,8 +336,6 @@
         </div>
       `).join('');
     }
-
-    /* Initial load */
     render();
   </script>
 </body>
