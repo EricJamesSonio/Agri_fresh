@@ -7,17 +7,18 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../css/style.css">
   <link rel="stylesheet" href="../css/about.css">
+  <link rel="stylesheet" href="../css/sidebar.css">
   
 </head>
 <body>
-
+  <?php include(__DIR__ . '/../components/sidebar.php'); ?>
   <!-- Re-use the header from index -->
   <header>
     <h1>Agri Fresh Market</h1>
     <nav>
       <a href="index.php">Home</a>
       <a href="index.php#products">Products</a>
-      <a href="login.html">Log in</a>
+      <a href="login.php">Log in</a>
     </nav>
   </header>
 

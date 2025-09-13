@@ -1,0 +1,55 @@
+.sidebar-trigger {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 20px;
+  height: 100%;
+  background: transparent;
+  z-index: 3000;
+  cursor: pointer;
+}
+
+.sidebar-menu {
+  position: fixed;
+  top: 0;
+  right: -220px;
+  width: 220px;
+  height: 100%;
+  background: #4CAF50;
+  padding-top: 60px;
+  transition: right 0.3s ease;
+  z-index: 2999;
+  color: white;
+  box-shadow: -2px 0 6px rgba(0,0,0,0.2);
+  display: flex;
+  flex-direction: column;
+}
+
+.sidebar-trigger:hover + .sidebar-menu,
+.sidebar-menu:hover {
+  right: 0;
+}
+
+.sidebar-menu a {
+  padding: 12px 20px;
+  text-decoration: none;
+  display: block;
+  color: white;
+  font-size: 1rem;
+  transition: background 0.2s;
+}
+
+.sidebar-menu a:hover {
+  background: #45a049;
+}
+
+.sidebar-menu a.logout {
+  margin-top: auto;
+  background: #e53935;
+  color: white;
+  font-weight: bold;
+}
+
+.sidebar-menu a.logout:hover {
+  background: #c62828;
+}

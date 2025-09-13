@@ -5,6 +5,7 @@
   <title>Sign Up – Agri Fresh</title>
   <link rel="stylesheet" href="../css/style.css">
   <link rel="stylesheet" href="../css/signup.css">
+  <link rel="stylesheet" href="../css/sidebar.css">
   <style>
     .error {
       color: red;
@@ -12,19 +13,46 @@
       margin-top: 3px;
       display: block;
     }
+
+    /* Back button fixed at top-right */
+    .back-btn {
+      position: fixed;
+      top: 1rem;
+      right: 1rem;
+      background: #4CAF50;
+      color: white;
+      border: none;
+      padding: 0.6rem 1.2rem;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 1rem;
+      z-index: 1000; /* keeps it above sidebar/content */
+    }
+
+    .back-btn:hover {
+      background: #45a049;
+    }
+
+    .signup-wrapper {
+      max-width: 600px;
+      margin: 4rem auto 2rem auto; /* add margin-top so form doesn't overlap button */
+      background: #fff;
+      padding: 2rem;
+      border-radius: 8px;
+      border: 1px solid #e0e0e0;
+    }
+
+    .signup-wrapper h1 {
+      margin-bottom: 1rem;
+    }
   </style>
 </head>
 
 <body>
-  <nav class="dots-menu">
-    <input type="checkbox" id="dots-toggle">
-    <label for="dots-toggle">⋮</label>
-    <ul>
-      <li><a href="index.php">Home</a></li>
-      <li><a href="login.html">Log in</a></li>
-      <li><a href="admin.html">Admin</a></li>
-    </ul>
-  </nav>
+<?php include(__DIR__ . '/../components/sidebar.php'); ?>
+
+  <!-- Back button fixed at very top-right -->
+  <button onclick="window.location.href='index.php'" class="back-btn">← Back</button>
 
   <main class="signup-wrapper">
     <h1>Sign Up</h1>
@@ -59,10 +87,10 @@
         <span class="error" id="passwordError"></span>
       </label>
 
-      <button type="submit">Create Account</button>
+      <button type="submit" class="btn">Create Account</button>
 
       <p class="switch">
-        Already have an account? <a href="login.html">Log in</a>
+        Already have an account? <a href="login.php">Log in</a>
       </p>
     </form>
   </main>

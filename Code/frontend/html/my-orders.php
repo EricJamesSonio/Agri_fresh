@@ -3,7 +3,7 @@ session_start();
 
 // ✅ Require login
 if (!isset($_SESSION['customer_id'])) {
-    header("Location: login.html");
+    header("Location: login.php");
     exit();
 }
 
@@ -20,6 +20,7 @@ $customer_name = $_SESSION['customer_name'] ?? 'Customer';
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/sidebar.css">
   <style>
     .order-card {
         border: 1px solid #ddd;
@@ -48,13 +49,15 @@ $customer_name = $_SESSION['customer_name'] ?? 'Customer';
   </style>
 </head>
 <body>
+<?php include(__DIR__ . '/../components/sidebar.php'); ?>
+
 
 <header>
   <h1>Agri Fresh Market</h1>
   <nav>
     <a href="index.php">Home</a>
-    <a href="about.html">About Us</a>
-    <a href="my-cart.html" style="display: inline-block; margin-left: 10px;">
+    <a href="about.php">About Us</a>
+    <a href="my-cart.php" style="display: inline-block; margin-left: 10px;">
         <img src="../images/cart.jpg" alt="Cart" style="width:32px; height:32px;">
     </a>
 

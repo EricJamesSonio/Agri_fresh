@@ -1,7 +1,7 @@
 const user = JSON.parse(localStorage.getItem('currentUser'));
 if (!user) { 
   alert('Please log in first'); 
-  location.href = 'login.html'; 
+  location.href = 'login.php'; 
 }
 
 const allOrders = JSON.parse(localStorage.getItem('orders') || '[]');

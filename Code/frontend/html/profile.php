@@ -6,6 +6,7 @@
 
   <link rel="stylesheet" href="../css/style.css">
   <link rel="stylesheet" href="../css/profile.css">
+  <link rel="stylesheet" href="../css/sidebar.css">
 
   <style>
     body {
@@ -134,5 +135,6 @@
 
 <script src="../js/config.js"></script>
 <script src="../js/profile.js"></script>
+<?php include(__DIR__ . '/../components/sidebar.php'); ?>
 </body>
 </html>

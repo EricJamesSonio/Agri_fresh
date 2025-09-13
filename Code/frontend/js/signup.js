@@ -97,7 +97,7 @@ form.addEventListener("submit", async (e) => {
 
     if (data.success) {
       alert("Account created successfully!");
-      window.location.href = "login.html";
+      window.location.href = "login.php";
     } else {
       alert("Error: " + data.message);
     }

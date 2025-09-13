@@ -10,7 +10,7 @@ function requireAdmin() {
 
 function requireLogin() {
     if (!isset($_SESSION['customer_id'])) {
-        header("Location: ../../frontend/html/login.html");
+        header("Location: ../../frontend/html/login.php");
         exit();
     }
 }

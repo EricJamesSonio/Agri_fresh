@@ -1,7 +1,7 @@
 <?php
 session_start();
 if (!isset($_SESSION['customer_id'])) { 
-    header("Location: login.html"); 
+    header("Location: login.php"); 
     exit(); 
 }
 $role = $_SESSION['role'] ?? 'customer';
@@ -14,15 +14,17 @@ $role = $_SESSION['role'] ?? 'customer';
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="../css/style.css">
   <link rel="stylesheet" href="../css/my_orders.css">
+  <link rel="stylesheet" href="../css/sidebar.css">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
 </head>
 <body>
+<?php include(__DIR__ . '/../components/sidebar.php'); ?>
 
 <header>
   <h1>Agri Fresh Market</h1>
   <nav>
     <a href="index.php">Home</a>
-    <a href="about.html">About&nbsp;Us</a>
+    <a href="about.php">About&nbsp;Us</a>
     <a href="index.php#products">Products</a>
     <a href="#" onclick="logout()">Logout</a>
   </nav>

@@ -25,13 +25,16 @@ code/
 ---> ----> ----> ----> sales.html
 ---> ----> ----> css/
 ---> ----> ----> ---->  index.css
+
 ---> ----> ----> js/
 ---> ----> ----> ---->  index.js
 
-
+---> ----> components/
+---> ----> ---> sidebar.php
 ---> ----> html/
 ---> ----> ---->  index.php # home pagedefault
 ---> ----> css/
+---> ----> ----> ---->  sidebar.css
 
 ---> ----> js/
 ---> ----> --> config.js    # based helper for connecting backend to js

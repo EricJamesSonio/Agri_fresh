@@ -355,7 +355,7 @@ closeSizeModal() {
 async confirmAddToCart(product, qty) {
   if (!this.customer_id) {
     alert("You are not logged in yet. Please login first.");
-    window.location.href = 'login.html';
+    window.location.href = 'login.php';
     return;
   }
 
@@ -533,7 +533,7 @@ logout() {
   this.updateCart();
 
 
-  window.location.href = `${location.origin}/agri_fresh/code/frontend/html/login.html`;
+  window.location.href = `${location.origin}/agri_fresh/code/frontend/html/login.php`;
 }
 
 
@@ -592,12 +592,12 @@ logout() {
       return;
     }
     // Instead of redirecting to checkout-address.html
-    window.location.href = 'my-cart.html';
+    window.location.href = 'my-cart.php';
   }
 
   goToCart() {
     // Navigate to the full cart page (my-orders.html)
-    window.location.href = 'my-cart.html';
+    window.location.href = 'my-cart.php';
   }
 
   scrollToProducts() {
