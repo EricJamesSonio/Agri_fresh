@@ -591,7 +591,7 @@ logout() {
       alert('Your cart is empty!');
       return;
     }
-    // Instead of redirecting to checkout-address.html
+    // Instead of redirecting to checkout-address.php
     window.location.href = 'my-cart.php';
   }
 

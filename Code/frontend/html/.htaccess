@@ -1,2 +1,0 @@
-# Make PHP take priority over HTML
-DirectoryIndex index.php index.html

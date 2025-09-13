@@ -199,3 +199,28 @@ header nav a {
 .delete-btn:hover {
   background: #e53935;
 }
+
+.order-card {
+    border: 1px solid #ddd;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    border-radius: 8px;
+    background: #fafafa;
+}
+.order-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 0.5rem;
+}
+.order-details {
+    margin-top: 0.5rem;
+}
+.order-item {
+    border-top: 1px solid #eee;
+    padding: 0.5rem 0;
+}
+.status-pending { color: orange; }
+.status-processing { color: blue; }
+.status-shipped { color: purple; }
+.status-delivered { color: green; }
+.status-cancelled { color: red; }
