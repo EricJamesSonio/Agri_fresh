@@ -68,6 +68,7 @@
   <!-- Load config FIRST, then login logic -->
   <script src="../js/config.js"></script>
   <script src="../js/login.js"></script>
+  
   <?php include(__DIR__ . '/../components/sidebar.php'); ?>
 </body>
 </html>

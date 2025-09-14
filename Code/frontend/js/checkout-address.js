@@ -1,10 +1,9 @@
 let selectedAddressId = null;
-let customer_id = parseInt(localStorage.getItem("customer_id"), 10);
 let cartData = [];
 
 // Initialize page
 document.addEventListener('DOMContentLoaded', function() {
-  if (!customer_id) {
+  if (!CONFIG.CUSTOMER_ID) {
     alert('Please login to continue');
     window.location.href = 'login.php';
     return;
@@ -16,7 +15,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 async function loadOrderSummary() {
   try {
-    const response = await fetch(apiUrl(`cart?customer_id=${customer_id}`));
+    const response = await fetch(apiUrl(`cart?customer_id=${CONFIG.CUSTOMER_ID}`));
     const data = await response.json();
     cartData = data || [];
 
@@ -105,7 +104,7 @@ function escapeHtml(str) {
 
 async function loadAddresses() {
   try {
-    const response = await fetch(apiUrl(`address?customer_id=${customer_id}`));
+    const response = await fetch(apiUrl(`address?customer_id=${CONFIG.CUSTOMER_ID}`));
     const result = await response.json();
     
     if (result.status === 'success') {
@@ -178,7 +177,7 @@ document.getElementById('address-form').addEventListener('submit', async functio
   
   const formData = new FormData(e.target);
   const addressData = {
-    customer_id: customer_id,
+    customer_id: CONFIG.CUSTOMER_ID,
     action: 'add',
     street: formData.get('street'),
     city: formData.get('city'),
@@ -237,7 +236,7 @@ async function placeOrder() {
   }
 
   const payload = {
-    customer_id,
+    customer_id: CONFIG.CUSTOMER_ID,
     address_id: selectedAddressId,
     payment_method: paymentMethod,
     voucher_code: voucherCode

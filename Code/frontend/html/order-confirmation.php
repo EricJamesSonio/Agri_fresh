@@ -58,5 +58,6 @@ $customer_name = $_SESSION['customer_name'] ?? 'Customer';
 
 <script src="../js/config.js"></script>
 <script src="../js/order-confirmation.js"></script>
+
 </body>
 </html>

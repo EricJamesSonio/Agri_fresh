@@ -4,124 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Stock Management</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #f8f9fa;
-      margin: 0;
-      padding: 20px;
-    }
-
-    .card {
-      background: #fff;
-      border-radius: 8px;
-      padding: 20px;
-      max-width: 1200px;
-      margin: auto;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    }
-
-    .card-title {
-      font-size: 1.5rem;
-      font-weight: bold;
-      margin-bottom: 15px;
-      color: #2e7d32;
-    }
-
-    /* Threshold controls */
-    .threshold-controls {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      margin-bottom: 15px;
-      flex-wrap: wrap;
-    }
-
-    .threshold-controls input[type="number"] {
-      width: 60px;
-      padding: 6px 8px;
-      border-radius: 5px;
-      border: 1px solid #ccc;
-    }
-
-    .threshold-controls button {
-      background-color: #4CAF50;
-      color: white;
-      border: none;
-      padding: 8px 12px;
-      border-radius: 5px;
-      cursor: pointer;
-      transition: background 0.3s;
-    }
-
-    .threshold-controls button:hover {
-      background-color: #45a049;
-    }
-
-    /* Table styles */
-    .table-responsive {
-      width: 100%;
-      overflow-x: auto;
-    }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      min-width: 700px;
-    }
-
-    thead {
-      background-color: #28a745;
-      color: white;
-    }
-
-    th, td {
-      padding: 12px;
-      border-bottom: 1px solid #ddd;
-      text-align: left;
-      white-space: nowrap;
-    }
-
-    tbody tr:nth-child(even) {
-      background-color: #f9f9f9;
-    }
-
-    .low-stock {
-      background-color: #ffcccc;
-    }
-
-    /* Responsive tweaks */
-    @media (max-width: 768px) {
-      body {
-        padding: 10px;
-      }
-
-      .card {
-        padding: 15px;
-      }
-
-      .threshold-controls {
-        flex-direction: column;
-        align-items: flex-start;
-      }
-    }
-
-    @media (max-width: 480px) {
-      .card-title {
-        font-size: 1.2rem;
-        text-align: center;
-      }
-
-      table {
-        font-size: 0.9rem;
-        min-width: 500px;
-      }
-
-      th, td {
-        padding: 8px;
-      }
-    }
-  </style>
+  <link rel="stylesheet" href="css/stock.css">
 </head>
 <body>
   <div class="card">
@@ -156,14 +39,6 @@
   </div>
 
   <script>
-    // Example stock data (replace with your PHP fetch if needed)
-    const stockData = [
-      {id:1, name:'Apple', category:'Fruit', size:'1 kg', price:120, stock:3},
-      {id:2, name:'Banana', category:'Fruit', size:'1 kg', price:50, stock:12},
-      {id:3, name:'Milk', category:'Dairy', size:'1 liter', price:80, stock:4},
-      {id:4, name:'Bread', category:'Bakery', size:'1 loaf', price:40, stock:8}
-    ];
-
     const tableBody = document.querySelector('#stock-table tbody');
     const thresholdInput = document.getElementById('stock-threshold-input');
     const thresholdDisplay = document.getElementById('stock-threshold');
@@ -186,10 +61,8 @@
       thresholdDisplay.textContent = threshold;
     }
 
-    // Initial render
     renderTable(parseInt(thresholdInput.value));
 
-    // Update threshold dynamically
     document.getElementById('update-threshold-btn').addEventListener('click', () => {
       const threshold = parseInt(thresholdInput.value);
       renderTable(threshold);

@@ -104,6 +104,7 @@
       &copy; 2025 AgriFresh Market – Freshness Delivered.
     </p>
   </footer>
+  
 
 </body>
 </html>

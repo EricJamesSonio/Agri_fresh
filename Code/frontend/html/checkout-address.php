@@ -36,7 +36,6 @@ $customer_name = $_SESSION['customer_name'] ?? 'Customer';
 </header>
 
 <main style="padding: 1rem;">
-  
   <div class="checkout-container">
     <!-- Order Summary -->
     <div class="order-summary">
@@ -132,7 +131,17 @@ $customer_name = $_SESSION['customer_name'] ?? 'Customer';
   &copy; 2025 AgriFresh Market – Freshness Delivered.
 </footer>
 
+<!-- Load global config -->
 <script src="../js/config.js"></script>
+
+<!-- Inject PHP session values into CONFIG -->
+<script>
+  CONFIG.CUSTOMER_ID = "<?= htmlspecialchars($customer_id) ?>";
+  CONFIG.CUSTOMER_NAME = "<?= htmlspecialchars($customer_name) ?>";
+  CONFIG.ROLE = "<?= htmlspecialchars($role) ?>";
+</script>
+
+<!-- Page-specific JS -->
 <script src="../js/checkout-address.js"></script>
 </body>
 </html>

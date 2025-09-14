@@ -135,6 +135,8 @@
 
 <script src="../js/config.js"></script>
 <script src="../js/profile.js"></script>
+
 <?php include(__DIR__ . '/../components/sidebar.php'); ?>
+
 </body>
 </html>
