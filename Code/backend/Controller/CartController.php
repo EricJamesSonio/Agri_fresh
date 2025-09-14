@@ -36,7 +36,7 @@ class CartController {
 
         $items = [];
         while ($row = mysqli_fetch_assoc($res)) {
-            // Combine size_value + size_unit for frontend convenience
+            // Combine size_value + size_unit for frontend
             $row['size'] = number_format((float)$row['size_value'], 2) . ' ' . $row['size_unit'];
             $items[] = $row;
         }
@@ -94,16 +94,24 @@ class CartController {
             $stmt->bind_param("iiids", $quantity, $cart_id, $product_id, $size_value, $size_unit);
             $stmt->execute();
         } else {
-            // Insert new with price from product table
+            // ✅ Get correct price from product table
             $priceRow = mysqli_fetch_assoc(mysqli_query(
                 $this->con,
-                "SELECT price FROM product 
-                 WHERE product_id=$product_id 
-                 AND size_value=$size_value 
-                 AND size_unit='$size_unit'"
+                "SELECT 
+                    CASE
+                        WHEN size1_value = $size_value AND size1_unit = '$size_unit' THEN price1
+                        WHEN size2_value = $size_value AND size2_unit = '$size_unit' THEN price2
+                        ELSE NULL
+                    END AS matched_price
+                 FROM product 
+                 WHERE product_id = $product_id"
             ));
-            $price = $priceRow ? floatval($priceRow['price']) : 0.0;
 
+            $price = $priceRow && $priceRow['matched_price'] !== null
+                ? floatval($priceRow['matched_price'])
+                : 0.0;
+
+            // Insert new item
             $stmt = $this->con->prepare("
                 INSERT INTO cart_item (cart_id, product_id, size_value, size_unit, quantity, price_each) 
                 VALUES (?, ?, ?, ?, ?, ?)

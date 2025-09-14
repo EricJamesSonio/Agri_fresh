@@ -1,16 +1,33 @@
+/* ---------- Global Theme ---------- */
+:root {
+  --primary: #007BFF;   /* main blue */
+  --primary-dark: #0056b3;
+  --success: #4CAF50;   /* green for add/success */
+  --success-dark: #388e3c;
+  --danger: #c02736;    /* red for delete */
+  --danger-dark: #a71d2a;
+  --light-bg: #f9f9f9;
+  --text-dark: #333;
+  --radius: 10px;
+  --shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+/* ---------- Base ---------- */
 body {
-  font-family: Arial, sans-serif;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   background: #f8f9fa;
   margin: 0;
   padding: 20px;
+  color: var(--text-dark);
 }
 
+/* ---------- Card Container ---------- */
 .card {
   background: #fff;
-  border-radius: 8px;
-  padding: 16px;
+  border-radius: var(--radius);
+  padding: 20px;
   margin-bottom: 20px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  box-shadow: var(--shadow);
   max-width: 1200px;
   margin-left: auto;
   margin-right: auto;
@@ -18,43 +35,95 @@ body {
 
 .card-title {
   font-size: 1.5rem;
-  font-weight: bold;
+  font-weight: 600;
   margin-bottom: 15px;
+  color: var(--text-dark);
 }
 
-/* Make table scrollable on small screens */
+/* ---------- Tables ---------- */
 .table-responsive {
   width: 100%;
   overflow-x: auto;
+  margin-top: 15px;
 }
 
 .table {
   width: 100%;
   border-collapse: collapse;
-  min-width: 600px; /* prevents table from shrinking too much */
+  min-width: 600px;
+  background: #fff;
+  border-radius: var(--radius);
+  overflow: hidden;
+  box-shadow: var(--shadow);
 }
 
 .table thead {
-  background-color: #28a745;
+  background-color: var(--primary);
   color: white;
+  text-transform: uppercase;
+  font-weight: 600;
 }
 
 .table th, .table td {
   padding: 12px;
   border-bottom: 1px solid #ddd;
   text-align: left;
-  white-space: nowrap; /* prevent text from breaking awkwardly */
+  white-space: nowrap;
 }
 
-.table tbody tr:nth-child(even) {
-  background-color: #f9f9f9;
+.table tbody tr:hover {
+  background-color: #f1f1f1;
 }
 
+/* ---------- Form Elements ---------- */
 select {
-  padding: 4px;
+  padding: 6px 8px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 14px;
 }
 
-/* Tablet adjustments */
+/* ---------- Buttons (if used in cards) ---------- */
+button {
+  padding: 8px 14px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+/* Primary (blue) */
+button.primary {
+  background: var(--primary);
+  color: white;
+}
+button.primary:hover {
+  background: var(--primary-dark);
+  transform: translateY(-1px);
+}
+
+/* Success (green) */
+button.success {
+  background: var(--success);
+  color: white;
+}
+button.success:hover {
+  background: var(--success-dark);
+  transform: translateY(-1px);
+}
+
+/* Danger (red) */
+button.danger {
+  background: var(--danger);
+  color: white;
+}
+button.danger:hover {
+  background: var(--danger-dark);
+  transform: translateY(-1px);
+}
+
+/* ---------- Responsive ---------- */
 @media (max-width: 768px) {
   body {
     padding: 10px;
@@ -75,7 +144,6 @@ select {
   }
 }
 
-/* Mobile adjustments */
 @media (max-width: 480px) {
   .card {
     padding: 12px;

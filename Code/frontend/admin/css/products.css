@@ -1,98 +1,133 @@
+/* ---------- Global Theme ---------- */
+:root {
+  --primary: #007BFF;
+  --primary-dark: #0056b3;
+  --success: #28a745;
+  --success-dark: #218838;
+  --danger: #c02736;
+  --danger-dark: #a71d2a;
+  --light-bg: #f9f9f9;
+  --text-dark: #333;
+  --radius: 10px;
+  --shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+/* ---------- Base ---------- */
 body {
-  font-family: Arial, sans-serif;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   background: #f8f9fa;
   margin: 0;
   padding: 20px;
+  color: var(--text-dark);
 }
 
+/* ---------- Section Container ---------- */
 .section-container {
   background: #fff;
-  border-radius: 8px;
+  border-radius: var(--radius);
   padding: 20px;
   max-width: 1200px;
   margin: auto;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  box-shadow: var(--shadow);
 }
 
 h2 {
   margin-bottom: 15px;
-  color: #2e7d32;
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--text-dark);
 }
 
+/* ---------- Buttons ---------- */
 #add-new-product {
   margin-bottom: 15px;
-  background-color: #4CAF50;
+  background: var(--success);
   color: white;
   border: none;
   padding: 10px 15px;
-  border-radius: 5px;
+  border-radius: var(--radius);
   cursor: pointer;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  box-shadow: var(--shadow);
 }
 
 #add-new-product:hover {
-  background-color: #45a049;
+  background: var(--success-dark);
+  transform: translateY(-2px);
 }
 
-/* Form styling */
+#save-product-btn {
+  grid-column: 1 / -1;
+  background: var(--primary);
+  color: white;
+  border: none;
+  padding: 10px;
+  border-radius: var(--radius);
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  box-shadow: var(--shadow);
+}
+
+#save-product-btn:hover {
+  background: var(--primary-dark);
+  transform: translateY(-2px);
+}
+
+/* ---------- Form Styling ---------- */
 form {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 12px;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 15px;
   margin-bottom: 20px;
 }
 
 form h3 {
-  grid-column: 1 / -1; /* span all columns */
+  grid-column: 1 / -1;
   margin-bottom: 10px;
-}
-
-input, select, button, label {
-  font-size: 1rem;
+  font-size: 1.2rem;
+  font-weight: 600;
 }
 
 input, select {
-  padding: 8px;
+  padding: 10px;
   border: 1px solid #ccc;
-  border-radius: 5px;
+  border-radius: var(--radius);
   width: 100%;
   box-sizing: border-box;
+  font-size: 0.95rem;
 }
 
 label {
   display: flex;
   align-items: center;
-  gap: 5px;
+  gap: 6px;
+  font-weight: 500;
 }
 
-#save-product-btn {
-  grid-column: 1 / -1;
-  background-color: #28a745;
-  color: white;
-  border: none;
-  padding: 10px;
-  border-radius: 5px;
-  cursor: pointer;
-}
-
-#save-product-btn:hover {
-  background-color: #218838;
-}
-
-/* Table styling */
+/* ---------- Table Styling ---------- */
 .table-responsive {
   width: 100%;
   overflow-x: auto;
+  margin-top: 15px;
 }
 
 table {
   width: 100%;
   border-collapse: collapse;
   min-width: 700px;
+  background: #fff;
+  border-radius: var(--radius);
+  overflow: hidden;
+  box-shadow: var(--shadow);
 }
 
 thead {
-  background-color: #28a745;
+  background-color: var(--primary);
   color: white;
+  text-transform: uppercase;
+  font-weight: 600;
 }
 
 th, td {
@@ -103,41 +138,28 @@ th, td {
 }
 
 tbody tr:nth-child(even) {
-  background-color: #f9f9f9;
+  background-color: var(--light-bg);
 }
 
-/* Responsive tweaks */
+tbody tr:hover {
+  background-color: #f1f1f1;
+}
+
+/* ---------- Responsive Tweaks ---------- */
 @media (max-width: 768px) {
-  body {
-    padding: 10px;
-  }
+  body { padding: 10px; }
 
-  form {
-    grid-template-columns: 1fr; /* single column form */
-  }
+  form { grid-template-columns: 1fr; }
 
-  #save-product-btn {
-    width: 100%;
-  }
+  #save-product-btn { width: 100%; }
+
+  table { font-size: 0.9rem; min-width: 500px; }
 }
 
 @media (max-width: 480px) {
-  h2 {
-    font-size: 1.2rem;
-    text-align: center;
-  }
+  h2 { font-size: 1.2rem; text-align: center; }
+  form h3 { font-size: 1rem; text-align: center; }
 
-  form h3 {
-    font-size: 1rem;
-    text-align: center;
-  }
-
-  table {
-    font-size: 0.9rem;
-    min-width: 500px;
-  }
-
-  th, td {
-    padding: 8px;
-  }
+  table { font-size: 0.85rem; }
+  th, td { padding: 8px; }
 }

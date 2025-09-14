@@ -1,62 +1,81 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Product Management</title>
-  <link rel="stylesheet" href="css/products.css">
-</head>
-<body>
-  <div class="section-container">
-    <h2>Product Management</h2>
+<div class="section-container">
+  <h2>Product Management</h2>
 
-    <!-- Add New Product Button -->
-    <button type="button" id="add-new-product">+ Add New Product</button>
+  <!-- Add New Product Button -->
+  <button type="button" id="add-new-product">+ Add New Product</button>
 
+  <!-- Product Form -->
   <form id="product-form">
-    <h3 id="form-title">Update Product</h3>
+    <h3 id="form-title">Add New Product</h3>
     <input type="hidden" id="product-id" />
-    
+
+    <!-- Basic Info -->
     <input type="text" id="product-name" placeholder="Name" required />
-    <input type="number" id="product-price" placeholder="Price" step="0.01" required />
     <input type="number" id="product-stock" placeholder="Stock Quantity" required />
-    
-    <!-- ✅ Size fields -->
+    <input type="text" id="product-image" placeholder="Image URL" />
+    <textarea id="product-description" placeholder="Product Description"></textarea>
+    <select id="product-category"></select>
+
+    <!-- ✅ Size 1 -->
     <div class="size-group">
-      <input type="number" id="product-size-value" placeholder="Size Value (e.g. 1, 500)" step="0.01" required />
-      <select id="product-size-unit" required>
-        <option value="">--Unit--</option>
-        <option value="kg">kg</option>
-        <option value="bunch">bunch</option>
-      </select>
+      <h4>Size Option 1</h4>
+      <div class="size-row">
+        <input type="number" id="size1-value" placeholder="Value (e.g. 1, 500)" step="0.01" />
+        <select id="size1-unit">
+          <option value="">Unit--</option>
+          <option value="kg">kg</option>
+          <option value="g">g</option>
+          <option value="liter">liter</option>
+          <option value="ml">ml</option>
+          <option value="bunch">bunch</option>
+        </select>
+        <input type="number" id="price1" placeholder="Price" step="0.01" />
+      </div>
     </div>
 
-    <input type="text" id="product-image" placeholder="Image URL" />
-    <select id="product-category"></select>
-    
-    <label><input type="checkbox" id="product-organic" /> Organic</label>
-    <label><input type="checkbox" id="product-seasonal" /> Seasonal</label>
-    
+    <!-- ✅ Size 2 -->
+    <div class="size-group">
+      <h4>Size Option 2</h4>
+      <div class="size-row">
+        <input type="number" id="size2-value" placeholder="Value (e.g. 1, 500)" step="0.01" />
+        <select id="size2-unit">
+          <option value="">Unit--</option>
+          <option value="kg">kg</option>
+          <option value="g">g</option>
+          <option value="liter">liter</option>
+          <option value="ml">ml</option>
+          <option value="bunch">bunch</option>
+        </select>
+        <input type="number" id="price2" placeholder="Price" step="0.01" />
+      </div>
+    </div>
+
+    <!-- ✅ Tags (side by side) -->
+    <div class="tags-group">
+      <label><input type="checkbox" id="product-organic" /> Organic</label>
+      <label><input type="checkbox" id="product-seasonal" /> Seasonal</label>
+    </div>
+
+    <!-- Submit -->
     <button type="submit" id="save-product-btn">Save Product</button>
   </form>
 
-    <!-- Products Table -->
-    <div class="table-responsive">
-      <table id="products-table">
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>Name</th>
-            <th>Price</th>
-            <th>Stock</th>
-            <th>Category</th>
-            <th>Tags</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody></tbody>
-      </table>
-    </div>
+  <!-- ✅ Products Table -->
+  <div class="table-responsive">
+    <table id="products-table">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Name</th>
+          <th>Description</th> 
+          <th>Sizes & Prices</th>
+          <th>Stock</th>
+          <th>Category</th>
+          <th>Tags</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
   </div>
-</body>
-</html>
+</div>

@@ -1,38 +1,64 @@
+/* ---------- Global Theme ---------- */
+:root {
+  --primary: #007BFF;   /* main blue */
+  --primary-dark: #0056b3;
+  --success: #4CAF50;   /* green for add/success */
+  --success-dark: #388e3c;
+  --danger: #c02736;    /* red for delete */
+  --danger-dark: #a71d2a;
+  --light-bg: #f9f9f9;
+  --text-dark: #333;
+  --radius: 10px;
+  --shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+/* ---------- Base ---------- */
 body {
-  font-family: Arial, sans-serif;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   background: #f8f9fa;
   margin: 0;
   padding: 20px;
+  color: var(--text-dark);
 }
 
+/* ---------- Section Containers ---------- */
 .section-container {
   background: #fff;
-  border-radius: 8px;
+  border-radius: var(--radius);
   padding: 20px;
   max-width: 1200px;
   margin: auto;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  box-shadow: var(--shadow);
 }
 
-h2 {
+.section-container h2 {
   margin-bottom: 15px;
-  color: #2e7d32;
+  color: var(--text-dark);
+  font-weight: 600;
 }
 
+/* ---------- Tables ---------- */
 .table-responsive {
   width: 100%;
   overflow-x: auto;
+  margin-top: 15px;
 }
 
 table {
   width: 100%;
   border-collapse: collapse;
   min-width: 700px;
+  background: #fff;
+  border-radius: var(--radius);
+  overflow: hidden;
+  box-shadow: var(--shadow);
 }
 
 thead {
-  background-color: #28a745;
+  background-color: var(--primary);
   color: white;
+  text-transform: uppercase;
+  font-weight: 600;
 }
 
 th, td {
@@ -42,27 +68,51 @@ th, td {
   white-space: nowrap;
 }
 
-tbody tr:nth-child(even) {
-  background-color: #f9f9f9;
+tbody tr:hover {
+  background-color: #f1f1f1;
 }
 
+/* ---------- Buttons ---------- */
 button {
-  padding: 6px 12px;
+  padding: 8px 14px;
   border: none;
-  border-radius: 5px;
+  border-radius: 6px;
   cursor: pointer;
+  font-weight: 600;
+  transition: all 0.2s ease;
 }
 
-.block-btn {
-  background: orange;
+/* Primary Action */
+button.primary {
+  background: var(--primary);
   color: white;
 }
-
-.delete-btn {
-  background: red;
-  color: white;
+button.primary:hover {
+  background: var(--primary-dark);
+  transform: translateY(-1px);
 }
 
+/* Success (block/unblock) */
+button.success, .block-btn {
+  background: var(--success);
+  color: white;
+}
+button.success:hover, .block-btn:hover {
+  background: var(--success-dark);
+  transform: translateY(-1px);
+}
+
+/* Danger (delete) */
+button.danger, .delete-btn {
+  background: var(--danger);
+  color: white;
+}
+button.danger:hover, .delete-btn:hover {
+  background: var(--danger-dark);
+  transform: translateY(-1px);
+}
+
+/* ---------- Responsive ---------- */
 @media (max-width: 768px) {
   body { padding: 10px; }
   table { font-size: 0.9rem; min-width: 500px; }

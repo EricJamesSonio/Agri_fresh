@@ -45,26 +45,48 @@ class ShoppingCart {
       const rawProducts = await res.json();
       console.log("Raw products from API:", rawProducts);
 
-      this.products = rawProducts.map(p => {
+      this.products = rawProducts.flatMap(p => {
         let imgSrc = p.img || p.image_url;
         if (!imgSrc) {
-          imgSrc = '/agri_fresh/code/frontend/images/placeholder.jpg'; // absolute safe path
+          imgSrc = '/agri_fresh/code/frontend/images/placeholder.jpg';
         } else if (!imgSrc.startsWith('http')) {
           imgSrc = imageUrl(imgSrc);
         }
 
-        return {
-          ...p,
+        const base = {
           id: parseInt(p.product_id || p.id, 10),
-          category: p.category ?? p.category_name ?? 'Uncategorized',
+          name: p.name,
           description: p.description ?? '',
+          category: p.category ?? p.category_name ?? 'Uncategorized',
           tags: Array.isArray(p.tags) ? p.tags.map(t => t.toLowerCase()) : [],
           img: imgSrc,
-          stock_quantity: parseInt(p.stock_quantity || 0, 10) // Ensure stock is integer
+          stock_quantity: parseInt(p.stock_quantity || 0, 10)
         };
+
+        const variants = [];
+
+        if (p.size1_value && p.price1) {
+          variants.push({
+            ...base,
+            size_value: parseFloat(p.size1_value),
+            size_unit: p.size1_unit,
+            price: parseFloat(p.price1)
+          });
+        }
+
+        if (p.size2_value && p.price2) {
+          variants.push({
+            ...base,
+            size_value: parseFloat(p.size2_value),
+            size_unit: p.size2_unit,
+            price: parseFloat(p.price2)
+          });
+        }
+
+        return variants;
       });
 
-      console.log("Final products array:", this.products);
+      console.log("Final products array (with variants):", this.products);
       this.render(this.products);
     } catch (err) {
       console.error(err);
@@ -74,6 +96,7 @@ class ShoppingCart {
       }
     }
   }
+
 
   async populateCategories() {
     const sel = document.getElementById('category');
@@ -128,48 +151,59 @@ class ShoppingCart {
   }
 
   render(list = this.products) {
-  const grid = document.getElementById('products');
-  if (!grid) return;
+    const grid = document.getElementById('products');
+    if (!grid) return;
 
-  // Only keep unique products by name (first occurrence)
-  const uniqueProductsMap = new Map();
-  list.forEach(p => {
-    if (!uniqueProductsMap.has(p.name)) {
-      uniqueProductsMap.set(p.name, p);
-    }
-  });
-  const uniqueList = Array.from(uniqueProductsMap.values());
+    // Group products by name (collect all size variants)
+    const grouped = {};
+    list.forEach(p => {
+      if (!grouped[p.name]) grouped[p.name] = [];
+      grouped[p.name].push(p);
+    });
 
-  const safeList = uniqueList.map(p => {
-    const img = p.img && p.img.trim() ? p.img : '/agri_fresh/code/frontend/images/placeholder.jpg';
-    return { ...p, img };
-  });
+    const safeGroups = Object.values(grouped).map(variants => {
+      // pick first as representative
+      const first = variants[0];
+      const img = first.img && first.img.trim() 
+        ? first.img 
+        : '/agri_fresh/code/frontend/images/placeholder.jpg';
+      return { name: first.name, img, description: first.description, variants };
+    });
 
-  grid.innerHTML = safeList.map(p => {
-    const isOutOfStock = p.stock_quantity <= 0;
+    grid.innerHTML = safeGroups.map(g => {
+      // compute min/max price across sizes
+      const prices = g.variants.map(v => parseFloat(v.price));
+      const minPrice = Math.min(...prices);
+      const maxPrice = Math.max(...prices);
 
-    return `
-      <div class="card ${isOutOfStock ? 'out-of-stock' : ''}">
-        <div class="card-image-container">
-          <img src="${p.img}" alt="${p.name}" loading="lazy"
-               onerror="this.onerror=null; this.src='/agri_fresh/code/frontend/images/placeholder.jpg'">
-          ${isOutOfStock ? '<div class="out-of-stock-overlay"><span>OUT OF STOCK</span></div>' : ''}
+      // stock check: if all variants out of stock, mark as out
+      const allOut = g.variants.every(v => v.stock_quantity <= 0);
+
+      return `
+        <div class="card ${allOut ? 'out-of-stock' : ''}">
+          <div class="card-image-container">
+            <img src="${g.img}" alt="${g.name}" loading="lazy"
+                onerror="this.onerror=null; this.src='/agri_fresh/code/frontend/images/placeholder.jpg'">
+            ${allOut ? '<div class="out-of-stock-overlay"><span>OUT OF STOCK</span></div>' : ''}
+          </div>
+          <div class="card-body">
+            <h4>${g.name}</h4>
+            <span class="price">
+              ₱${minPrice}${minPrice !== maxPrice ? ` – ₱${maxPrice}` : ""}
+            </span>
+            <button class="add-to-cart-btn ${allOut ? 'disabled' : ''}" 
+                    onclick='cartInstance.openSizeModal(${JSON.stringify(g)})' 
+                    ${allOut ? 'disabled' : ''}>
+              ${allOut ? 'Out of Stock' : 'Select Size'}
+            </button>
+          </div>
         </div>
-        <div class="card-body">
-          <h4>${p.name}</h4>
-          <span class="price">₱${p.price}</span>
-          <button class="add-to-cart-btn ${isOutOfStock ? 'disabled' : ''}" 
-                  onclick="addToCart(${p.id})" 
-                  ${isOutOfStock ? 'disabled' : ''}>
-            ${isOutOfStock ? 'Out of Stock' : 'Add to Cart'}
-          </button>
-        </div>
-      </div>
-    `;
-  }).join('');
+      `;
+    }).join('');
 
-  this.addOutOfStockStyles();
-}
+    this.addOutOfStockStyles();
+  }
+
 
   addOutOfStockStyles() {
     // Check if styles are already added
@@ -312,33 +346,27 @@ class ShoppingCart {
     if (typeof renderOrderTable === 'function') renderOrderTable();
 }
 
-openSizeModal(product) {
+openSizeModal(productGroup) {
   const modal = document.getElementById("sizeModal");
-  document.getElementById("modalProductName").textContent = product.name;
-  document.getElementById("modalProductImg").src = product.img;
-  document.getElementById("modalProductDesc").textContent = product.description;
+  document.getElementById("modalProductName").textContent = productGroup.name;
+  document.getElementById("modalProductImg").src = productGroup.img;
+  document.getElementById("modalProductDesc").textContent = productGroup.description;
 
   const sizeSelect = document.getElementById("sizeSelect");
-  sizeSelect.innerHTML = ""; // clear existing options
+  sizeSelect.innerHTML = "";
 
-  // Find all variants of this product (different sizes)
-  const variants = this.products.filter(p => p.name === product.name);
-
-  variants.forEach(v => {
+  productGroup.variants.forEach(v => {
     const option = document.createElement("option");
-    option.value = `${v.size_value} ${v.size_unit}`;
+    option.value = v.id; // store ID only
     option.textContent = `${v.size_value} ${v.size_unit} - ₱${v.price}`;
     sizeSelect.appendChild(option);
   });
 
   document.getElementById("confirmAddBtn").onclick = () => {
     const qty = parseInt(document.getElementById("modalQty").value, 10) || 1;
-    const [size_value, size_unit] = sizeSelect.value.split(" ");
-    
-    // Find the exact variant by size
-    const selectedProduct = variants.find(v => 
-      v.size_value == parseFloat(size_value) && v.size_unit === size_unit
-    );
+    const selectedId = parseInt(sizeSelect.value, 10);
+
+    const selectedProduct = this.products.find(p => p.id === selectedId);
 
     this.confirmAddToCart(selectedProduct, qty);
     this.closeSizeModal();

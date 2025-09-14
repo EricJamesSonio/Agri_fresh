@@ -22,16 +22,17 @@ class ProductController {
     }
 
     public function createOrUpdate() {
-    $data = json_decode(file_get_contents('php://input'), true);
+        $data = json_decode(file_get_contents('php://input'), true);
 
-    if(isset($data['id']) && $data['id']) {
-        $this->model->update($data);
-        echo json_encode(["status" => "success", "message" => "Product updated"]);
-    } else {
-        $this->model->create($data);
-        echo json_encode(["status" => "success", "message" => "Product created"]);
+        if (isset($data['id']) && $data['id']) {
+            $this->model->update($data);
+            echo json_encode(["status" => "success", "message" => "Product updated"]);
+        } else {
+            $this->model->create($data);
+            echo json_encode(["status" => "success", "message" => "Product created"]);
+        }
     }
-}
+
 
     public function delete($id) {
     $success = $this->model->delete($id);

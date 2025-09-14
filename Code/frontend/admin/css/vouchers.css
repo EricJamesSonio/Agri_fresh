@@ -1,25 +1,43 @@
+/* ---------- Global Theme ---------- */
+:root {
+  --primary: #007BFF;
+  --primary-dark: #0056b3;
+  --success: #28a745;
+  --success-dark: #218838;
+  --danger: #c02736;
+  --danger-dark: #a71d2a;
+  --light-bg: #f9f9f9;
+  --text-dark: #333;
+  --radius: 10px;
+  --shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+/* ---------- Base ---------- */
 body {
-  font-family: Arial, sans-serif;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   background: #f8f9fa;
   margin: 0;
   padding: 20px;
+  color: var(--text-dark);
 }
 
+/* ---------- Section Container ---------- */
 .section-container {
   background: #fff;
-  border-radius: 8px;
+  border-radius: var(--radius);
   padding: 20px;
   max-width: 1200px;
   margin: auto;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  box-shadow: var(--shadow);
 }
 
 h2 {
   margin-bottom: 15px;
-  color: #2e7d32;
+  color: var(--text-dark);
+  font-weight: 600;
 }
 
-/* Form styling */
+/* ---------- Form ---------- */
 form {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -30,55 +48,76 @@ form {
 form h3 {
   grid-column: 1 / -1;
   margin-bottom: 10px;
+  font-size: 1.2rem;
+  color: var(--success);
 }
 
-input, select, button, label {
+input, select, label {
   font-size: 1rem;
 }
 
 input, select {
-  padding: 8px;
+  padding: 8px 10px;
   border: 1px solid #ccc;
-  border-radius: 5px;
+  border-radius: var(--radius);
   width: 100%;
   box-sizing: border-box;
+  transition: border 0.2s ease;
+}
+
+input:focus, select:focus {
+  border-color: var(--primary);
+  outline: none;
 }
 
 label {
   display: flex;
   align-items: center;
   gap: 5px;
+  font-weight: 500;
+  color: var(--text-dark);
 }
 
 button[type="submit"] {
   grid-column: 1 / -1;
-  background-color: #28a745;
-  color: white;
+  background: var(--success);
+  color: #fff;
   border: none;
   padding: 10px;
-  border-radius: 5px;
+  border-radius: var(--radius);
   cursor: pointer;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  box-shadow: var(--shadow);
 }
 
 button[type="submit"]:hover {
-  background-color: #218838;
+  background: var(--success-dark);
+  transform: translateY(-2px);
 }
 
-/* Table styling */
+/* ---------- Table ---------- */
 .table-responsive {
   width: 100%;
   overflow-x: auto;
+  margin-top: 15px;
 }
 
 table {
   width: 100%;
   border-collapse: collapse;
   min-width: 700px;
+  background: #fff;
+  border-radius: var(--radius);
+  overflow: hidden;
+  box-shadow: var(--shadow);
 }
 
 thead {
-  background-color: #28a745;
+  background-color: var(--primary);
   color: white;
+  text-transform: uppercase;
+  font-weight: 600;
 }
 
 th, td {
@@ -89,22 +128,63 @@ th, td {
 }
 
 tbody tr:nth-child(even) {
-  background-color: #f9f9f9;
+  background-color: var(--light-bg);
 }
 
-/* Responsive tweaks */
+tbody tr:hover {
+  background: #f1f1f1;
+}
+
+/* ---------- Modal ---------- */
+.modal {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(0,0,0,0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  padding: 20px;
+}
+
+.modal-content {
+  background: #fff;
+  padding: 20px;
+  border-radius: var(--radius);
+  width: 450px;
+  max-width: 90%;
+  max-height: 80vh;
+  overflow-y: auto;
+  position: relative;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+  animation: fadeIn 0.3s ease;
+}
+
+.close {
+  position: absolute;
+  top: 10px;
+  right: 15px;
+  cursor: pointer;
+  font-size: 22px;
+  color: var(--danger);
+  font-weight: bold;
+  transition: transform 0.2s ease;
+}
+
+.close:hover {
+  transform: scale(1.2);
+}
+
+/* ---------- Responsive ---------- */
 @media (max-width: 768px) {
-  body {
-    padding: 10px;
-  }
+  body { padding: 10px; }
 
-  form {
-    grid-template-columns: 1fr;
-  }
+  form { grid-template-columns: 1fr; }
 
-  button[type="submit"] {
-    width: 100%;
-  }
+  button[type="submit"] { width: 100%; }
+
+  table { font-size: 0.9rem; min-width: 500px; }
 }
 
 @media (max-width: 480px) {
@@ -118,43 +198,15 @@ tbody tr:nth-child(even) {
     text-align: center;
   }
 
-  table {
-    font-size: 0.9rem;
-    min-width: 500px;
-  }
+  table { font-size: 0.85rem; }
 
-  th, td {
-    padding: 8px;
-  }
+  th, td { padding: 8px; }
+
+  .modal-content { width: 95%; padding: 15px; }
 }
 
-/* Modal */
-.modal {
-  position: fixed;
-  top: 0; left: 0;
-  width: 100%; height: 100%;
-  background: rgba(0,0,0,0.5);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 1000;
-}
-
-.modal-content {
-  background: white;
-  padding: 20px;
-  border-radius: 8px;
-  width: 400px;
-  max-width: 90%;
-  max-height: 80vh; /* Limit height */
-  overflow-y: auto; /* Enable scrolling */
-  position: relative;
-}
-
-.close {
-  position: absolute;
-  top: 10px;
-  right: 15px;
-  cursor: pointer;
-  font-size: 20px;
+/* ---------- Animations ---------- */
+@keyframes fadeIn {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
 }

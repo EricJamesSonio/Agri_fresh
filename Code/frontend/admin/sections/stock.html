@@ -1,23 +1,21 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Stock Management</title>
-  <link rel="stylesheet" href="css/stock.css">
-</head>
-<body>
-  <div class="card">
-    <h2 class="card-title">Stock Management</h2>
+<div class="threshold-controls">
+  <label for="kg-threshold-input">Set Low Stock Threshold (Kg):</label>
+  <input type="number" id="kg-threshold-input" min="0" value="5">
+  <span id="kg-threshold">5</span>
+  <br><br>
+  <label for="bunch-threshold-input">Set Low Stock Threshold (Bunch):</label>
+  <input type="number" id="bunch-threshold-input" min="0" value="10">
+  <span id="bunch-threshold">10</span>
+  <br><br>
+  <button id="update-threshold-btn">Update Thresholds</button>
+</div>
 
-    <!-- Threshold Update -->
-    <div class="threshold-controls">
-      <label for="stock-threshold-input">Set Low Stock Threshold:</label>
-      <input type="number" id="stock-threshold-input" min="0" value="5">
-      <button id="update-threshold-btn">Update</button>
-    </div>
+<p>
+  Products highlighted in red are below their unit-specific threshold.
+</p>
 
-    <p>Products highlighted in red are below the threshold of <span id="stock-threshold">5</span> items.</p>
+      <span id="stock-threshold">5</span> items.
+    </p>
 
     <div class="table-responsive">
       <table id="stock-table">
@@ -26,47 +24,22 @@
             <th>ID</th>
             <th>Name</th>
             <th>Category</th>
-            <th>Size</th>
-            <th>Price</th>
+            <th>Sizes & Prices</th>
             <th>Stock Quantity</th>
           </tr>
         </thead>
         <tbody>
-          <!-- Stock data injected here -->
+          <!-- Stock data injected here by JS -->
         </tbody>
       </table>
     </div>
   </div>
 
-  <script>
-    const tableBody = document.querySelector('#stock-table tbody');
-    const thresholdInput = document.getElementById('stock-threshold-input');
-    const thresholdDisplay = document.getElementById('stock-threshold');
-
-    function renderTable(threshold) {
-      tableBody.innerHTML = '';
-      stockData.forEach(item => {
-        const tr = document.createElement('tr');
-        if(item.stock <= threshold) tr.classList.add('low-stock');
-        tr.innerHTML = `
-          <td>${item.id}</td>
-          <td>${item.name}</td>
-          <td>${item.category}</td>
-          <td>${item.size}</td>
-          <td>${item.price.toFixed(2)}</td>
-          <td>${item.stock}</td>
-        `;
-        tableBody.appendChild(tr);
-      });
-      thresholdDisplay.textContent = threshold;
-    }
-
-    renderTable(parseInt(thresholdInput.value));
-
-    document.getElementById('update-threshold-btn').addEventListener('click', () => {
-      const threshold = parseInt(thresholdInput.value);
-      renderTable(threshold);
-    });
+  <!-- ✅ Load your stock.js instead of inline script -->
+  <script type="module" src="js/stock.js"></script>
+  <script type="module">
+    import { initStock } from "./js/stock.js";
+    initStock();
   </script>
 </body>
 </html>
