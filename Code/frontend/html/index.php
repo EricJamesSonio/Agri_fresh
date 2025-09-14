@@ -47,7 +47,7 @@ $notifCount = $notifCountRow['cnt'] ?? 0;
     <h1>Agri Fresh Market</h1>
     <nav>
       <a href="#products">Products</a>
-      <a href="my-orders.php">My Orders</a>
+      <a href="my-orders.php">Orders</a>
       <a href="my-cart.php" style="display: inline-block; margin-left: 10px;">
           <img src="../images/cart.jpg" alt="Cart" style="width:32px; height:32px;">
       </a>
