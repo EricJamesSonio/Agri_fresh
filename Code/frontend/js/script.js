@@ -521,18 +521,27 @@ this.cart = data.map(i => {
     }
   }
 
-logout() {
+async logout() {
   console.log("Logging out customer_id:", this.customer_id);
 
+  try {
+    const res = await fetch(apiUrl('logout'), { method: 'POST' });
+
+    if (!res.ok) {
+      throw new Error("Failed to log out on server");
+    }
+    const result = await res.json();
+    console.log("Server logout response:", result);
+  } catch (err) {
+    console.error("Server logout error:", err);
+  }
+
   localStorage.clear();
-
-
   this.cart = [];
   this.customer_id = null;
-
   this.updateCart();
 
-
+  // Redirect to login
   window.location.href = `${location.origin}/agri_fresh/code/frontend/html/login.php`;
 }
 

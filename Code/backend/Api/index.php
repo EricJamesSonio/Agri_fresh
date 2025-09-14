@@ -55,6 +55,7 @@ switch ($request) {
     case 'customer':
         require_once(__DIR__ . '/../Routes/customer.php');
         break;
+
     case 'get-notifications':
         require_once(__DIR__ . '/../Routes/get-notifications.php');
         break;
@@ -64,24 +65,28 @@ switch ($request) {
         break;
 
     case 'voucherAdd':
-    require_once(__DIR__ . '/../Routes/voucherAdd.php');
-    break;
+        require_once(__DIR__ . '/../Routes/voucherAdd.php');
+        break;
 
-case 'voucherDelete':
-    require_once(__DIR__ . '/../Routes/voucherDelete.php');
-    break;
+    case 'voucherDelete':
+        require_once(__DIR__ . '/../Routes/voucherDelete.php');
+        break;
 
-case 'voucherUpdate':
-    require_once(__DIR__ . '/../Routes/voucherUpdate.php');
-    break;
+    case 'voucherUpdate':
+        require_once(__DIR__ . '/../Routes/voucherUpdate.php');
+        break;
 
-case 'voucherList':
-    require_once(__DIR__ . '/../Routes/voucherList.php');
-    break;
+    case 'voucherList':
+        require_once(__DIR__ . '/../Routes/voucherList.php');
+        break;
 
-case 'voucherValidate':
-    require_once(__DIR__ . '/../Routes/voucherValidate.php');
-    break;
+    case 'voucherValidate':
+        require_once(__DIR__ . '/../Routes/voucherValidate.php');
+        break;
+
+    case 'logout':
+        require_once(__DIR__ . '/../Routes/logout.php');
+        break;
 
 
 
