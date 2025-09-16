@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Voucher Management</title>
   <link rel="stylesheet" href="css/vouchers.css">
-
 </head>
 <body>
   <div class="section-container">
@@ -99,6 +98,61 @@
       </form>
     </div>
   </div>
+
+  <!-- Customer Select Modal -->
+<div id="customer-modal" class="modal" style="display:none;">
+  <div class="modal-content">
+    <span id="close-customer-modal" class="close">&times;</span>
+    <h3>Select Customer to Send Voucher</h3>
+    <table id="customer-table">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Name</th>
+          <th>Email</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+</div>
+
+<style>
+/* vouchers.css */
+
+/* General modal styling */
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 1000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.6); /* overlay */
+  justify-content: center;
+  align-items: center;
+  overflow: auto;
+}
+
+.modal-content {
+  background: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  width: 80%;            
+  max-width: 1000px;    
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  overflow-x: auto;   
+}
+
+.modal .close {
+  float: right;
+  font-size: 22px;
+  cursor: pointer;
+}
+</styles>
+
 
   <script>
     // Hide discount fields if type is free_shipping

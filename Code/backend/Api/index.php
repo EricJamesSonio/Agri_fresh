@@ -88,6 +88,10 @@ switch ($request) {
         require_once(__DIR__ . '/../Routes/logout.php');
         break;
 
+    case 'sendVoucher':
+        require_once(__DIR__ . '/../Routes/send-voucher.php');
+        break;
+
 
 
 

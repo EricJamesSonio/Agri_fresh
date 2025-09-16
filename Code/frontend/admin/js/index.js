@@ -26,6 +26,25 @@ async function loadSection(section) {
     const customersModule = await import('./customers.js');
     if(customersModule.initCustomers) await customersModule.initCustomers();
 }
+document.addEventListener("DOMContentLoaded", () => {
+  const sidebar = document.querySelector(".sidebar");
+  const backBtn = document.querySelector("[data-back]");
+
+  // Handle section switching
+  sidebar.addEventListener("click", (e) => {
+    const li = e.target.closest("li[data-section]");
+    if (li) {
+      const section = li.getAttribute("data-section");
+      // Let browser paint before doing heavy work
+      setTimeout(() => loadSection(section), 0);
+    }
+  });
+
+  // Handle back button
+  backBtn.addEventListener("click", () => {
+    window.location.href = "../html/";
+  });
+});
 
 
 

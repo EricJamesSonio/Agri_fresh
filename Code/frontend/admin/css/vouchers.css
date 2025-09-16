@@ -1,41 +1,5 @@
-/* ---------- Global Theme ---------- */
-:root {
-  --primary: #007BFF;
-  --primary-dark: #0056b3;
-  --success: #28a745;
-  --success-dark: #218838;
-  --danger: #c02736;
-  --danger-dark: #a71d2a;
-  --light-bg: #f9f9f9;
-  --text-dark: #333;
-  --radius: 10px;
-  --shadow: 0 2px 6px rgba(0,0,0,0.1);
-}
 
-/* ---------- Base ---------- */
-body {
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background: #f8f9fa;
-  margin: 0;
-  padding: 20px;
-  color: var(--text-dark);
-}
 
-/* ---------- Section Container ---------- */
-.section-container {
-  background: #fff;
-  border-radius: var(--radius);
-  padding: 20px;
-  max-width: 1200px;
-  margin: auto;
-  box-shadow: var(--shadow);
-}
-
-h2 {
-  margin-bottom: 15px;
-  color: var(--text-dark);
-  font-weight: 600;
-}
 
 /* ---------- Form ---------- */
 form {

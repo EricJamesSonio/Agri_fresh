@@ -23,6 +23,8 @@
       border-radius: 8px;
       border: 1px solid #e0e0e0;
     }
+
+/* Keep normal form labels stacked */
     label {
       display: block;
       font-weight: 500;
@@ -39,14 +41,35 @@
       border-radius: 4px;
       font-size: 1rem;
     }
-    .radio-group {
-      margin-top: 0.5rem;
-    }
-    .radio-group label {
-      display: inline-block;
-      margin-right: 1rem;
-      font-weight: normal;
-    }
+/* General form labels (stacked) */
+form > label {
+  display: block;
+  font-weight: 500;
+  margin-bottom: 0.3rem;
+  margin-top: 1rem;
+}
+
+/* Radio group in a row */
+.radio-group {
+  display: flex;
+  gap: 1.5rem;
+  margin-top: 0.5rem;
+}
+
+/* Each radio option: force circle beside text */
+.radio-group label {
+  display: inline-flex !important;  /* override the block label */
+  align-items: center;              /* vertical alignment */
+  font-weight: normal;
+  margin: 0;
+}
+
+.radio-group input[type="radio"] {
+  margin-left: 1.20rem; /* space between text and circle */
+}
+
+
+
     .dob-row {
       display: flex;
       gap: 1rem;
@@ -93,12 +116,13 @@
     <label for="phone">Phone Number</label>
     <input type="text" id="phone" name="phone">
 
-    <label>Gender</label>
-    <div class="radio-group">
-      <label><input type="radio" name="gender" value="male"> Male</label>
-      <label><input type="radio" name="gender" value="female"> Female</label>
-      <label><input type="radio" name="gender" value="other"> Other</label>
-    </div>
+  <label>Gender</label>
+  <div class="radio-group">
+    <label>Male <input type="radio" name="gender" value="male"></label>
+    <label>Female <input type="radio" name="gender" value="female"></label>
+    <label>Other <input type="radio" name="gender" value="other"></label>
+  </div>
+
 
     <label>Date of Birth</label>
     <div class="dob-row">
