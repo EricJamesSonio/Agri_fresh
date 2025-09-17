@@ -1,3 +1,4 @@
+<?php include(__DIR__ . '/../components/sidebar.php'); ?>
 <!doctype html>
 <html lang="en">
 <head>
@@ -24,7 +25,7 @@
       border: 1px solid #e0e0e0;
     }
 
-/* Keep normal form labels stacked */
+    /* Keep normal form labels stacked */
     label {
       display: block;
       font-weight: 500;
@@ -41,34 +42,33 @@
       border-radius: 4px;
       font-size: 1rem;
     }
-/* General form labels (stacked) */
-form > label {
-  display: block;
-  font-weight: 500;
-  margin-bottom: 0.3rem;
-  margin-top: 1rem;
-}
 
-/* Radio group in a row */
-.radio-group {
-  display: flex;
-  gap: 1.5rem;
-  margin-top: 0.5rem;
-}
+    /* General form labels (stacked) */
+    form > label {
+      display: block;
+      font-weight: 500;
+      margin-bottom: 0.3rem;
+      margin-top: 1rem;
+    }
 
-/* Each radio option: force circle beside text */
-.radio-group label {
-  display: inline-flex !important;  /* override the block label */
-  align-items: center;              /* vertical alignment */
-  font-weight: normal;
-  margin: 0;
-}
+    /* Radio group in a row */
+    .radio-group {
+      display: flex;
+      gap: 1.5rem;
+      margin-top: 0.5rem;
+    }
 
-.radio-group input[type="radio"] {
-  margin-left: 1.20rem; /* space between text and circle */
-}
+    /* Each radio option: force circle beside text */
+    .radio-group label {
+      display: inline-flex !important;  
+      align-items: center;              
+      font-weight: normal;
+      margin: 0;
+    }
 
-
+    .radio-group input[type="radio"] {
+      margin-left: 1.20rem; /* space between text and circle */
+    }
 
     .dob-row {
       display: flex;
@@ -116,19 +116,17 @@ form > label {
     <label for="phone">Phone Number</label>
     <input type="text" id="phone" name="phone">
 
-  <label>Gender</label>
-  <div class="radio-group">
-    <label>Male <input type="radio" name="gender" value="male"></label>
-    <label>Female <input type="radio" name="gender" value="female"></label>
-    <label>Other <input type="radio" name="gender" value="other"></label>
-  </div>
-
+    <label>Gender</label>
+    <div class="radio-group">
+      <label>Male <input type="radio" name="gender" value="male"></label>
+      <label>Female <input type="radio" name="gender" value="female"></label>
+      <label>Other <input type="radio" name="gender" value="other"></label>
+    </div>
 
     <label>Date of Birth</label>
     <div class="dob-row">
       <select name="day" id="day">
         <option value="">Date</option>
-        <!-- 1–31 -->
         <script>
           for (let i=1; i<=31; i++) {
             document.write(`<option value="${i}">${i}</option>`);
@@ -159,8 +157,6 @@ form > label {
 
 <script src="../js/config.js"></script>
 <script src="../js/profile.js"></script>
-
-<?php include(__DIR__ . '/../components/sidebar.php'); ?>
 
 </body>
 </html>

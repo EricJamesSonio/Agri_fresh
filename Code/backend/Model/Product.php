@@ -34,7 +34,7 @@ class Product {
                 'category_id' => $row['category_id'],
                 'category' => $row['category'] ?? 'Uncategorized',
                 'stock_quantity' => intval($row['stock_quantity']),
-                'img' => $row['image_url'],
+                'image_url' => $row['image_url'],
 
                 // Sizes
                 'size1_value' => floatval($row['size1_value']),
@@ -52,35 +52,38 @@ class Product {
         return $products;
     }
 
-    public function create($data) {
-        $stmt = $this->con->prepare("
-            INSERT INTO product 
-            (name, description, stock_quantity, image_url, category_id,
-             size1_value, size1_unit, price1,
-             size2_value, size2_unit, price2,
-             is_organic, is_seasonal) 
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-        ");
-            $stmt->bind_param(
-                "ssissi d s d d s d i i",  // spacing for clarity, actual string is below
-                $data['name'],          // s
-                $data['description'],   // s
-                $data['stock_quantity'],// i
-                $data['image_url'],     // s
-                $data['category'],      // i
-                $data['size1_value'],   // d
-                $data['size1_unit'],    // s
-                $data['price1'],        // d
-                $data['size2_value'],   // d
-                $data['size2_unit'],    // s
-                $data['price2'],        // d
-                $data['is_organic'],    // i
-                $data['is_seasonal']    // i
-            );
+public function create($data) {
+    $stmt = $this->con->prepare("
+        INSERT INTO product 
+        (name, description, stock_quantity, image_url, category_id,
+        size1_value, size1_unit, price1,
+        size2_value, size2_unit, price2,
+        is_organic, is_seasonal) 
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    ");
 
+    $stmt->bind_param(
+        "ssisisdsdsdii",
+        $data['name'],
+        $data['description'],
+        $data['stock_quantity'],
+        $data['image_url'],
+        $data['category_id'],
+        $data['size1_value'],
+        $data['size1_unit'],
+        $data['price1'],
+        $data['size2_value'],
+        $data['size2_unit'],
+        $data['price2'],
+        $data['is_organic'],
+        $data['is_seasonal']
+    );
 
-        $stmt->execute();
+    if (!$stmt->execute()) {
+        throw new Exception("Create failed: " . $stmt->error);
     }
+}
+
 
     public function update($data) {
         $current = $this->find($data['id']);

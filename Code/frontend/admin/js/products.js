@@ -245,22 +245,23 @@ export async function initPage() {
 
       if (!name) return alert("Product name required.");
 
-      const payload = {
-        id: id || null,
-        name,
-        description,
-        stock_quantity,
-        image_url,
-        category,
-        size1_value,
-        size1_unit,
-        price1,
-        size2_value,
-        size2_unit,
-        price2,
-        is_organic,
-        is_seasonal,
-      };
+const payload = {
+  id: id || null,
+  name,
+  description,
+  stock_quantity,
+  image_url,
+  category_id: category,   // ✅ use category_id instead of category
+  size1_value,
+  size1_unit,
+  price1,
+  size2_value,
+  size2_unit,
+  price2,
+  is_organic,
+  is_seasonal,
+};
+
 
       try {
         const response = await fetch(apiUrl("products"), {
