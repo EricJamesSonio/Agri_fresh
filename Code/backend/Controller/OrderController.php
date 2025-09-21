@@ -94,9 +94,14 @@ if ($voucher_code) {
             $success = $this->orderModel->addOrderDetail($order_id, $item['product_id'], $item['quantity'], $item['price_each']);
             if (!$success) throw new Exception('Failed to add order details.');
 
-            $stmt = $con->prepare("UPDATE product SET stock_quantity = stock_quantity - ? WHERE product_id = ?");
-            $stmt->bind_param("ii", $item['quantity'], $item['product_id']);
-            $stmt->execute();
+// Use size_value from cart item, multiplied by quantity
+$deductionQty = $item['quantity'] * $item['size_value'];
+
+$stmt = $con->prepare("UPDATE product SET stock_quantity = stock_quantity - ? WHERE product_id = ?");
+$stmt->bind_param("di", $deductionQty, $item['product_id']);
+$stmt->execute();
+
+
         }
 
         if ($voucher_code) $this->voucherModel->markUsed($voucher_code, $customer_id);

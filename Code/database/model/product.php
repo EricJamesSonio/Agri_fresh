@@ -15,7 +15,7 @@ createTable($con, 'product', "
         size2_value DECIMAL(10,2) DEFAULT NULL,
         size2_unit ENUM('kg','g','liter','ml','bunch') DEFAULT NULL,
         price2 DECIMAL(10,2) DEFAULT NULL,
-        stock_quantity INT DEFAULT 0,
+        stock_quantity DECIMAL(10,2) DEFAULT 0,
         image_url VARCHAR(255),
         is_seasonal BOOLEAN DEFAULT FALSE,
         is_organic BOOLEAN DEFAULT FALSE,

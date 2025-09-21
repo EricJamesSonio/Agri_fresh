@@ -10,7 +10,7 @@ createTable($con, 'cart_item', "
         product_id INT NOT NULL,
         size_value DECIMAL(10,2) NOT NULL,
         size_unit ENUM('kg','g','liter','ml','bunch') NOT NULL,
-        quantity INT NOT NULL CHECK (quantity > 0),
+        quantity DECIMAL(10,2) NOT NULL CHECK (quantity > 0),
         price_each DECIMAL(10,2) NOT NULL,
         added_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         FOREIGN KEY (cart_id) REFERENCES cart(cart_id) ON DELETE CASCADE,
@@ -18,4 +18,5 @@ createTable($con, 'cart_item', "
         UNIQUE(cart_id, product_id, size_value, size_unit) -- allow same product with different sizes
     )
 ");
+
 

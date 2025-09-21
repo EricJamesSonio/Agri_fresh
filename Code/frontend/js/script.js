@@ -301,7 +301,7 @@ class ShoppingCart {
     const found = this.cart.find(i => parseInt(i.product_id, 10) === product_id);
     
     if (found) {
-      found.qty = parseInt(found.qty, 10) + 1; // FIXED: Ensure proper integer addition
+      found.qty = parseFloat(found.qty) + 1;
     } else {
       this.cart.push({ 
         name: product.name, 
@@ -322,7 +322,7 @@ class ShoppingCart {
     if (list && total && count) {
         list.innerHTML = this.cart.map(
             (item, idx) => {
-                const lineTotal = parseFloat(item.price) * parseInt(item.qty, 10);
+                const lineTotal = parseFloat(item.price) * parseFloat(item.qty);
                 return `<li>
                     ${item.name} ${item.size ? `(${item.size})` : ''} – 
                     ${lineTotal.toLocaleString('en-PH', { style: 'currency', currency: 'PHP' })} 
@@ -335,9 +335,10 @@ class ShoppingCart {
             }
         ).join('');
 
-        const grand = this.cart.reduce((t, i) => t + (parseFloat(i.price) * parseInt(i.qty, 10)), 0);
-        total.textContent = grand.toLocaleString('en-PH', { style: 'currency', currency: 'PHP' });
-        count.textContent = this.cart.reduce((c, i) => c + parseInt(i.qty, 10), 0);
+const grand = this.cart.reduce((t, i) => t + (parseFloat(i.price) * parseFloat(i.qty)), 0);
+count.textContent = this.cart.reduce((c, i) => c + parseFloat(i.qty), 0);
+        count.textContent = this.cart.reduce((c, i) => c + parseFloat(i.qty), 0);
+
 
         document.getElementById('cart').classList.toggle('show', this.cart.length > 0);
     }
@@ -357,20 +358,31 @@ openSizeModal(productGroup) {
 
   productGroup.variants.forEach(v => {
     const option = document.createElement("option");
-    option.value = v.id; // store ID only
+    option.value = JSON.stringify({
+      id: v.id,
+      size_value: v.size_value,
+      size_unit: v.size_unit,
+      price: v.price
+    });
     option.textContent = `${v.size_value} ${v.size_unit} - ₱${v.price}`;
     sizeSelect.appendChild(option);
   });
 
   document.getElementById("confirmAddBtn").onclick = () => {
-    const qty = parseInt(document.getElementById("modalQty").value, 10) || 1;
-    const selectedId = parseInt(sizeSelect.value, 10);
+    const qty = parseFloat(document.getElementById("modalQty").value) || 1;
 
-    const selectedProduct = this.products.find(p => p.id === selectedId);
+    // Parse the JSON string back into an object
+    const selectedVariant = JSON.parse(sizeSelect.value);
 
-    this.confirmAddToCart(selectedProduct, qty);
+    // Find the matching product variant
+    const selectedProduct = this.products.find(p => p.id === selectedVariant.id 
+      && p.size_value === selectedVariant.size_value 
+      && p.size_unit === selectedVariant.size_unit);
+
+    this.confirmAddToCart(selectedProduct, qty, selectedVariant);
     this.closeSizeModal();
   };
+
 
   modal.classList.remove("hidden");
 }
@@ -380,7 +392,7 @@ closeSizeModal() {
   document.getElementById("sizeModal").classList.add("hidden");
 }
 
-async confirmAddToCart(product, qty) {
+async confirmAddToCart(product, qty, selectedVariant) {
   if (!this.customer_id) {
     alert("You are not logged in yet. Please login first.");
     window.location.href = 'login.php';
@@ -394,11 +406,13 @@ async confirmAddToCart(product, qty) {
 
   const payload = {
     customer_id: parseInt(this.customer_id, 10),
-    product_id: parseInt(product.id, 10),
-    size_value: product.size_value,
-    size_unit: product.size_unit,
+    product_id: parseInt(selectedVariant.id, 10),
+    size_value: selectedVariant.size_value,
+    size_unit: selectedVariant.size_unit,
+    price_each: selectedVariant.price,
     quantity: qty
   };
+
 
   try {
     const response = await fetch(apiUrl('cart'), {
@@ -439,8 +453,8 @@ async confirmAddToCart(product, qty) {
 
 async changeQty(idx, delta) {
   const item = this.cart[idx];
-  const currentQty = parseInt(item.qty, 10);
-  const newQty = currentQty + delta;
+const currentQty = parseFloat(item.qty);
+const newQty = currentQty + parseFloat(delta);
 
   // Check stock when increasing
   if (delta > 0) {
@@ -535,7 +549,7 @@ this.cart = data.map(i => {
     name: i.name,
     size: `${i.size_value} ${i.size_unit}`, // combine for UI
     price: parseFloat(i.price_each),
-    qty: parseInt(i.quantity, 10),
+    qty: parseFloat(i.quantity),  
     product_id: parseInt(i.product_id, 10),
     img: prod ? prod.img : imageUrl('placeholder.jpg')
   };

@@ -3,19 +3,27 @@ let cartData = [];
 
 // Initialize page
 document.addEventListener('DOMContentLoaded', function() {
-  if (!CONFIG.CUSTOMER_ID) {
+  const customerId = parseInt(localStorage.getItem("customer_id"), 10);
+
+  if (!customerId || isNaN(customerId)) {
     alert('Please login to continue');
     window.location.href = 'login.php';
     return;
   }
 
-  loadOrderSummary();
-  loadAddresses();
+  loadOrderSummary(customerId);
+  loadAddresses(customerId);
+
+  // Attach submit listener for address form
+  document.getElementById('address-form').addEventListener('submit', function(e) {
+    e.preventDefault();
+    addAddress(customerId, e);
+  });
 });
 
-async function loadOrderSummary() {
+async function loadOrderSummary(customerId) {
   try {
-    const response = await fetch(apiUrl(`cart?customer_id=${CONFIG.CUSTOMER_ID}`));
+    const response = await fetch(apiUrl(`cart?customer_id=${customerId}`));
     const data = await response.json();
     cartData = data || [];
 
@@ -102,9 +110,9 @@ function escapeHtml(str) {
     .replace(/>/g, '&gt;');
 }
 
-async function loadAddresses() {
+async function loadAddresses(customerId) {
   try {
-    const response = await fetch(apiUrl(`address?customer_id=${CONFIG.CUSTOMER_ID}`));
+    const response = await fetch(apiUrl(`address?customer_id=${customerId}`));
     const result = await response.json();
     
     if (result.status === 'success') {
@@ -172,12 +180,10 @@ function toggleAddressForm() {
   }
 }
 
-document.getElementById('address-form').addEventListener('submit', async function(e) {
-  e.preventDefault();
-  
+async function addAddress(customerId, e) {
   const formData = new FormData(e.target);
   const addressData = {
-    customer_id: CONFIG.CUSTOMER_ID,
+    customer_id: customerId,
     action: 'add',
     street: formData.get('street'),
     city: formData.get('city'),
@@ -203,7 +209,7 @@ document.getElementById('address-form').addEventListener('submit', async functio
       e.target.reset();
       setTimeout(() => {
         toggleAddressForm();
-        loadAddresses();
+        loadAddresses(customerId);
       }, 1000);
     } else {
       document.getElementById('address-message').innerHTML = 
@@ -214,7 +220,7 @@ document.getElementById('address-form').addEventListener('submit', async functio
     document.getElementById('address-message').innerHTML = 
       '<div class="error">Failed to add address. Please try again.</div>';
   }
-});
+}
 
 async function placeOrder() {
   if (!selectedAddressId) {
@@ -222,6 +228,7 @@ async function placeOrder() {
     return;
   }
 
+  const customerId = parseInt(localStorage.getItem("customer_id"), 10);
   const paymentMethod = document.querySelector('input[name="payment_method"]:checked').value;
 
   let voucherCode = null;
@@ -236,7 +243,7 @@ async function placeOrder() {
   }
 
   const payload = {
-    customer_id: CONFIG.CUSTOMER_ID,
+    customer_id: customerId,
     address_id: selectedAddressId,
     payment_method: paymentMethod,
     voucher_code: voucherCode

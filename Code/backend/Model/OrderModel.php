@@ -48,7 +48,7 @@ $stmt->bind_param(
             INSERT INTO order_detail (order_id, product_id, quantity, price_each) 
             VALUES (?, ?, ?, ?)
         ");
-        $stmt->bind_param("iiid", $order_id, $product_id, $quantity, $price_each);
+        $stmt->bind_param("iidd", $order_id, $product_id, $quantity, $price_each);
         return $stmt->execute();
     }
 
@@ -115,14 +115,15 @@ $stmt->bind_param(
     }
 
     public function updateOrderTotal($order_id, $subtotal = 0, $shipping_fee = 0, $discount_amount = 0, $total_amount = 0) {
-    $stmt = $this->con->prepare("
-        UPDATE orders 
-        SET subtotal = ?, shipping_fee = ?, discount_amount = ?, total_amount = ? 
-        WHERE order_id = ?
-    ");
-    $stmt->bind_param("dddii", $subtotal, $shipping_fee, $discount_amount, $total_amount, $order_id);
-    return $stmt->execute();
-}
+        $stmt = $this->con->prepare("
+            UPDATE orders 
+            SET subtotal = ?, shipping_fee = ?, discount_amount = ?, total_amount = ? 
+            WHERE order_id = ?
+        ");
+        $stmt->bind_param("ddddi", $subtotal, $shipping_fee, $discount_amount, $total_amount, $order_id);
+        return $stmt->execute();
+    }
+
 
 
     public function getAllOrders() {
