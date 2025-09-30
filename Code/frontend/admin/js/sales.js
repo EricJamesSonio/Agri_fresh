@@ -1,30 +1,14 @@
-// sales.js
+import { viewOrderDetails } from "./orders.js";
+
 export async function initSales() {
-  // helper: wait for element after HTML injection
-  async function waitFor(selector, timeout = 2000) {
-    const interval = 50;
-    const maxTries = Math.ceil(timeout / interval);
-    let tries = 0;
-    while (tries++ < maxTries) {
-      const el = document.querySelector(selector);
-      if (el) return el;
-      await new Promise(res => setTimeout(res, interval));
-    }
-    return null;
-  }
+  const tbody = document.querySelector("#sales-table tbody");
+  const exportBtn = document.getElementById("export-btn");
 
-  const tbodySelector = "#sales-table tbody";
-  const exportSelector = "#export-btn";
-
-  const tbody = await waitFor(tbodySelector, 1500);
   if (!tbody) {
     console.warn("initSales: sales table not found — aborting.");
     return;
   }
 
-  const exportBtn = document.querySelector(exportSelector);
-
-  // track state
   let currentFilter = "all";
   let currentSales = [];
 
@@ -35,23 +19,19 @@ export async function initSales() {
 
       if (result.status !== "success") throw new Error(result.message || "Failed to fetch orders");
 
-      // Completed orders only
-      let sales = Array.isArray(result.data)
-        ? result.data.filter(o => o.order_status === "completed")
-        : [];
+      // completed only
+      let sales = (Array.isArray(result.data) ? result.data : [])
+        .filter(o => o.order_status === "completed");
 
       const now = new Date();
 
-      // filtering
       if (currentFilter === "daily") {
         const today = new Date();
         sales = sales.filter(o => {
           const d = new Date(o.created_at);
-          return (
-            d.getDate() === today.getDate() &&
-            d.getMonth() === today.getMonth() &&
-            d.getFullYear() === today.getFullYear()
-          );
+          return d.getDate() === today.getDate() &&
+                 d.getMonth() === today.getMonth() &&
+                 d.getFullYear() === today.getFullYear();
         });
       } else if (currentFilter === "weekly") {
         const startOfWeek = new Date(now);
@@ -83,9 +63,20 @@ export async function initSales() {
             <td>₱${amt}</td>
             <td style="text-transform:capitalize">${order.order_status}</td>
             <td>${created}</td>
+            <td>
+              <button class="details-btn" data-id="${order.order_id}">View Details</button>
+            </td>
           </tr>
         `;
       }).join("");
+
+      // attach listeners for details buttons
+      tbody.querySelectorAll(".details-btn").forEach(btn => {
+        btn.addEventListener("click", () => {
+          const id = btn.dataset.id;
+          viewOrderDetails(id);
+        });
+      });
 
       // summary rows
       const totalRevenue = sales.reduce((s, o) => s + (parseFloat(o.total_amount) || 0), 0);
@@ -98,108 +89,81 @@ export async function initSales() {
       }, 0);
 
       const summaryHTML = `
-        <tr class="summary"><td colspan="5">Total Revenue: ₱${totalRevenue.toFixed(2)}</td></tr>
-        <tr class="summary"><td colspan="5">Total Discounts: ₱${totalDiscounts.toFixed(2)}</td></tr>
-        <tr class="summary"><td colspan="5">Total Items Sold: ${totalItemsSold}</td></tr>
+        <tr class="summary"><td colspan="6">Total Revenue: ₱${totalRevenue.toFixed(2)}</td></tr>
+        <tr class="summary"><td colspan="6">Total Discounts: ₱${totalDiscounts.toFixed(2)}</td></tr>
+        <tr class="summary"><td colspan="6">Total Items Sold: ${totalItemsSold}</td></tr>
       `;
       tbody.insertAdjacentHTML("beforeend", summaryHTML);
 
     } catch (err) {
       console.error("Failed to load sales report:", err);
-      tbody.innerHTML = `<tr><td colspan="5" class="error">Failed to load sales report.</td></tr>`;
+      tbody.innerHTML = `<tr><td colspan="6" class="error">Failed to load sales report.</td></tr>`;
     }
   }
 
-function exportCSV(sales) {
-  if (!Array.isArray(sales) || sales.length === 0) {
-    alert("No sales data to export.");
-    return;
-  }
+  // export CSV
+  function exportCSV(sales) {
+    if (!Array.isArray(sales) || sales.length === 0) {
+      alert("No sales data to export.");
+      return;
+    }
 
-  const headers = [
-    "Order ID",
-    "Customer ID",
-    "Subtotal",
-    "Shipping Fee",
-    "Discount",
-    "Total Amount",
-    "Status",
-    "Created At"
-  ];
-
-  const currency = (val) =>
-    "₱" +
-    Number(val || 0).toLocaleString("en-PH", { minimumFractionDigits: 2 });
-
-  const rows = sales.map((o) => {
-    const date = o.created_at
-      ? new Date(o.created_at).toLocaleDateString("en-PH")
-      : "";
-    const status = o.order_status
-      ? o.order_status.charAt(0).toUpperCase() + o.order_status.slice(1)
-      : "";
-
-    return [
-      o.order_id,
-      o.customer_id,
-      currency(o.subtotal),
-      currency(o.shipping_fee),
-      currency(o.discount_amount),
-      currency(o.total_amount),
-      status,
-      date,
+    const headers = [
+      "Order ID","Customer ID","Subtotal","Shipping Fee","Discount",
+      "Total Amount","Status","Created At"
     ];
-  });
 
-  // summary calculations
-  const totalRevenue = sales.reduce(
-    (s, o) => s + (parseFloat(o.total_amount) || 0),
-    0
-  );
-  const totalDiscounts = sales.reduce(
-    (s, o) => s + (parseFloat(o.discount_amount) || 0),
-    0
-  );
-  const totalItemsSold = sales.reduce((sum, o) => {
-    if (o.details && Array.isArray(o.details)) {
-      return (
-        sum + o.details.reduce((is, it) => is + (parseInt(it.quantity) || 0), 0)
-      );
-    }
-    return sum;
-  }, 0);
+    const currency = (val) =>
+      "₱" + Number(val || 0).toLocaleString("en-PH", { minimumFractionDigits: 2 });
 
-  const summary = [
-    ["", "", "", "", "", "", "", ""],
-    ["Total Revenue", currency(totalRevenue)],
-    ["Total Discounts", currency(totalDiscounts)],
-    ["Total Items Sold", totalItemsSold],
-  ];
+    const rows = sales.map(o => {
+      const date = o.created_at ? new Date(o.created_at).toLocaleDateString("en-PH") : "";
+      const status = o.order_status
+        ? o.order_status.charAt(0).toUpperCase() + o.order_status.slice(1)
+        : "";
+      return [
+        o.order_id,
+        o.customer_id,
+        currency(o.subtotal),
+        currency(o.shipping_fee),
+        currency(o.discount_amount),
+        currency(o.total_amount),
+        status,
+        date,
+      ];
+    });
 
-  // build CSV string with commas and quotes
-  let csvContent = [headers, ...rows, ...summary]
-    .map((r) =>
-      r
-        .map((cell) => `"${String(cell ?? "").replace(/"/g, '""')}"`)
-        .join(",")
-    )
-    .join("\n");
+    const totalRevenue = sales.reduce((s, o) => s + (parseFloat(o.total_amount) || 0), 0);
+    const totalDiscounts = sales.reduce((s, o) => s + (parseFloat(o.discount_amount) || 0), 0);
+    const totalItemsSold = sales.reduce((sum, o) => {
+      if (o.details && Array.isArray(o.details)) {
+        return sum + o.details.reduce((is, it) => is + (parseInt(it.quantity) || 0), 0);
+      }
+      return sum;
+    }, 0);
 
-  // add UTF-8 BOM for Excel compatibility
-  const blob = new Blob(["\uFEFF" + csvContent], { type: "text/csv;charset=utf-8;" });
-  const url = URL.createObjectURL(blob);
+    const summary = [
+      ["", "", "", "", "", "", "", ""],
+      ["Total Revenue", currency(totalRevenue)],
+      ["Total Discounts", currency(totalDiscounts)],
+      ["Total Items Sold", totalItemsSold],
+    ];
 
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = `sales_report_${new Date().toISOString().slice(0, 10)}.csv`;
-  a.click();
+    let csvContent = [headers, ...rows, ...summary]
+      .map(r => r.map(cell => `"${String(cell ?? "").replace(/"/g, '""')}"`).join(","))
+      .join("\n");
 
-  URL.revokeObjectURL(url);
-}
+    const blob = new Blob(["\uFEFF" + csvContent], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
 
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `sales_report_${new Date().toISOString().slice(0, 10)}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+  }
 
-
-  // wire up filter buttons
+  // filter buttons
   document.querySelectorAll(".filter-btn").forEach(btn => {
     btn.addEventListener("click", () => {
       currentFilter = btn.dataset.filter;
@@ -207,9 +171,7 @@ function exportCSV(sales) {
     });
   });
 
-  // export button
   if (exportBtn) exportBtn.addEventListener("click", () => exportCSV(currentSales));
 
-  // initial load
   await loadSalesReport();
 }

@@ -8,9 +8,14 @@ async function loadSection(section) {
 
     // Load JS after HTML injection
     if(section === 'orders') {
-      const ordersModule = await import('./orders.js');
-      if(ordersModule.initOrders) await ordersModule.initOrders();
-    } else if(section === 'sales') {
+  const ordersModule = await import('./orders.js');
+  if(ordersModule.initOrders) await ordersModule.initOrders();
+
+  // Ensure global functions exist after loading module
+  window.updateOrder = ordersModule.updateOrder || window.updateOrder;
+  window.viewOrderDetails = ordersModule.viewOrderDetails || window.viewOrderDetails;
+}
+else if(section === 'sales') {
       const salesModule = await import('./sales.js');
       if(salesModule.initSales) await salesModule.initSales();
     } else if(section === 'products') {

@@ -147,3 +147,73 @@ body {
     padding: 8px;
   }
 }
+
+/* ===== Modal Styles ===== */
+.modal {
+  display: none; /* Hidden until triggered */
+  position: fixed;
+  z-index: 1000;
+  left: 0; 
+  top: 0;
+  width: 100%; 
+  height: 100%;
+  overflow: auto;
+  background: rgba(0, 0, 0, 0.6);
+}
+
+/* Modal inner box */
+.modal-content {
+  background: #fff;
+  margin: 5% auto;
+  padding: 20px 25px;
+  border-radius: 12px;
+  width: 80%;
+  max-width: 600px;
+  animation: slideDown 0.3s ease-out;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+}
+
+/* Close button */
+.close-btn {
+  color: #aaa;
+  float: right;
+  font-size: 24px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.close-btn:hover {
+  color: #000;
+}
+
+/* Order details section */
+#order-details p {
+  margin: 8px 0;
+  font-size: 14px;
+}
+
+#order-details h3 {
+  margin-top: 15px;
+  margin-bottom: 10px;
+  font-size: 16px;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 5px;
+}
+
+#order-details ul {
+  list-style: none;
+  padding: 0;
+}
+
+#order-details li {
+  padding: 5px 0;
+  border-bottom: 1px solid #f1f1f1;
+  font-size: 14px;
+}
+
+/* Animation */
+@keyframes slideDown {
+  from { transform: translateY(-20px); opacity: 0; }
+  to   { transform: translateY(0); opacity: 1; }
+}
+
