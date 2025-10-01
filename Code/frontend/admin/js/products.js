@@ -103,49 +103,45 @@ tbody.innerHTML = products
   // -------------------------
   // Edit product
   // -------------------------
-  async function editProduct(id) {
-    try {
-      const res = await fetch(apiUrl("products") + `&id=${id}`);
-      const product = await res.json();
-      if (!product) return;
+// -------------------------
+// Edit product
+// -------------------------
+async function editProduct(id) {
+  try {
+    const res = await fetch(apiUrl("products") + `&id=${id}`);
+    const product = await res.json();
+    if (!product) return;
 
-      originalProduct = { ...product };
-      if (formTitle) formTitle.textContent = "Update Product";
+    originalProduct = { ...product };
+    if (formTitle) formTitle.textContent = "Update Product";
 
-      if (form) {
-        form.querySelector("#product-id").value = product.id;
-        form.querySelector("#product-name").value = product.name;
-        form.querySelector("#product-price").value = product.price;
-        form.querySelector("#product-stock").value = product.stock_quantity || 0;
-        form.querySelector("#product-image").value = product.img || "";
-        form.querySelector("#product-size-value").value = product.size_value || 0;
-        form.querySelector("#product-size-unit").value = product.size_unit || "";
+    if (form) {
+      form.querySelector("#product-id").value = product.id;
+      form.querySelector("#product-name").value = product.name;
+      form.querySelector("#product-price").value = product.price;
+      form.querySelector("#product-stock").value = product.stock_quantity || 0;
+      form.querySelector("#product-image").value = product.img || "";
+      form.querySelector("#product-size-value").value = product.size_value || 0;
+      form.querySelector("#product-size-unit").value = product.size_unit || "";
 
+      const select = form.querySelector("#product-category");
+      if (select && categories.length > 0)
+        select.value = product.category_id || "";
 
+      form.querySelector("#product-organic").checked =
+        product.tags.includes("organic");
+      form.querySelector("#product-seasonal").checked =
+        product.tags.includes("seasonal");
 
-
-
-
-
-
-
-        const select = form.querySelector("#product-category");
-        if (select && categories.length > 0)
-          select.value = product.category_id || "";
-
-        form.querySelector("#product-organic").checked =
-          product.tags.includes("organic");
-        form.querySelector("#product-seasonal").checked =
-          product.tags.includes("seasonal");
-      }
-
-
-
-
-
-    } catch {}
+      // Scroll to the form and focus the first input
+      form.scrollIntoView({ behavior: "smooth", block: "start" });
+      form.querySelector("#product-name")?.focus();
+    }
+  } catch (err) {
+    console.error(err);
   }
-  window.editProduct = editProduct;
+}
+window.editProduct = editProduct;
 
   // -------------------------
   // Live validation
