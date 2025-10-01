@@ -1,0 +1,147 @@
+/* --- EXPIRED SECTION --- */
+.expired-section {
+  margin-top: 28px;
+  background: #fff8f0; /* soft warm background to distinguish the area */
+  border: 1px solid #ffd7b5;
+  border-radius: 12px;
+  padding: 18px;
+  box-shadow: 0 6px 20px rgba(245, 137, 61, 0.06);
+  transition: transform .12s ease, box-shadow .12s ease;
+}
+
+/* header line with badge */
+.expired-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.expired-title {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: #b84b00; /* amber / burnt orange */
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.expired-badge {
+  background: #ff8a4b;
+  color: #fff;
+  font-weight: 700;
+  min-width: 36px;
+  padding: 4px 8px;
+  border-radius: 999px;
+  text-align: center;
+  box-shadow: 0 2px 6px rgba(255,138,75,0.18);
+  font-size: 0.9rem;
+}
+
+/* table container */
+.table-section .table-responsive {
+  overflow-x: auto;
+  border-radius: 8px;
+  background: #fff;
+  padding: 10px;
+}
+
+#expired-products-table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 900px; /* keep columns readable on large screens */
+}
+
+/* table head */
+#expired-products-table thead th {
+  text-align: left;
+  padding: 10px 12px;
+  font-size: 0.92rem;
+  color: #6b3a12;
+  background: rgba(248, 220, 200, 0.6);
+  border-bottom: 1px solid rgba(0,0,0,0.04);
+}
+
+/* table body rows */
+#expired-products-table tbody tr {
+  transition: background .12s ease, transform .08s ease;
+  border-bottom: 1px solid rgba(0,0,0,0.04);
+}
+
+#expired-products-table tbody td {
+  padding: 12px;
+  vertical-align: middle;
+  font-size: 0.95rem;
+  color: #3a2b21;
+}
+
+/* visually emphasize expired rows */
+#expired-products-table tbody tr.expired-row {
+  background: linear-gradient(90deg, rgba(255,240,235,0.6), rgba(255,250,248,0.4));
+}
+
+/* small pill showing expired date / age */
+.days-expired {
+  display: inline-block;
+  padding: 4px 8px;
+  border-radius: 999px;
+  background: rgba(216, 79, 8, 0.12);
+  color: #b84b00;
+  font-weight: 600;
+  font-size: 0.85rem;
+}
+
+/* action buttons in row */
+.table-action-btn {
+  display: inline-flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.action-btn {
+  border: 0;
+  padding: 6px 10px;
+  border-radius: 8px;
+  font-size: 0.88rem;
+  cursor: pointer;
+  transition: transform .08s ease, box-shadow .08s ease;
+}
+
+.restore-btn {
+  background: #fff;
+  color: #2f6b2f;
+  border: 1px solid rgba(47,107,47,0.12);
+}
+
+.delete-btn {
+  background: #fff;
+  color: #b02a2a;
+  border: 1px solid rgba(176,42,42,0.10);
+}
+
+.action-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 18px rgba(0,0,0,0.06); }
+
+/* empty-state message */
+.no-expired-message {
+  margin-top: 14px;
+  padding: 12px;
+  background: #f6fffa;
+  border: 1px dashed #dff6e8;
+  color: #1b6a39;
+  border-radius: 8px;
+  font-weight: 600;
+  display: inline-block;
+}
+
+/* responsive tweaks */
+@media (max-width: 880px) {
+  .expired-section { padding: 12px; }
+  #expired-products-table { min-width: 720px; }
+  #expired-products-table thead th, #expired-products-table tbody td { padding: 8px; font-size: 0.88rem; }
+}
+
+/* subtle hover row highlight for desktop */
+@media (hover: hover) {
+  #expired-products-table tbody tr:hover { background: rgba(255,230,220,0.5); }
+}

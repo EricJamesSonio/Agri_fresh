@@ -34,7 +34,7 @@ class ProductController {
     }
 }
 
-    public function delete($id) {
+    public function delete($id): void {
     $success = $this->model->delete($id);
     header("Content-Type: application/json");
     if ($success) {

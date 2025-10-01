@@ -1,62 +1,113 @@
-<div class="section-container">
-  <h2>Product Management</h2>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="css/expired.css">
+  <title>Product Management</title>
+</head>
+<body>
+  <div class="section-container">
+    <h2>Product Management</h2>
 
-  <!-- Add New Product Button -->
-  <button type="button" id="add-new-product">+ Add New Product</button>
+    <!-- Add New Product Button -->
+    <button type="button" id="add-new-product">+ Add New Product</button>
 
-  <!-- Product Form -->
-  <form id="product-form">
-    <h3 id="form-title">Add New Product</h3>
-    <input type="hidden" id="product-id" />
+    <!-- Product Form -->
+    <form id="product-form">
+      <h3 id="form-title">Add New Product</h3>
+      <input type="hidden" id="product-id" />
 
-    <!-- Basic Info -->
-    <input type="text" id="product-name" placeholder="Name" required />
-    <input type="number" id="product-stock" placeholder="Stock Quantity" step="0.01" required />
-    <input type="text" id="product-image" placeholder="Image URL" />
-    <textarea id="product-description" placeholder="Product Description"></textarea>
-    <select id="product-category"></select>
+      <!-- Basic Info -->
+      <input type="text" id="product-name" placeholder="Product Name" required />
+      <input type="number" id="product-stock" placeholder="Stock Quantity" step="0.01" required />
+      <input type="text" id="product-image" placeholder="Image URL" />
+      <textarea id="product-description" placeholder="Product Description"></textarea>
+      <select id="product-category">
+        <option value="">Select Category</option>
+      </select>
 
-    <!-- ✅ Single Size & Price (matches DB + JS) -->
-    <div class="size-group">
-      <h4>Size & Price</h4>
-      <div class="size-row">
-        <input type="number" id="product-size-value" placeholder="Value (e.g. 1, 500)" step="0.01" required />
-        <select id="product-size-unit" required>
-          <option value="">Unit--</option>
-          <option value="kg">kg</option>
-          <option value="g">g</option>
-          <option value="bunch">bunch</option>
-        </select>
-        <input type="number" id="product-price" placeholder="Price" step="0.01" required />
+      <!-- Expiration Date -->
+      <input type="date" id="product-expiration" placeholder="Expiration Date" />
+
+      <!-- Single Size & Price -->
+      <div class="size-group">
+        <h4>Size & Price</h4>
+        <div class="size-row">
+          <input type="number" id="product-size-value" placeholder="Value (e.g. 1, 500)" step="0.01" required />
+          <select id="product-size-unit" required>
+            <option value="">--Unit--</option>
+            <option value="kg">kg</option>
+            <option value="g">g</option>
+            <option value="liter">liter</option>
+            <option value="ml">ml</option>
+            <option value="bunch">bunch</option>
+          </select>
+          <input type="number" id="product-price" placeholder="Price (₱)" step="0.01" required />
+        </div>
+      </div>
+
+      <!-- Tags -->
+      <div class="tags-group">
+        <label><input type="checkbox" id="product-organic" /> Organic</label>
+        <label><input type="checkbox" id="product-seasonal" /> Seasonal</label>
+      </div>
+
+      <!-- Submit -->
+      <button type="submit" id="save-product-btn">Save Product</button>
+    </form>
+
+    <!-- Active Products Table -->
+    <div class="table-section">
+      <h3 class="table-heading">Active Products</h3>
+      <div class="table-responsive">
+        <table id="products-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Name</th>
+              <th>Description</th> 
+              <th>Size & Price</th>
+              <th>Stock</th>
+              <th>Category</th>
+              <th>Expiration Date</th>
+              <th>Tags</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
       </div>
     </div>
 
-    <!-- ✅ Tags -->
-    <div class="tags-group">
-      <label><input type="checkbox" id="product-organic" /> Organic</label>
-      <label><input type="checkbox" id="product-seasonal" /> Seasonal</label>
+    <!-- Expired Products Section -->
+    <div class="table-section expired-section">
+      <div class="expired-header">
+        <h3 class="table-heading expired-title">⚠️ Expired Products (Removed from Stock)</h3>
+        <span id="expired-count" class="expired-badge">0</span>
+      </div>
+      <div class="table-responsive">
+        <table id="expired-products-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Name</th>
+              <th>Description</th> 
+              <th>Size & Price</th>
+              <th>Category</th>
+              <th>Expired On</th>
+              <th>Days Expired</th>
+              <th>Tags</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+      <div id="no-expired" class="no-expired-message">
+        ✓ No expired products
+      </div>
     </div>
-
-    <!-- Submit -->
-    <button type="submit" id="save-product-btn">Save Product</button>
-  </form>
-
-  <!-- ✅ Products Table -->
-  <div class="table-responsive">
-    <table id="products-table">
-      <thead>
-        <tr>
-          <th>ID</th>
-          <th>Name</th>
-          <th>Description</th> 
-          <th>Size & Price</th>
-          <th>Stock</th>
-          <th>Category</th>
-          <th>Tags</th>
-          <th>Actions</th>
-        </tr>
-      </thead>
-      <tbody></tbody>
-    </table>
   </div>
-</div>
+</body>
+</html>

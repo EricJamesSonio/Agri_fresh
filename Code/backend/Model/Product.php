@@ -12,6 +12,7 @@ class Product {
         $sql = "SELECT p.product_id, p.name, p.description, p.price,
                        IFNULL(p.stock_quantity, 0) AS stock_quantity,
                        p.image_url, p.size_value, p.size_unit,
+                       p.expiration_date,
                        c.category_id, c.category_name AS category,
                        p.is_organic, p.is_seasonal
                 FROM product p
@@ -26,18 +27,19 @@ class Product {
             if ($row['is_seasonal']) $tags[] = 'seasonal';
 
             $products[] = [
-                'id'             => $row['product_id'],
-                'name'           => $row['name'],
-                'description'    => $row['description'],
-                'category_id'    => $row['category_id'],
-                'category'       => $row['category'] ?? 'Uncategorized',
-                'price'          => floatval($row['price']),
-                'stock_quantity' => floatval($row['stock_quantity']),
-                'img'            => $row['image_url'],
-                'size_value'     => floatval($row['size_value']),
-                'size_unit'      => $row['size_unit'],
-                'size'           => $row['size_value'] . ' ' . $row['size_unit'],
-                'tags'           => $tags
+                'id'              => $row['product_id'],
+                'name'            => $row['name'],
+                'description'     => $row['description'],
+                'category_id'     => $row['category_id'],
+                'category'        => $row['category'] ?? 'Uncategorized',
+                'price'           => floatval($row['price']),
+                'stock_quantity'  => floatval($row['stock_quantity']),
+                'img'             => $row['image_url'],
+                'size_value'      => floatval($row['size_value']),
+                'size_unit'       => $row['size_unit'],
+                'size'            => $row['size_value'] . ' ' . $row['size_unit'],
+                'expiration_date' => $row['expiration_date'],
+                'tags'            => $tags
             ];
         }
 
@@ -48,12 +50,12 @@ class Product {
         $stmt = $this->con->prepare("
             INSERT INTO product 
                 (name, description, price, stock_quantity, image_url, category_id, 
-                 size_value, size_unit, is_organic, is_seasonal) 
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                 size_value, size_unit, is_organic, is_seasonal, expiration_date) 
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         ");
 
         $stmt->bind_param(
-            "ssdissdsii",
+            "ssdissdsijs",
             $data['name'],
             $data['description'],
             $data['price'],
@@ -63,7 +65,8 @@ class Product {
             $data['size_value'],
             $data['size_unit'],
             $data['is_organic'],
-            $data['is_seasonal']
+            $data['is_seasonal'],
+            $data['expiration_date']
         );
 
         $stmt->execute();
@@ -136,6 +139,13 @@ class Product {
             $values[] = $data['size_unit'];
         }
 
+        // Handle expiration_date (can be null)
+        if (isset($data['expiration_date'])) {
+            $updateFields[] = "expiration_date=?";
+            $types .= "s";
+            $values[] = $data['expiration_date'] ?: null;
+        }
+
         // If no fields to update, return
         if (empty($updateFields)) {
             return;
@@ -154,7 +164,7 @@ class Product {
     public function find($id) {
         $stmt = $this->con->prepare("
             SELECT p.product_id, p.name, p.description, p.price, p.stock_quantity, 
-                   p.image_url, p.size_value, p.size_unit,
+                   p.image_url, p.size_value, p.size_unit, p.expiration_date,
                    c.category_id, c.category_name AS category,
                    p.is_organic, p.is_seasonal
             FROM product p
@@ -173,18 +183,19 @@ class Product {
         if ($result['is_seasonal']) $tags[] = 'seasonal';
 
         return [
-            'id'             => $result['product_id'],
-            'name'           => $result['name'],
-            'description'    => $result['description'],
-            'category_id'    => $result['category_id'],
-            'category'       => $result['category'] ?? 'Uncategorized',
-            'price'          => floatval($result['price']),
-            'stock_quantity' => floatval($result['stock_quantity']),
-            'img'            => $result['image_url'],
-            'size_value'     => floatval($result['size_value']),
-            'size_unit'      => $result['size_unit'],
-            'size'           => $result['size_value'] . ' ' . $result['size_unit'],
-            'tags'           => $tags
+            'id'              => $result['product_id'],
+            'name'            => $result['name'],
+            'description'     => $result['description'],
+            'category_id'     => $result['category_id'],
+            'category'        => $result['category'] ?? 'Uncategorized',
+            'price'           => floatval($result['price']),
+            'stock_quantity'  => floatval($result['stock_quantity']),
+            'img'             => $result['image_url'],
+            'size_value'      => floatval($result['size_value']),
+            'size_unit'       => $result['size_unit'],
+            'size'            => $result['size_value'] . ' ' . $result['size_unit'],
+            'expiration_date' => $result['expiration_date'],
+            'tags'            => $tags
         ];
     }
 

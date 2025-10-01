@@ -1,3 +1,5 @@
+
+
 class ShoppingCart {
   constructor() {
     this.products = [];
@@ -34,7 +36,17 @@ class ShoppingCart {
     }
   }
 
+  // Add this helper function at the top of your ShoppingCart class or before fetchProducts
 
+  isExpired(dateStr) {
+    if (!dateStr) return false;
+    const expirationDate = new Date(dateStr);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    return expirationDate < today;
+  }
+
+  // REPLACE your existing fetchProducts method with this updated version:
 
   async fetchProducts() {
     try {
@@ -45,10 +57,14 @@ class ShoppingCart {
       const rawProducts = await res.json();
       console.log("Raw products from API:", rawProducts);
 
-      this.products = rawProducts.map(p => {
+      // Filter out expired products for customers
+      const activeProducts = rawProducts.filter(p => !this.isExpired(p.expiration_date));
+      console.log(`Filtered ${rawProducts.length - activeProducts.length} expired products`);
+
+      this.products = activeProducts.map(p => {
         let imgSrc = p.img || p.image_url;
         if (!imgSrc) {
-          imgSrc = '/agri_fresh/code/frontend/images/placeholder.jpg'; // absolute safe path
+          imgSrc = '/agri_fresh/code/frontend/images/placeholder.jpg';
         } else if (!imgSrc.startsWith('http')) {
           imgSrc = imageUrl(imgSrc);
         }
@@ -58,36 +74,13 @@ class ShoppingCart {
           id: parseInt(p.product_id || p.id, 10),
           category: p.category ?? p.category_name ?? 'Uncategorized',
           description: p.description ?? '',
-
           tags: Array.isArray(p.tags) ? p.tags.map(t => t.toLowerCase()) : [],
           img: imgSrc,
-          stock_quantity: parseInt(p.stock_quantity || 0, 10) // Ensure stock is integer
+          stock_quantity: parseInt(p.stock_quantity || 0, 10)
         };
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
       });
 
-      console.log("Final products array:", this.products);
+      console.log("Final products array (expired filtered):", this.products);
       this.render(this.products);
     } catch (err) {
       console.error(err);

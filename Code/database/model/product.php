@@ -16,6 +16,7 @@ createTable($con, 'product', "
         image_url VARCHAR(255),
         is_seasonal BOOLEAN DEFAULT FALSE,
         is_organic BOOLEAN DEFAULT FALSE,
+        expiration_date DATE DEFAULT NULL,
         created_by INT,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,

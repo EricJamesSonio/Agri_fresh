@@ -1,6 +1,6 @@
 export async function initPage() {
   let categories = [];
-  let originalProduct = null; // Store original product data when editing
+  let originalProduct = null;
 
   const form = document.getElementById("product-form");
   const formTitle = document.getElementById("form-title");
@@ -24,45 +24,160 @@ export async function initPage() {
   }
 
   // -------------------------
+  // Check if product is expired
+  // -------------------------
+  function isExpired(dateStr) {
+    if (!dateStr) return false;
+    const expirationDate = new Date(dateStr);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    return expirationDate < today;
+  }
+
+  // -------------------------
+  // Calculate days expired
+  // -------------------------
+  function getDaysExpired(dateStr) {
+    if (!dateStr) return 0;
+    const expirationDate = new Date(dateStr);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const diffTime = today - expirationDate;
+    return Math.floor(diffTime / (1000 * 60 * 60 * 24));
+  }
+
+  // -------------------------
+  // Format expiration date for display
+  // -------------------------
+  function formatExpirationDate(dateStr) {
+    if (!dateStr) return "-";
+    const date = new Date(dateStr);
+    const now = new Date();
+    const diffTime = date - now;
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    
+    const formatted = date.toLocaleDateString('en-US', { 
+      year: 'numeric', 
+      month: 'short', 
+      day: 'numeric' 
+    });
+    
+    if (diffDays < 0) {
+      return `<span style="color: red; font-weight: bold;">${formatted} (Expired)</span>`;
+    } else if (diffDays <= 7) {
+      return `<span style="color: orange; font-weight: bold;">${formatted} (${diffDays}d)</span>`;
+    } else if (diffDays <= 30) {
+      return `<span style="color: #ff9800;">${formatted} (${diffDays}d)</span>`;
+    } else {
+      return formatted;
+    }
+  }
+
+  // -------------------------
   // Load products
   // -------------------------
   async function loadProducts() {
     try {
       const res = await fetch(apiUrl("products"));
-      const products = await res.json();
-      const tbody = document.querySelector("#products-table tbody");
-      if (!tbody) return;
+      const allProducts = await res.json();
+      
+      // Separate active and expired products
+      const activeProducts = allProducts.filter(p => !isExpired(p.expiration_date));
+      const expiredProducts = allProducts.filter(p => isExpired(p.expiration_date));
 
-tbody.innerHTML = products
-  .map(
-    p => `
-      <tr ${p.stock_quantity === 0 ? 'style="opacity:0.5;"' : ""}>
-        <td>${p.id}</td>
-        <td>${p.name}</td>
-        <td>${p.description || ""}</td>
-        <td>
-          ${p.size_value ? p.size_value + " " + (p.size_unit || "") : "-"} 
-          - ₱${p.price.toFixed(2)}
-        </td>
-        <td>${p.stock_quantity === 0 ? "Out of Stock" : p.stock_quantity}</td>
-        <td>${p.category || "Uncategorized"}</td>
-        <td>
-          ${[
-            p.is_organic ? "Organic" : null,
-            p.is_seasonal ? "Seasonal" : null
-          ].filter(Boolean).join(", ")}
-        </td>
-        <td>
-          <button type="button" onclick="editProduct(${p.id})">Edit</button>
-          <button type="button" onclick="deleteProduct(${p.id})" 
-            style="margin-left:5px; background-color:red; color:white; border:none; padding:5px 10px; border-radius:4px;">
-            Remove
-          </button>
-        </td>
-      </tr>
-    `
-  )
-  .join("");
+      // Load active products
+      const tbody = document.querySelector("#products-table tbody");
+      if (tbody) {
+        tbody.innerHTML = activeProducts
+          .map(
+            p => `
+              <tr ${p.stock_quantity === 0 ? 'style="opacity:0.5;"' : ""}>
+                <td>${p.id}</td>
+                <td>${p.name}</td>
+                <td>${p.description || ""}</td>
+                <td>
+                  ${p.size_value ? p.size_value + " " + (p.size_unit || "") : "-"} 
+                  - ₱${p.price.toFixed(2)}
+                </td>
+                <td>${p.stock_quantity === 0 ? "Out of Stock" : p.stock_quantity}</td>
+                <td>${p.category || "Uncategorized"}</td>
+                <td>${formatExpirationDate(p.expiration_date)}</td>
+                <td>
+                  ${[
+                    p.is_organic ? "Organic" : null,
+                    p.is_seasonal ? "Seasonal" : null
+                  ].filter(Boolean).join(", ")}
+                </td>
+                <td>
+                  <button type="button" onclick="editProduct(${p.id})">Edit</button>
+                  <button type="button" onclick="deleteProduct(${p.id})" 
+                    style="margin-left:5px; background-color:red; color:white; border:none; padding:5px 10px; border-radius:4px;">
+                    Remove
+                  </button>
+                </td>
+              </tr>
+            `
+          )
+          .join("");
+      }
+
+      // Load expired products
+      const expiredTbody = document.querySelector("#expired-products-table tbody");
+      const expiredCount = document.getElementById("expired-count");
+      const noExpiredMsg = document.getElementById("no-expired");
+      const expiredTable = document.getElementById("expired-products-table");
+
+      if (expiredTbody && expiredCount) {
+        expiredCount.textContent = expiredProducts.length;
+
+        if (expiredProducts.length === 0) {
+          if (noExpiredMsg) noExpiredMsg.style.display = "block";
+          if (expiredTable) expiredTable.style.display = "none";
+        } else {
+          if (noExpiredMsg) noExpiredMsg.style.display = "none";
+          if (expiredTable) expiredTable.style.display = "table";
+
+          expiredTbody.innerHTML = expiredProducts
+            .map(
+              p => {
+                const daysExpired = getDaysExpired(p.expiration_date);
+                return `
+                  <tr style="background-color: #ffebee;">
+                    <td>${p.id}</td>
+                    <td>${p.name}</td>
+                    <td>${p.description || ""}</td>
+                    <td>
+                      ${p.size_value ? p.size_value + " " + (p.size_unit || "") : "-"} 
+                      - ₱${p.price.toFixed(2)}
+                    </td>
+                    <td>${p.category || "Uncategorized"}</td>
+                    <td style="color: red; font-weight: bold;">
+                      ${new Date(p.expiration_date).toLocaleDateString('en-US', { 
+                        year: 'numeric', 
+                        month: 'short', 
+                        day: 'numeric' 
+                      })}
+                    </td>
+                    <td style="color: red; font-weight: bold;">${daysExpired} day${daysExpired !== 1 ? 's' : ''} ago</td>
+                    <td>
+                      ${[
+                        p.is_organic ? "Organic" : null,
+                        p.is_seasonal ? "Seasonal" : null
+                      ].filter(Boolean).join(", ")}
+                    </td>
+                    <td>
+                      <button type="button" onclick="deleteProduct(${p.id})" 
+                        style="background-color:red; color:white; border:none; padding:5px 10px; border-radius:4px;">
+                        Remove
+                      </button>
+                    </td>
+                  </tr>
+                `;
+              }
+            )
+            .join("");
+        }
+      }
 
     } catch {
       console.error("Failed to load products.");
@@ -103,51 +218,49 @@ tbody.innerHTML = products
   // -------------------------
   // Edit product
   // -------------------------
-// -------------------------
-// Edit product
-// -------------------------
-async function editProduct(id) {
-  try {
-    const res = await fetch(apiUrl("products") + `&id=${id}`);
-    const product = await res.json();
-    if (!product) return;
+  async function editProduct(id) {
+    try {
+      const res = await fetch(apiUrl("products") + `&id=${id}`);
+      const product = await res.json();
+      if (!product) return;
 
-    originalProduct = { ...product };
-    if (formTitle) formTitle.textContent = "Update Product";
+      originalProduct = { ...product };
+      if (formTitle) formTitle.textContent = "Update Product";
 
-    if (form) {
-      form.querySelector("#product-id").value = product.id;
-      form.querySelector("#product-name").value = product.name;
-      form.querySelector("#product-price").value = product.price;
-      form.querySelector("#product-stock").value = product.stock_quantity || 0;
-      form.querySelector("#product-image").value = product.img || "";
-      form.querySelector("#product-size-value").value = product.size_value || 0;
-      form.querySelector("#product-size-unit").value = product.size_unit || "";
+      if (form) {
+        form.querySelector("#product-id").value = product.id;
+        form.querySelector("#product-name").value = product.name;
+        form.querySelector("#product-price").value = product.price;
+        form.querySelector("#product-stock").value = product.stock_quantity || 0;
+        form.querySelector("#product-image").value = product.img || "";
+        form.querySelector("#product-size-value").value = product.size_value || 0;
+        form.querySelector("#product-size-unit").value = product.size_unit || "";
+        form.querySelector("#product-description").value = product.description || "";
+        form.querySelector("#product-expiration").value = product.expiration_date || "";
 
-      const select = form.querySelector("#product-category");
-      if (select && categories.length > 0)
-        select.value = product.category_id || "";
+        const select = form.querySelector("#product-category");
+        if (select && categories.length > 0)
+          select.value = product.category_id || "";
 
-      form.querySelector("#product-organic").checked =
-        product.tags.includes("organic");
-      form.querySelector("#product-seasonal").checked =
-        product.tags.includes("seasonal");
+        form.querySelector("#product-organic").checked =
+          product.tags.includes("organic");
+        form.querySelector("#product-seasonal").checked =
+          product.tags.includes("seasonal");
 
-      // Scroll to the form and focus the first input
-      form.scrollIntoView({ behavior: "smooth", block: "start" });
-      form.querySelector("#product-name")?.focus();
+        form.scrollIntoView({ behavior: "smooth", block: "start" });
+        form.querySelector("#product-name")?.focus();
+      }
+    } catch (err) {
+      console.error(err);
     }
-  } catch (err) {
-    console.error(err);
   }
-}
-window.editProduct = editProduct;
+  window.editProduct = editProduct;
 
   // -------------------------
   // Live validation
   // -------------------------
   function setupLiveValidation() {
-    if (!form) return; // skip if no form
+    if (!form) return;
 
     const inputs = [
       {
@@ -177,6 +290,21 @@ window.editProduct = editProduct;
         el: form.querySelector("#product-stock"),
         validator: val => {
           if (parseInt(val) < 0) return "Stock cannot be negative.";
+          return "";
+        },
+      },
+      {
+        el: form.querySelector("#product-expiration"),
+        validator: val => {
+          if (val) {
+            const selectedDate = new Date(val);
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            
+            if (selectedDate < today) {
+              return "Expiration date cannot be in the past.";
+            }
+          }
           return "";
         },
       },
@@ -229,33 +357,19 @@ window.editProduct = editProduct;
       const stock_quantity =
         parseFloat(form.querySelector("#product-stock").value) || 0;
       const image_url = form.querySelector("#product-image").value.trim();
+      const description = form.querySelector("#product-description").value.trim();
       const category =
         parseInt(form.querySelector("#product-category").value) || null;
       const size_value =
         parseFloat(form.querySelector("#product-size-value").value) || 0;
-      const size_unit = form
-        .querySelector("#product-size-unit")
-        .value.trim();
-
-
-
-
-
-
-
-
-
-
+      const size_unit = form.querySelector("#product-size-unit").value.trim();
+      const expiration_date = form.querySelector("#product-expiration").value || null;
       const is_organic = form.querySelector("#product-organic").checked ? 1 : 0;
-      const is_seasonal = form.querySelector("#product-seasonal").checked
-        ? 1
-        : 0;
+      const is_seasonal = form.querySelector("#product-seasonal").checked ? 1 : 0;
 
       if (!name || !/^[A-Za-z\s]+$/.test(name) || stock_quantity < 0) return;
       if (!id && (!image_url || !/\.(jpg|jpeg|png|gif|webp)$/i.test(image_url))) {
-        alert(
-          "Please enter a valid image URL for new product (.jpg, .png, .gif, .webp)."
-        );
+        alert("Please enter a valid image URL for new product (.jpg, .png, .gif, .webp).");
         return;
       }
       if (!size_unit) {
@@ -263,21 +377,30 @@ window.editProduct = editProduct;
         return;
       }
 
-      // -----------------------
-      // Build payload
-      // -----------------------
+      if (expiration_date) {
+        const selectedDate = new Date(expiration_date);
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        
+        if (selectedDate < today) {
+          alert("Expiration date cannot be in the past.");
+          return;
+        }
+      }
+
       let payload;
       if (!id) {
         payload = {
           id: null,
           name,
-          description: "",
+          description,
           price,
           stock_quantity,
           image_url,
           category,
           size_value,
           size_unit,
+          expiration_date,
           is_organic,
           is_seasonal,
         };
@@ -285,12 +408,14 @@ window.editProduct = editProduct;
         payload = {
           id,
           name,
+          description,
           price,
           stock_quantity,
           image_url,
           category,
           size_value,
           size_unit,
+          expiration_date,
           is_organic,
           is_seasonal,
         };

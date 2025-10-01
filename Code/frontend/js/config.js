@@ -10,3 +10,4 @@ function apiUrl(endpoint) {
 function imageUrl(filename) {
   return `${CONFIG.IMAGE_PATH}/${filename}`;
 }
+
