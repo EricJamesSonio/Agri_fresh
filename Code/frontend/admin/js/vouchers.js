@@ -168,8 +168,12 @@ async function loadCustomers() {
       editDiscountType.value = voucher.discount_type || "";
       editDiscountValue.value = voucher.discount_value || "";
       editUsageLimit.value = voucher.usage_limit || "";
-      editStartDate.value = voucher.start_date || "";
-      editEndDate.value = voucher.end_date || "";
+      editStartDate.value = (voucher.start_date && voucher.start_date !== "0000-00-00") 
+  ? voucher.start_date 
+  : "";
+      editEndDate.value = (voucher.end_date && voucher.end_date !== "0000-00-00") 
+  ? voucher.end_date 
+  : "";
       editIsActive.checked = !!voucher.is_active;
 
       modal.style.display = "flex";

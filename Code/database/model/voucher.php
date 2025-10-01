@@ -13,12 +13,8 @@ createTable($con, 'voucher', "
         usage_limit INT DEFAULT NULL,             -- Max times the voucher can be used (NULL = unlimited)
         used_count INT DEFAULT 0,                 -- Track how many times it was used
         is_active TINYINT(1) DEFAULT 1,           -- 1 = active, 0 = inactive
-        start_date DATE DEFAULT NULL,             -- When voucher becomes valid
-        end_date DATE DEFAULT NULL,               -- When voucher expires
+        start_date DATE NULL DEFAULT NULL,        -- When voucher becomes valid
+        end_date DATE NULL DEFAULT NULL,          -- When voucher expires
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     )
 ");
-
-echo "✅ Voucher table created successfully.<br>";
-
-
