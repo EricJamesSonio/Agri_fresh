@@ -24,24 +24,44 @@ async function fetchOrders() {
 
             const statusClass = 'status-' + order.order_status.toLowerCase();
 
-            orderCard.innerHTML = `
-                <div class="order-header">
-                    <div>
-                        <strong>Order #${order.order_id}</strong> 
-                        - <span class="${statusClass}">${order.order_status}</span>
-                    </div>
-                    <div>Total: ${parseFloat(order.total_amount).toLocaleString('en-PH', { style: 'currency', currency: 'PHP' })}</div>
-                </div>
-                <div><small>Ordered on: ${new Date(order.created_at).toLocaleString()}</small></div>
-                <div><strong>Shipping Address:</strong> ${order.street}, ${order.city}, ${order.state || ''}, ${order.country}</div>
-                <div class="order-details">
-                    ${order.details.map(item => `
-                        <div class="order-item">
-                            ${item.product_name} - Qty: ${item.quantity} - ${parseFloat(item.price_each).toLocaleString('en-PH', { style: 'currency', currency: 'PHP' })}
-                        </div>
-                    `).join('')}
-                </div>
-            `;
+orderCard.innerHTML = `
+    <div class="order-header">
+        <div>
+            <strong>Order #${order.order_id}</strong> 
+            - <span class="${statusClass}">${order.order_status}</span>
+        </div>
+        <div>Total: ${parseFloat(order.total_amount).toLocaleString('en-PH', { style: 'currency', currency: 'PHP' })}</div>
+    </div>
+
+    <div><small>Ordered on: ${new Date(order.created_at).toLocaleString()}</small></div>
+    <div><strong>Payment:</strong> ${order.payment_method}</div>
+
+    <div><strong>Customer:</strong> ${order.first_name} ${order.last_name} (${order.email})</div>
+
+    <div><strong>Shipping Address:</strong> 
+        ${order.street}, ${order.city}, ${order.state || ''}, ${order.country}
+    </div>
+
+    <div><strong>Subtotal:</strong> ₱${parseFloat(order.subtotal).toFixed(2)}</div>
+    <div><strong>Shipping Fee:</strong> ₱${parseFloat(order.shipping_fee).toFixed(2)}</div>
+    <div><strong>Discount:</strong> -₱${parseFloat(order.discount_amount).toFixed(2)}</div>
+    ${order.voucher_code ? `<div><strong>Voucher Applied:</strong> ${order.voucher_code}</div>` : ""}
+    <div><strong>Final Total:</strong> ₱${parseFloat(order.total_amount).toFixed(2)}</div>
+
+    <div class="order-details">
+        <h4>Items:</h4>
+        ${order.details.map(item => `
+            <div class="order-item">
+                ${item.product_name} 
+                (${item.size_value} ${item.size_unit}) 
+                - Qty: ${item.quantity} 
+                - Price: ₱${parseFloat(item.price_each).toFixed(2)}
+            </div>
+        `).join('')}
+    </div>
+`;
+
+
             container.appendChild(orderCard);
         });
     } catch (error) {

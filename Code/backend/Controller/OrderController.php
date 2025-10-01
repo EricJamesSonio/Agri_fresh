@@ -168,13 +168,18 @@ $stmt->execute();
         }
     }
 
-  public function getCustomerOrders($customer_id) {
+public function getCustomerOrders($customer_id) {
     try {
         $orders = $this->orderModel->getCustomerOrders($customer_id);
 
-        // Add details for each order
         foreach ($orders as &$order) {
             $order['details'] = $this->orderModel->getOrderDetails($order['order_id']);
+
+            // Also fetch full order info (with address + customer details)
+            $fullOrder = $this->orderModel->getOrder($order['order_id']);
+            if ($fullOrder) {
+                $order = array_merge($order, $fullOrder);
+            }
         }
 
         return [
@@ -189,6 +194,7 @@ $stmt->execute();
         ];
     }
 }
+
 
    public function updateOrderStatus($order_id, $status) {
     global $con;
