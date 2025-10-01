@@ -224,3 +224,33 @@ header nav a {
 .status-shipped { color: purple; }
 .status-delivered { color: green; }
 .status-cancelled { color: red; }
+
+.order-actions {
+  display: flex;
+  justify-content: flex-end; /* pushes button(s) to the right */
+  margin-top: 10px;
+}
+
+.return-btn {
+  background-color: #ff4d4d;
+  color: #fff;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: 0.3s;
+}
+
+.return-btn:hover:not(.expired) {
+  background-color: #e63939;
+}
+
+.return-btn.expired {
+  background-color: #aaa;
+  cursor: not-allowed;
+}
+.notif {
+  font-size: 14px;
+  color: #666;
+}
