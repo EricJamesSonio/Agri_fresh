@@ -1,45 +1,63 @@
 <div class="threshold-controls">
-  <label for="kg-threshold-input">Set Low Stock Threshold (Kg):</label>
-  <input type="number" id="kg-threshold-input" min="0" value="5">
-  <span id="kg-threshold">5</span>
+  <label for="threshold-input">Set Low Stock Threshold:</label>
+  <input type="number" id="threshold-input" min="0" value="5">
+  
+  <select id="threshold-unit">
+    <option value="kg">Kg</option>
+    <option value="bunch">Bunch</option>
+  </select>
+  
+  <span id="threshold-display">5 kg</span>
   <br><br>
-  <label for="bunch-threshold-input">Set Low Stock Threshold (Bunch):</label>
-  <input type="number" id="bunch-threshold-input" min="0" value="10">
-  <span id="bunch-threshold">10</span>
-  <br><br>
-  <button id="update-threshold-btn">Update Thresholds</button>
+  <button id="update-threshold-btn">Update Threshold</button>
 </div>
 
 <p>
   Products highlighted in red are below their unit-specific threshold.
 </p>
 
-      <span id="stock-threshold">5</span> items.
-    </p>
+<p>
+  Current threshold: <span id="stock-threshold">5</span> items.
+</p>
 
-    <div class="table-responsive">
-      <table id="stock-table">
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>Name</th>
-            <th>Category</th>
-            <th>Sizes & Prices</th>
-            <th>Stock Quantity</th>
-          </tr>
-        </thead>
-        <tbody>
-          <!-- Stock data injected here by JS -->
-        </tbody>
-      </table>
-    </div>
-  </div>
+<div class="table-responsive">
+  <table id="stock-table">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Name</th>
+        <th>Category</th>
+        <th>Sizes & Prices</th>
+        <th>Stock Quantity</th>
+      </tr>
+    </thead>
+    <tbody>
+      <!-- Stock data injected here by JS -->
+    </tbody>
+  </table>
+</div>
 
-  <!-- ✅ Load your stock.js instead of inline script -->
-  <script type="module" src="js/stock.js"></script>
-  <script type="module">
-    import { initStock } from "./js/stock.js";
-    initStock();
-  </script>
-</body>
-</html>
+<!-- ✅ Load your stock.js -->
+<script type="module" src="js/stock.js"></script>
+<script type="module">
+  import { initStock } from "./js/stock.js";
+  initStock();
+
+  const input = document.getElementById("threshold-input");
+  const unit = document.getElementById("threshold-unit");
+  const display = document.getElementById("threshold-display");
+  const stockThreshold = document.getElementById("stock-threshold");
+
+  function updateDisplay() {
+    display.textContent = `${input.value} ${unit.value}`;
+    stockThreshold.textContent = input.value;
+  }
+
+  input.addEventListener("input", updateDisplay);
+  unit.addEventListener("change", updateDisplay);
+
+  document.getElementById("update-threshold-btn").addEventListener("click", () => {
+    // Update your stock.js thresholds here if needed
+    alert(`Threshold updated to ${input.value} ${unit.value}`);
+  });
+</script>

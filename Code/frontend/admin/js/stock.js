@@ -6,17 +6,36 @@ export async function initStock() {
   };
 
   // UI elements
-  const kgThresholdInput = document.getElementById("kg-threshold-input");
-  const bunchThresholdInput = document.getElementById("bunch-threshold-input");
-  const kgThresholdDisplay = document.getElementById("kg-threshold");
-  const bunchThresholdDisplay = document.getElementById("bunch-threshold");
+  const thresholdInput = document.getElementById("threshold-input");
+  const thresholdUnit = document.getElementById("threshold-unit");
+  const thresholdDisplay = document.getElementById("threshold-display");
+  const stockThreshold = document.getElementById("stock-threshold");
   const updateBtn = document.getElementById("update-threshold-btn");
 
-  // Set default values in UI
-  kgThresholdInput.value = thresholds.kg;
-  bunchThresholdInput.value = thresholds.bunch;
-  kgThresholdDisplay.textContent = thresholds.kg;
-  bunchThresholdDisplay.textContent = thresholds.bunch;
+  // Set default display
+  function updateDisplay() {
+    const unit = thresholdUnit.value;
+    thresholdDisplay.textContent = `${thresholds[unit]} ${unit}`;
+    stockThreshold.textContent = thresholds[unit];
+    thresholdInput.value = thresholds[unit];
+  }
+
+  thresholdUnit.addEventListener("change", updateDisplay);
+  thresholdInput.addEventListener("input", () => {
+    const unit = thresholdUnit.value;
+    thresholds[unit] = parseFloat(thresholdInput.value) || 0;
+    updateDisplay();
+  });
+
+  updateBtn.addEventListener("click", () => {
+    const unit = thresholdUnit.value;
+    const value = parseFloat(thresholdInput.value);
+    if (isNaN(value) || value < 0) return alert(`Enter a valid ${unit} threshold`);
+
+    thresholds[unit] = value;
+    updateDisplay();
+    loadProducts();
+  });
 
   // -------------------------
   // Load products
@@ -30,20 +49,12 @@ export async function initStock() {
 
       tbody.innerHTML = products
         .map(p => {
-          // Build sizes & prices
-          let sizePriceDisplay = "";
-          let stockUnit = "";
-          if (p.size1_value) {
-            sizePriceDisplay += `${p.size1_value} ${p.size1_unit} - ₱${p.price1.toFixed(2)}`;
-            stockUnit = p.size1_unit?.toLowerCase();
-          }
-          if (p.size2_value) {
-            sizePriceDisplay += `<br>${p.size2_value} ${p.size2_unit} - ₱${p.price2.toFixed(2)}`;
-            stockUnit = p.size2_unit?.toLowerCase();
-          }
+          const sizePriceDisplay = p.size_value
+            ? `${p.size_value} ${p.size_unit} - ₱${p.price.toFixed(2)}`
+            : "-";
 
-          // Pick threshold based on unit
-          let unitThreshold = thresholds[stockUnit] ?? thresholds.kg; // default fallback
+          const stockUnit = p.size_unit?.toLowerCase();
+          const unitThreshold = thresholds[stockUnit] ?? thresholds.kg;
           const lowStockClass = p.stock_quantity <= unitThreshold ? "low-stock" : "";
 
           return `
@@ -51,7 +62,7 @@ export async function initStock() {
               <td>${p.id}</td>
               <td>${p.name}</td>
               <td>${p.category || "Uncategorized"}</td>
-              <td>${sizePriceDisplay || "-"}</td>
+              <td>${sizePriceDisplay}</td>
               <td>${p.stock_quantity === 0 ? "Out of Stock" : p.stock_quantity}</td>
             </tr>
           `;
@@ -63,28 +74,8 @@ export async function initStock() {
   }
 
   // -------------------------
-  // Update thresholds handler
-  // -------------------------
-  if (updateBtn) {
-    updateBtn.addEventListener("click", () => {
-      const newKg = parseFloat(kgThresholdInput.value);
-      const newBunch = parseFloat(bunchThresholdInput.value);
-
-      if (isNaN(newKg) || newKg < 0) return alert("Enter a valid Kg threshold");
-      if (isNaN(newBunch) || newBunch < 0) return alert("Enter a valid Bunch threshold");
-
-      thresholds.kg = newKg;
-      thresholds.bunch = newBunch;
-
-      kgThresholdDisplay.textContent = thresholds.kg;
-      bunchThresholdDisplay.textContent = thresholds.bunch;
-
-      loadProducts();
-    });
-  }
-
-  // -------------------------
   // Initialize
   // -------------------------
+  updateDisplay();
   await loadProducts();
 }
