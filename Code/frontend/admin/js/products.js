@@ -1,6 +1,6 @@
 export async function initPage() {
   let categories = [];
-  let originalProduct = null;
+  let originalProduct = null; // Store original product data when editing
 
   const form = document.getElementById("product-form");
   const formTitle = document.getElementById("form-title");
@@ -33,28 +33,37 @@ export async function initPage() {
       const tbody = document.querySelector("#products-table tbody");
       if (!tbody) return;
 
-      tbody.innerHTML = products
-        .map(
-          p => `
-        <tr ${p.stock_quantity === 0 ? 'style="opacity:0.5;"' : ""}>
-          <td>${p.id}</td>
-          <td>${p.name}</td>
-          <td>${p.description || ""}</td>
-          <td>
-            ${p.size1_value ? `${p.size1_value} ${p.size1_unit} - ₱${p.price1.toFixed(2)}` : ""}
-            ${p.size2_value ? `<br>${p.size2_value} ${p.size2_unit} - ₱${p.price2.toFixed(2)}` : ""}
-          </td>
-          <td>${p.stock_quantity === 0 ? "Out of Stock" : p.stock_quantity}</td>
-          <td>${p.category || "Uncategorized"}</td>
-          <td>${p.tags?.join(", ") || ""}</td>
-          <td>
-            <button type="button" class="action-btn edit-btn" onclick="editProduct(${p.id})">Edit</button>
-            <button type="button" class="action-btn remove-btn" onclick="deleteProduct(${p.id})">Remove</button>
-          </td>
-        </tr>
-      `
-        )
-        .join("");
+tbody.innerHTML = products
+  .map(
+    p => `
+      <tr ${p.stock_quantity === 0 ? 'style="opacity:0.5;"' : ""}>
+        <td>${p.id}</td>
+        <td>${p.name}</td>
+        <td>${p.description || ""}</td>
+        <td>
+          ${p.size_value ? p.size_value + " " + (p.size_unit || "") : "-"} 
+          - ₱${p.price.toFixed(2)}
+        </td>
+        <td>${p.stock_quantity === 0 ? "Out of Stock" : p.stock_quantity}</td>
+        <td>${p.category || "Uncategorized"}</td>
+        <td>
+          ${[
+            p.is_organic ? "Organic" : null,
+            p.is_seasonal ? "Seasonal" : null
+          ].filter(Boolean).join(", ")}
+        </td>
+        <td>
+          <button type="button" onclick="editProduct(${p.id})">Edit</button>
+          <button type="button" onclick="deleteProduct(${p.id})" 
+            style="margin-left:5px; background-color:red; color:white; border:none; padding:5px 10px; border-radius:4px;">
+            Remove
+          </button>
+        </td>
+      </tr>
+    `
+  )
+  .join("");
+
     } catch {
       console.error("Failed to load products.");
     }
@@ -71,7 +80,7 @@ export async function initPage() {
 
       if (
         !confirm(
-          `Remove Item "${product.name}" ?`
+          `Remove all items with name "${product.name}" (including all sizes)?`
         )
       )
         return;
@@ -106,33 +115,33 @@ export async function initPage() {
       if (form) {
         form.querySelector("#product-id").value = product.id;
         form.querySelector("#product-name").value = product.name;
-        form.querySelector("#product-description").value = product.description || "";
+        form.querySelector("#product-price").value = product.price;
         form.querySelector("#product-stock").value = product.stock_quantity || 0;
-        form.querySelector("#product-image").value = product.image_url || "";
+        form.querySelector("#product-image").value = product.img || "";
+        form.querySelector("#product-size-value").value = product.size_value || 0;
+        form.querySelector("#product-size-unit").value = product.size_unit || "";
 
-        // size 1
-        form.querySelector("#size1-value").value = product.size1_value || "";
-        form.querySelector("#size1-unit").value = product.size1_unit || "";
-        form.querySelector("#price1").value = product.price1 || "";
 
-        // size 2
-        form.querySelector("#size2-value").value = product.size2_value || "";
-        form.querySelector("#size2-unit").value = product.size2_unit || "";
-        form.querySelector("#price2").value = product.price2 || "";
+
+
+
+
+
+
 
         const select = form.querySelector("#product-category");
         if (select && categories.length > 0)
           select.value = product.category_id || "";
 
         form.querySelector("#product-organic").checked =
-          product.is_organic === 1;
+          product.tags.includes("organic");
         form.querySelector("#product-seasonal").checked =
-          product.is_seasonal === 1;
+          product.tags.includes("seasonal");
       }
 
-      // ✅ Scroll to form smoothly
-      form.scrollIntoView({ behavior: "smooth", block: "start" });
-      form.querySelector("#product-name")?.focus();
+
+
+
 
     } catch {}
   }
@@ -142,7 +151,7 @@ export async function initPage() {
   // Live validation
   // -------------------------
   function setupLiveValidation() {
-    if (!form) return;
+    if (!form) return; // skip if no form
 
     const inputs = [
       {
@@ -214,54 +223,82 @@ export async function initPage() {
   // Form submit
   // -------------------------
   if (form) {
+    setupLiveValidation();
     form.addEventListener("submit", async e => {
       e.preventDefault();
 
       const id = form.querySelector("#product-id").value;
       const name = form.querySelector("#product-name").value.trim();
-      const description = form.querySelector("#product-description").value.trim();
+      const price = parseFloat(form.querySelector("#product-price").value);
       const stock_quantity =
-        parseInt(form.querySelector("#product-stock").value) || 0;
+        parseFloat(form.querySelector("#product-stock").value) || 0;
       const image_url = form.querySelector("#product-image").value.trim();
       const category =
         parseInt(form.querySelector("#product-category").value) || null;
+      const size_value =
+        parseFloat(form.querySelector("#product-size-value").value) || 0;
+      const size_unit = form
+        .querySelector("#product-size-unit")
+        .value.trim();
 
-      // size 1
-      const size1_value =
-        parseFloat(form.querySelector("#size1-value").value) || null;
-      const size1_unit = form.querySelector("#size1-unit").value.trim() || null;
-      const price1 =
-        parseFloat(form.querySelector("#price1").value) || null;
 
-      // size 2
-      const size2_value =
-        parseFloat(form.querySelector("#size2-value").value) || null;
-      const size2_unit = form.querySelector("#size2-unit").value.trim() || null;
-      const price2 =
-        parseFloat(form.querySelector("#price2").value) || null;
+
+
+
+
+
+
+
 
       const is_organic = form.querySelector("#product-organic").checked ? 1 : 0;
-      const is_seasonal = form.querySelector("#product-seasonal").checked ? 1 : 0;
+      const is_seasonal = form.querySelector("#product-seasonal").checked
+        ? 1
+        : 0;
 
-      if (!name) return alert("Product name required.");
+      if (!name || !/^[A-Za-z\s]+$/.test(name) || stock_quantity < 0) return;
+      if (!id && (!image_url || !/\.(jpg|jpeg|png|gif|webp)$/i.test(image_url))) {
+        alert(
+          "Please enter a valid image URL for new product (.jpg, .png, .gif, .webp)."
+        );
+        return;
+      }
+      if (!size_unit) {
+        alert("Please select a size unit.");
+        return;
+      }
 
-const payload = {
-  id: id || null,
-  name,
-  description,
-  stock_quantity,
-  image_url,
-  category_id: category,   // ✅ use category_id instead of category
-  size1_value,
-  size1_unit,
-  price1,
-  size2_value,
-  size2_unit,
-  price2,
-  is_organic,
-  is_seasonal,
-};
-
+      // -----------------------
+      // Build payload
+      // -----------------------
+      let payload;
+      if (!id) {
+        payload = {
+          id: null,
+          name,
+          description: "",
+          price,
+          stock_quantity,
+          image_url,
+          category,
+          size_value,
+          size_unit,
+          is_organic,
+          is_seasonal,
+        };
+      } else {
+        payload = {
+          id,
+          name,
+          price,
+          stock_quantity,
+          image_url,
+          category,
+          size_value,
+          size_unit,
+          is_organic,
+          is_seasonal,
+        };
+      }
 
       try {
         const response = await fetch(apiUrl("products"), {

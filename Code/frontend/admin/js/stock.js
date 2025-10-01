@@ -67,8 +67,8 @@ export async function initStock() {
   // -------------------------
   if (updateBtn) {
     updateBtn.addEventListener("click", () => {
-      const newKg = parseInt(kgThresholdInput.value);
-      const newBunch = parseInt(bunchThresholdInput.value);
+      const newKg = parseFloat(kgThresholdInput.value);
+      const newBunch = parseFloat(bunchThresholdInput.value);
 
       if (isNaN(newKg) || newKg < 0) return alert("Enter a valid Kg threshold");
       if (isNaN(newBunch) || newBunch < 0) return alert("Enter a valid Bunch threshold");

@@ -71,13 +71,13 @@ $stmt->bind_param(
             SELECT od.*, 
                 p.name as product_name, 
                 p.description,
-                p.size1_value, p.size1_unit,
-                p.size2_value, p.size2_unit,
-                p.price1, p.price2
+                p.size_value, p.size_unit,
+                p.price
             FROM order_detail od
             JOIN product p ON od.product_id = p.product_id
             WHERE od.order_id = ?
         ");
+
         $stmt->bind_param("i", $order_id);
         $stmt->execute();
         $result = $stmt->get_result();

@@ -34,7 +34,7 @@ class ShoppingCart {
     }
   }
 
-  
+
 
   async fetchProducts() {
     try {
@@ -45,48 +45,49 @@ class ShoppingCart {
       const rawProducts = await res.json();
       console.log("Raw products from API:", rawProducts);
 
-      this.products = rawProducts.flatMap(p => {
+      this.products = rawProducts.map(p => {
         let imgSrc = p.img || p.image_url;
         if (!imgSrc) {
-          imgSrc = '/agri_fresh/code/frontend/images/placeholder.jpg';
+          imgSrc = '/agri_fresh/code/frontend/images/placeholder.jpg'; // absolute safe path
         } else if (!imgSrc.startsWith('http')) {
           imgSrc = imageUrl(imgSrc);
         }
 
-        const base = {
+        return {
+          ...p,
           id: parseInt(p.product_id || p.id, 10),
-          name: p.name,
-          description: p.description ?? '',
           category: p.category ?? p.category_name ?? 'Uncategorized',
+          description: p.description ?? '',
+
           tags: Array.isArray(p.tags) ? p.tags.map(t => t.toLowerCase()) : [],
           img: imgSrc,
-          stock_quantity: parseInt(p.stock_quantity || 0, 10)
+          stock_quantity: parseInt(p.stock_quantity || 0, 10) // Ensure stock is integer
         };
 
-        const variants = [];
 
-        if (p.size1_value && p.price1) {
-          variants.push({
-            ...base,
-            size_value: parseFloat(p.size1_value),
-            size_unit: p.size1_unit,
-            price: parseFloat(p.price1)
-          });
-        }
 
-        if (p.size2_value && p.price2) {
-          variants.push({
-            ...base,
-            size_value: parseFloat(p.size2_value),
-            size_unit: p.size2_unit,
-            price: parseFloat(p.price2)
-          });
-        }
 
-        return variants;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
       });
 
-      console.log("Final products array (with variants):", this.products);
+      console.log("Final products array:", this.products);
       this.render(this.products);
     } catch (err) {
       console.error(err);
@@ -151,59 +152,75 @@ class ShoppingCart {
   }
 
   render(list = this.products) {
-    const grid = document.getElementById('products');
-    if (!grid) return;
+  const grid = document.getElementById('products');
+  if (!grid) return;
 
-    // Group products by name (collect all size variants)
-    const grouped = {};
-    list.forEach(p => {
-      if (!grouped[p.name]) grouped[p.name] = [];
-      grouped[p.name].push(p);
-    });
+  // Only keep unique products by name (first occurrence)
+  const uniqueProductsMap = new Map();
+  list.forEach(p => {
+    if (!uniqueProductsMap.has(p.name)) {
+      uniqueProductsMap.set(p.name, p);
+    }
+  });
+  const uniqueList = Array.from(uniqueProductsMap.values());
 
-    const safeGroups = Object.values(grouped).map(variants => {
-      // pick first as representative
-      const first = variants[0];
-      const img = first.img && first.img.trim() 
-        ? first.img 
-        : '/agri_fresh/code/frontend/images/placeholder.jpg';
-      return { name: first.name, img, description: first.description, variants };
-    });
+  const safeList = uniqueList.map(p => {
+    const img = p.img && p.img.trim() ? p.img : '/agri_fresh/code/frontend/images/placeholder.jpg';
+    return { ...p, img };
+  });
 
-    grid.innerHTML = safeGroups.map(g => {
-      // compute min/max price across sizes
-      const prices = g.variants.map(v => parseFloat(v.price));
-      const minPrice = Math.min(...prices);
-      const maxPrice = Math.max(...prices);
+  grid.innerHTML = safeList.map(p => {
+    const isOutOfStock = p.stock_quantity <= 0;
 
-      // stock check: if all variants out of stock, mark as out
-      const allOut = g.variants.every(v => v.stock_quantity <= 0);
 
-      return `
-        <div class="card ${allOut ? 'out-of-stock' : ''}">
-          <div class="card-image-container">
-            <img src="${g.img}" alt="${g.name}" loading="lazy"
-                onerror="this.onerror=null; this.src='/agri_fresh/code/frontend/images/placeholder.jpg'">
-            ${allOut ? '<div class="out-of-stock-overlay"><span>OUT OF STOCK</span></div>' : ''}
-          </div>
-          <div class="card-body">
-            <h4>${g.name}</h4>
-            <span class="price">
-              ₱${minPrice}${minPrice !== maxPrice ? ` – ₱${maxPrice}` : ""}
-            </span>
-            <button class="add-to-cart-btn ${allOut ? 'disabled' : ''}" 
-                    onclick='cartInstance.openSizeModal(${JSON.stringify(g)})' 
-                    ${allOut ? 'disabled' : ''}>
-              ${allOut ? 'Out of Stock' : 'Select Size'}
-            </button>
-          </div>
+
+
+
+
+
+    return `
+      <div class="card ${isOutOfStock ? 'out-of-stock' : ''}">
+        <div class="card-image-container">
+          <img src="${p.img}" alt="${p.name}" loading="lazy"
+               onerror="this.onerror=null; this.src='/agri_fresh/code/frontend/images/placeholder.jpg'">
+          ${isOutOfStock ? '<div class="out-of-stock-overlay"><span>OUT OF STOCK</span></div>' : ''}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         </div>
-      `;
-    }).join('');
+        <div class="card-body">
+          <h4>${p.name}</h4>
+          <span class="price">₱${p.price}</span>
+          <button class="add-to-cart-btn ${isOutOfStock ? 'disabled' : ''}" 
+                  onclick="addToCart(${p.id})" 
+                  ${isOutOfStock ? 'disabled' : ''}>
+            ${isOutOfStock ? 'Out of Stock' : 'Add to Cart'}
+          </button>
+        </div>
+      </div>
+    `;
+  }).join('');
 
-    this.addOutOfStockStyles();
-  }
-
+  this.addOutOfStockStyles();
+}
 
   addOutOfStockStyles() {
     // Check if styles are already added
@@ -299,9 +316,9 @@ class ShoppingCart {
   addToLocalCart(product_id) {
     const product = this.products.find(p => p.id === product_id);
     const found = this.cart.find(i => parseInt(i.product_id, 10) === product_id);
-    
+
     if (found) {
-      found.qty = parseFloat(found.qty) + 1;
+      found.qty = parseInt(found.qty, 10) + 1; // FIXED: Ensure proper integer addition
     } else {
       this.cart.push({ 
         name: product.name, 
@@ -322,7 +339,7 @@ class ShoppingCart {
     if (list && total && count) {
         list.innerHTML = this.cart.map(
             (item, idx) => {
-                const lineTotal = parseFloat(item.price) * parseFloat(item.qty);
+                const lineTotal = parseFloat(item.price) * parseInt(item.qty, 10);
                 return `<li>
                     ${item.name} ${item.size ? `(${item.size})` : ''} – 
                     ${lineTotal.toLocaleString('en-PH', { style: 'currency', currency: 'PHP' })} 
@@ -335,10 +352,9 @@ class ShoppingCart {
             }
         ).join('');
 
-const grand = this.cart.reduce((t, i) => t + (parseFloat(i.price) * parseFloat(i.qty)), 0);
-count.textContent = this.cart.reduce((c, i) => c + parseFloat(i.qty), 0);
-        count.textContent = this.cart.reduce((c, i) => c + parseFloat(i.qty), 0);
-
+        const grand = this.cart.reduce((t, i) => t + (parseFloat(i.price) * parseInt(i.qty, 10)), 0);
+        total.textContent = grand.toLocaleString('en-PH', { style: 'currency', currency: 'PHP' });
+        count.textContent = this.cart.reduce((c, i) => c + parseInt(i.qty, 10), 0);
 
         document.getElementById('cart').classList.toggle('show', this.cart.length > 0);
     }
@@ -347,42 +363,37 @@ count.textContent = this.cart.reduce((c, i) => c + parseFloat(i.qty), 0);
     if (typeof renderOrderTable === 'function') renderOrderTable();
 }
 
-openSizeModal(productGroup) {
+openSizeModal(product) {
   const modal = document.getElementById("sizeModal");
-  document.getElementById("modalProductName").textContent = productGroup.name;
-  document.getElementById("modalProductImg").src = productGroup.img;
-  document.getElementById("modalProductDesc").textContent = productGroup.description;
+  document.getElementById("modalProductName").textContent = product.name;
+  document.getElementById("modalProductImg").src = product.img;
+  document.getElementById("modalProductDesc").textContent = product.description;
 
   const sizeSelect = document.getElementById("sizeSelect");
-  sizeSelect.innerHTML = "";
+  sizeSelect.innerHTML = ""; // clear existing options
 
-  productGroup.variants.forEach(v => {
+  // Find all variants of this product (different sizes)
+  const variants = this.products.filter(p => p.name === product.name);
+
+  variants.forEach(v => {
     const option = document.createElement("option");
-    option.value = JSON.stringify({
-      id: v.id,
-      size_value: v.size_value,
-      size_unit: v.size_unit,
-      price: v.price
-    });
+    option.value = `${v.size_value} ${v.size_unit}`;
     option.textContent = `${v.size_value} ${v.size_unit} - ₱${v.price}`;
     sizeSelect.appendChild(option);
   });
 
   document.getElementById("confirmAddBtn").onclick = () => {
-    const qty = parseFloat(document.getElementById("modalQty").value) || 1;
+    const qty = parseInt(document.getElementById("modalQty").value, 10) || 1;
+    const [size_value, size_unit] = sizeSelect.value.split(" ");
+    
+    // Find the exact variant by size
+    const selectedProduct = variants.find(v => 
+      v.size_value == parseFloat(size_value) && v.size_unit === size_unit
+    );
 
-    // Parse the JSON string back into an object
-    const selectedVariant = JSON.parse(sizeSelect.value);
-
-    // Find the matching product variant
-    const selectedProduct = this.products.find(p => p.id === selectedVariant.id 
-      && p.size_value === selectedVariant.size_value 
-      && p.size_unit === selectedVariant.size_unit);
-
-    this.confirmAddToCart(selectedProduct, qty, selectedVariant);
+    this.confirmAddToCart(selectedProduct, qty);
     this.closeSizeModal();
   };
-
 
   modal.classList.remove("hidden");
 }
@@ -392,7 +403,7 @@ closeSizeModal() {
   document.getElementById("sizeModal").classList.add("hidden");
 }
 
-async confirmAddToCart(product, qty, selectedVariant) {
+async confirmAddToCart(product, qty) {
   if (!this.customer_id) {
     alert("You are not logged in yet. Please login first.");
     window.location.href = 'login.php';
@@ -406,13 +417,11 @@ async confirmAddToCart(product, qty, selectedVariant) {
 
   const payload = {
     customer_id: parseInt(this.customer_id, 10),
-    product_id: parseInt(selectedVariant.id, 10),
-    size_value: selectedVariant.size_value,
-    size_unit: selectedVariant.size_unit,
-    price_each: selectedVariant.price,
+    product_id: parseInt(product.id, 10),
+    size_value: product.size_value,
+    size_unit: product.size_unit,
     quantity: qty
   };
-
 
   try {
     const response = await fetch(apiUrl('cart'), {
@@ -453,8 +462,8 @@ async confirmAddToCart(product, qty, selectedVariant) {
 
 async changeQty(idx, delta) {
   const item = this.cart[idx];
-const currentQty = parseFloat(item.qty);
-const newQty = currentQty + parseFloat(delta);
+  const currentQty = parseInt(item.qty, 10);
+  const newQty = currentQty + delta;
 
   // Check stock when increasing
   if (delta > 0) {
@@ -549,7 +558,7 @@ this.cart = data.map(i => {
     name: i.name,
     size: `${i.size_value} ${i.size_unit}`, // combine for UI
     price: parseFloat(i.price_each),
-    qty: parseFloat(i.quantity),  
+    qty: parseInt(i.quantity, 10),
     product_id: parseInt(i.product_id, 10),
     img: prod ? prod.img : imageUrl('placeholder.jpg')
   };
@@ -672,9 +681,9 @@ async logout() {
       product_id: 1,
       quantity: 1
     };
-    
+
     console.log("Testing with payload:", testPayload);
-    
+
     try {
       const response = await fetch(apiUrl('cart'), {
         method: 'POST',
@@ -684,7 +693,7 @@ async logout() {
         },
         body: JSON.stringify(testPayload)
       });
-      
+
       const result = await response.json();
       console.log("Test response:", result);
     } catch (err) {
@@ -738,4 +747,3 @@ window.goToCart = goToCart;
 // Initialize the application
 cartInstance.populateCategories();
 cartInstance.fetchProducts();
-cartInstance.fetchCart();

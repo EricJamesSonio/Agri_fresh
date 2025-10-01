@@ -11,17 +11,17 @@
 
     <!-- Basic Info -->
     <input type="text" id="product-name" placeholder="Name" required />
-    <input type="number" id="product-stock" placeholder="Stock Quantity" required />
+    <input type="number" id="product-stock" placeholder="Stock Quantity" step="0.01" required />
     <input type="text" id="product-image" placeholder="Image URL" />
     <textarea id="product-description" placeholder="Product Description"></textarea>
     <select id="product-category"></select>
 
-    <!-- ✅ Size 1 -->
+    <!-- ✅ Single Size & Price (matches DB + JS) -->
     <div class="size-group">
-      <h4>Size Option 1</h4>
+      <h4>Size & Price</h4>
       <div class="size-row">
-        <input type="number" id="size1-value" placeholder="Value (e.g. 1, 500)" step="0.01" />
-        <select id="size1-unit">
+        <input type="number" id="product-size-value" placeholder="Value (e.g. 1, 500)" step="0.01" required />
+        <select id="product-size-unit" required>
           <option value="">Unit--</option>
           <option value="kg">kg</option>
           <option value="g">g</option>
@@ -29,28 +29,11 @@
           <option value="ml">ml</option>
           <option value="bunch">bunch</option>
         </select>
-        <input type="number" id="price1" placeholder="Price" step="0.01" />
+        <input type="number" id="product-price" placeholder="Price" step="0.01" required />
       </div>
     </div>
 
-    <!-- ✅ Size 2 -->
-    <div class="size-group">
-      <h4>Size Option 2</h4>
-      <div class="size-row">
-        <input type="number" id="size2-value" placeholder="Value (e.g. 1, 500)" step="0.01" />
-        <select id="size2-unit">
-          <option value="">Unit--</option>
-          <option value="kg">kg</option>
-          <option value="g">g</option>
-          <option value="liter">liter</option>
-          <option value="ml">ml</option>
-          <option value="bunch">bunch</option>
-        </select>
-        <input type="number" id="price2" placeholder="Price" step="0.01" />
-      </div>
-    </div>
-
-    <!-- ✅ Tags (side by side) -->
+    <!-- ✅ Tags -->
     <div class="tags-group">
       <label><input type="checkbox" id="product-organic" /> Organic</label>
       <label><input type="checkbox" id="product-seasonal" /> Seasonal</label>
@@ -68,7 +51,7 @@
           <th>ID</th>
           <th>Name</th>
           <th>Description</th> 
-          <th>Sizes & Prices</th>
+          <th>Size & Price</th>
           <th>Stock</th>
           <th>Category</th>
           <th>Tags</th>

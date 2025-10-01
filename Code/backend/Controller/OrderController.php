@@ -39,9 +39,14 @@ class OrderController {
             $prod = $stmt->get_result()->fetch_assoc();
 
             if (!$prod) throw new Exception("Product not found: {$item['name']}");
-            if ($prod['stock_quantity'] < $item['quantity']) {
-                throw new Exception("Insufficient stock for {$prod['name']}. Available: {$prod['stock_quantity']}");
-            }
+$deductionQty = $item['quantity'] * $item['size_value'];
+
+if ($prod['stock_quantity'] < $deductionQty) {
+    throw new Exception("Insufficient stock for {$prod['name']}. 
+        Requested: {$deductionQty} {$item['size_unit']} 
+        Available: {$prod['stock_quantity']} {$item['size_unit']}");
+}
+
         }
 
         // 1️⃣ Subtotal (items only)
