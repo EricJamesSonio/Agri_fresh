@@ -56,7 +56,6 @@ $customer_name = $_SESSION['customer_name'] ?? 'Customer';
   &copy; 2025 AgriFresh Market – Freshness Delivered.
 </footer>
 
-<script src="../js/config.js"></script>
 <script src="../js/order-confirmation.js"></script>
 
 </body>

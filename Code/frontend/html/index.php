@@ -150,7 +150,6 @@ $notifCount = $notifCountRow['cnt'] ?? 0;
     </div>
   </div>
 
-  <script src="../js/config.js"></script>
   <script>
   const customerId = localStorage.getItem('customer_id');
   const notifWrapper = document.getElementById('notifWrapper');
@@ -200,6 +199,6 @@ $notifCount = $notifCountRow['cnt'] ?? 0;
   document.addEventListener('DOMContentLoaded', loadNotifications);
   </script>
 
-  <script src="../js/script.js"></script>
+ 
 </body>
 </html>

@@ -131,8 +131,6 @@ $customer_name = $_SESSION['customer_name'] ?? 'Customer';
   &copy; 2025 AgriFresh Market – Freshness Delivered.
 </footer>
 
-<!-- Load global config -->
-<script src="../js/config.js"></script>
 
 <!-- Inject PHP session values into CONFIG -->
 <script>

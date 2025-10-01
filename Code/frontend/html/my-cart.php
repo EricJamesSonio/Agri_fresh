@@ -86,8 +86,6 @@ $role = $_SESSION['role'] ?? 'customer';
   <p>&copy; 2025 AgriFresh Market – Freshness Delivered.</p>
 </footer>
 
-<script src="../js/config.js"></script>
-<script src="../js/script.js"></script>
 <script src="../js/my-cart.js"></script> <!-- Separated JS -->
 </body>
 </html>
