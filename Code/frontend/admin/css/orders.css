@@ -221,3 +221,24 @@ button.danger:hover {
   from { opacity: 0; transform: translateY(-20px); }
   to { opacity: 1; transform: translateY(0); }
 }
+
+.return-btn {
+  padding: 6px 12px;
+  background: #007bff;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+.return-btn.expired {
+  background: #ccc;
+  color: #555;
+  cursor: not-allowed;
+}
+.highlight-return {
+  background: #fff3cd !important;
+}
+.notif {
+  color: #d9534f;
+  font-weight: bold;
+}

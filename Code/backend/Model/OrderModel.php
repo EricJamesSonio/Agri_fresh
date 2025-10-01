@@ -52,19 +52,20 @@ $stmt->bind_param(
         return $stmt->execute();
     }
 
-    public function getOrder($order_id) {
-        $stmt = $this->con->prepare("
-            SELECT o.*, ca.street, ca.city, ca.state, ca.postal_code, ca.country,
-                   c.first_name, c.last_name, c.email
-            FROM `orders` o
-            JOIN customer_address ca ON o.address_id = ca.address_id
-            JOIN customer c ON o.customer_id = c.customer_id
-            WHERE o.order_id = ?
-        ");
-        $stmt->bind_param("i", $order_id);
-        $stmt->execute();
-        return $stmt->get_result()->fetch_assoc();
-    }
+public function getOrder($order_id) {
+    $stmt = $this->con->prepare("
+        SELECT o.*, o.return_request, 
+               ca.street, ca.city, ca.state, ca.postal_code, ca.country,
+               c.first_name, c.last_name, c.email
+        FROM `orders` o
+        JOIN customer_address ca ON o.address_id = ca.address_id
+        JOIN customer c ON o.customer_id = c.customer_id
+        WHERE o.order_id = ?
+    ");
+    $stmt->bind_param("i", $order_id);
+    $stmt->execute();
+    return $stmt->get_result()->fetch_assoc();
+}
 
     public function getOrderDetails($order_id) {
         $stmt = $this->con->prepare("
@@ -90,24 +91,24 @@ $stmt->bind_param(
     }
 
 
-    public function getCustomerOrders($customer_id) {
-        $stmt = $this->con->prepare("
-            SELECT o.*, ca.street, ca.city, ca.state, ca.country
-            FROM `orders` o
-            JOIN customer_address ca ON o.address_id = ca.address_id
-            WHERE o.customer_id = ?
-            ORDER BY o.created_at DESC
-        ");
-        $stmt->bind_param("i", $customer_id);
-        $stmt->execute();
-        $result = $stmt->get_result();
+public function getCustomerOrders($customer_id) {
+    $stmt = $this->con->prepare("
+        SELECT o.*, o.return_request, ca.street, ca.city, ca.state, ca.country
+        FROM `orders` o
+        JOIN customer_address ca ON o.address_id = ca.address_id
+        WHERE o.customer_id = ?
+        ORDER BY o.created_at DESC
+    ");
+    $stmt->bind_param("i", $customer_id);
+    $stmt->execute();
+    $result = $stmt->get_result();
 
-        $orders = [];
-        while ($row = $result->fetch_assoc()) {
-            $orders[] = $row;
-        }
-        return $orders;
+    $orders = [];
+    while ($row = $result->fetch_assoc()) {
+        $orders[] = $row;
     }
+    return $orders;
+}
 
     public function updateOrderStatus($order_id, $status) {
         $valid_statuses = ['pending','approved','processing','shipped','delivered','cancelled','completed','refunded','returned'];

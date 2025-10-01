@@ -25,11 +25,10 @@ createTable($con, 'orders', "
             'refunded'
         ) DEFAULT 'pending',
         payment_method VARCHAR(50),
+        return_request TINYINT(1) DEFAULT 0,     -- new column for return/refund request
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
         FOREIGN KEY (customer_id) REFERENCES customer(customer_id) ON DELETE CASCADE,
         FOREIGN KEY (address_id) REFERENCES customer_address(address_id) ON DELETE RESTRICT
     )
 ");
-
-
