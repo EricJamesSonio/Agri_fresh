@@ -29,28 +29,31 @@ async function fetchOrders() {
         const now = new Date();
         const hoursDiff = (now - createdAt) / (1000 * 60 * 60); // ms → hrs
 
-let returnBtn = "";
+        let returnBtn = "";
 
 if (order.return_request == 1) {
-    returnBtn = `<span class="notif">Return/Refund already requested</span>`;
-} else {
-    // check if within 8 hours
-    const createdAt = new Date(order.created_at);
-    const now = new Date();
-    const hoursDiff = (now - createdAt) / (1000 * 60 * 60);
-
-    if (hoursDiff <= 8) {
-        returnBtn = `
-        <button class="return-btn" onclick="requestReturn(${order.order_id})">
-            Request Return/Refund
-        </button>`;
+    if (order.order_status.toLowerCase() === "returned" || order.order_status.toLowerCase() === "refunded") {
+        returnBtn = `<span class="notif success">Request Approved!</span>`;
     } else {
-        returnBtn = `
-        <button class="return-btn expired" disabled>
-            Return/Refund expired (${hoursDiff.toFixed(1)} hrs ago)
-        </button>`;
+        returnBtn = `<span class="notif">Return/Refund already requested</span>`;
     }
-}
+        } else if (order.order_status.toLowerCase() === "completed") {
+            if (hoursDiff <= 8) {
+                returnBtn = `
+                <button class="return-btn" onclick="requestReturn(${order.order_id})">
+                    Request Return/Refund
+                </button>`;
+            } else {
+                returnBtn = `
+                <button class="return-btn expired" disabled>
+                    Return/Refund expired (${hoursDiff.toFixed(1)} hrs ago)
+                </button>`;
+            }
+        } else {
+            returnBtn = "";
+        }
+
+
         orderCard.innerHTML = `
             <div class="order-header">
                 <div>

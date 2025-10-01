@@ -47,7 +47,6 @@ export async function loadOrders() {
 function updateOrder(orderId, newStatus) {
   if (!newStatus) return;
 
-  // Run async work after handler exits
   (async () => {
     try {
       const response = await fetch(apiUrl("orderUpdate"), {
@@ -59,13 +58,21 @@ function updateOrder(orderId, newStatus) {
       const result = await response.json();
       alert(result.message);
 
-      // ✅ Instead of reload, update only that row
       const row = document.querySelector(`#orders-table tr[data-id="${orderId}"]`);
       if (row) {
         const statusCell = row.querySelector(".status-cell");
-        statusCell.innerHTML = (newStatus === "return_requested")
-          ? '<span class="notif">Return/Refund Requested</span>'
-          : newStatus;
+
+        // ✅ Handle return request highlight reset
+        if (newStatus === "refunded" || newStatus === "returned") {
+          row.classList.remove("highlight-return"); // remove highlight
+          statusCell.innerHTML = newStatus;         // show final status
+        } else if (newStatus === "return_requested") {
+          row.classList.add("highlight-return");
+          statusCell.innerHTML = '<span class="notif">Return/Refund Requested</span>';
+        } else {
+          row.classList.remove("highlight-return");
+          statusCell.innerHTML = newStatus;
+        }
       }
     } catch (error) {
       console.error("Failed to update order:", error);
@@ -73,6 +80,7 @@ function updateOrder(orderId, newStatus) {
     }
   })();
 }
+
 
 // ================================
 // View order details (modal)
