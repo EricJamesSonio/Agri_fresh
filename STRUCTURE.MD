@@ -6,7 +6,7 @@ code/
 
 ---> ----> Controller/      # functions / logic
 ---> ----> Model/           # model of data table
----> ----> Routes/          # entrance
+---> ----> Routes/          # entrance (the otp.php is in this folder )
 
 ---> database/          # Database creation & seedings
 ---> ----> Model/
@@ -41,3 +41,6 @@ code/
 
 ---> ----> images/
 
+scripts/   (same level path of code)
+---> .env (for gmail and app password use in send otp)
+---> send-otp.py (for sendign otp) 
