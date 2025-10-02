@@ -28,6 +28,7 @@ class ProductController {
         $this->model->update($data);
         echo json_encode(["status" => "success", "message" => "Product updated"]);
     } else {
+        file_put_contents("php://stderr", print_r($data, true));
         $this->model->create($data);
         echo json_encode(["status" => "success", "message" => "Product created"]);
 

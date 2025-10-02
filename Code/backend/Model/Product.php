@@ -50,27 +50,30 @@ class Product {
         $stmt = $this->con->prepare("
             INSERT INTO product 
                 (name, description, price, stock_quantity, image_url, category_id, 
-                 size_value, size_unit, is_organic, is_seasonal, expiration_date) 
+                size_value, size_unit, is_organic, is_seasonal, expiration_date) 
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         ");
 
         $stmt->bind_param(
-            "ssdissdsijs",
-            $data['name'],
-            $data['description'],
-            $data['price'],
-            $data['stock_quantity'],
-            $data['image_url'],
-            $data['category'],
-            $data['size_value'],
-            $data['size_unit'],
-            $data['is_organic'],
-            $data['is_seasonal'],
-            $data['expiration_date']
+            "ssdisdsiiss",
+            $data['name'],            // s
+            $data['description'],     // s
+            $data['price'],           // d
+            $data['stock_quantity'],  // i
+            $data['image_url'],       // s
+            $data['category'],        // d / i (category_id)
+            $data['size_value'],      // d
+            $data['size_unit'],       // s
+            $data['is_organic'],      // i
+            $data['is_seasonal'],     // i
+            $data['expiration_date']  // s
         );
 
-        $stmt->execute();
+        if (!$stmt->execute()) {
+            throw new Exception("DB Error: " . $stmt->error);
+        }
     }
+
 
     public function update($data) {
         // First get the current product data
