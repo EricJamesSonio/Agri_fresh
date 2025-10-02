@@ -137,47 +137,50 @@ export async function initPage() {
           if (noExpiredMsg) noExpiredMsg.style.display = "none";
           if (expiredTable) expiredTable.style.display = "table";
 
-          expiredTbody.innerHTML = expiredProducts
-            .map(
-              p => {
-                const daysExpired = getDaysExpired(p.expiration_date);
-                return `
-                  <tr style="background-color: #ffebee;">
-                    <td>${p.id}</td>
-                    <td>${p.name}</td>
-                    <td>${p.description || ""}</td>
-                    <td>
-                      ${p.size_value ? p.size_value + " " + (p.size_unit || "") : "-"} 
-                      - ₱${p.price.toFixed(2)}
-                    </td>
-                    <td>${p.category || "Uncategorized"}</td>
-                    <td style="color: red; font-weight: bold;">
-                      ${new Date(p.expiration_date).toLocaleDateString('en-US', { 
-                        year: 'numeric', 
-                        month: 'short', 
-                        day: 'numeric' 
-                      })}
-                    </td>
-                    <td style="color: red; font-weight: bold;">${daysExpired} day${daysExpired !== 1 ? 's' : ''} ago</td>
-                    <td>
-                      ${[
-                        p.is_organic ? "Organic" : null,
-                        p.is_seasonal ? "Seasonal" : null
-                      ].filter(Boolean).join(", ")}
-                    </td>
-                    <td>
-                      <button type="button" onclick="deleteProduct(${p.id})" 
-                        style="background-color:red; color:white; border:none; padding:5px 10px; border-radius:4px;">
-                        Remove
-                      </button>
-                    </td>
-                  </tr>
-                `;
-              }
-            )
-            .join("");
+        expiredTbody.innerHTML = expiredProducts
+          .map(p => {
+            const daysExpired = getDaysExpired(p.expiration_date);
+            return `
+              <tr style="background-color: #ffebee;">
+                <td>${p.id}</td>
+                <td>${p.name}</td>
+                <td>${p.description || ""}</td>
+                <td>
+                  ${p.size_value ? p.size_value + " " + (p.size_unit || "") : "-"} 
+                  - ₱${p.price.toFixed(2)}
+                </td>
+                <td>${p.stock_quantity}</td> <!-- Quantity column -->
+                <td>${p.category || "Uncategorized"}</td>
+                <td style="color: red; font-weight: bold;">
+                  ${new Date(p.expiration_date).toLocaleDateString('en-US', { 
+                    year: 'numeric', 
+                    month: 'short', 
+                    day: 'numeric' 
+                  })}
+                </td>
+                <td style="color: red; font-weight: bold;">
+                  ${daysExpired} day${daysExpired !== 1 ? 's' : ''} ago
+                </td>
+                <td>
+                  ${[
+                    p.is_organic ? "Organic" : null,
+                    p.is_seasonal ? "Seasonal" : null
+                  ].filter(Boolean).join(", ")}
+                </td>
+                <td>
+                  <button type="button" onclick="deleteProduct(${p.id})" 
+                    style="background-color:red; color:white; border:none; padding:5px 10px; border-radius:4px;">
+                    Remove
+                  </button>
+                </td>
+              </tr>
+            `;
+          })
+          .join("");
+
         }
       }
+
 
     } catch {
       console.error("Failed to load products.");
