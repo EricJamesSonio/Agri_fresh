@@ -1,6 +1,8 @@
 <?php
 require_once(__DIR__ . '/../../database/db.php');
 
+header("Content-Type: application/json");
+
 $data = json_decode(file_get_contents("php://input"), true);
 $order_id = intval($data['order_id'] ?? 0);
 
@@ -10,20 +12,24 @@ if (!$order_id) {
 }
 
 try {
+    // Prepare query
     $stmt = $con->prepare("UPDATE orders SET return_request = 1 WHERE order_id = ?");
-    $ok = $stmt->execute([$order_id]);
+    $stmt->bind_param("i", $order_id);
+    $ok = $stmt->execute();
 
-    if ($ok) {
+    if ($ok && $stmt->affected_rows > 0) {
         echo json_encode([
             "status" => "success",
-            "message" => "Return/Refund request submitted"
+            "message" => "Return/Refund request submitted successfully"
         ]);
     } else {
         echo json_encode([
             "status" => "error",
-            "message" => "Failed to submit request"
+            "message" => "Failed to submit request (order not found or already requested)"
         ]);
     }
+
+    $stmt->close();
 } catch (Exception $e) {
     echo json_encode([
         "status" => "error",

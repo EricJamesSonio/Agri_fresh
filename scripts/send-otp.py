@@ -24,7 +24,7 @@ def is_valid_email(email):
 
 def send_otp(email, otp):
     msg = MIMEText(f"Your OTP is {otp}. It expires in 5 minutes.")
-    msg["Subject"] = "Starbucks OTP"
+    msg["Subject"] = "Agrifresh OTP"
     msg["From"] = EMAIL_USER
     msg["To"] = email
 
