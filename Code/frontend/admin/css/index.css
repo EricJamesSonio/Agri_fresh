@@ -641,3 +641,14 @@ p {
     }
 }
 
+.highlight-return {
+  background-color: #ffe5e5; /* light red background */
+  color: #b30000;           /* dark red text */
+  font-weight: bold;
+}
+#sales-table tbody tr.highlight-return {
+  background-color: #ffe5e5 !important;
+  color: #b30000;
+  font-weight: bold;
+}
+

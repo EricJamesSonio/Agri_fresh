@@ -20,8 +20,7 @@ export async function initSales() {
       if (result.status !== "success") throw new Error(result.message || "Failed to fetch orders");
 
       // completed only
-      let sales = (Array.isArray(result.data) ? result.data : [])
-        .filter(o => o.order_status === "completed");
+      let sales = Array.isArray(result.data) ? result.data : [];
 
       const now = new Date();
 
@@ -51,24 +50,32 @@ export async function initSales() {
       }
 
       currentSales = sales;
-
+        window.currentSales = currentSales;
       // render rows
-      tbody.innerHTML = sales.map(order => {
-        const created = order.created_at ? new Date(order.created_at).toLocaleDateString() : "";
-        const amt = Number(order.total_amount || 0).toFixed(2);
-        return `
-          <tr>
-            <td>${order.order_id}</td>
-            <td>${order.customer_id}</td>
-            <td>₱${amt}</td>
-            <td style="text-transform:capitalize">${order.order_status}</td>
-            <td>${created}</td>
-            <td>
-              <button class="details-btn" data-id="${order.order_id}">View Details</button>
-            </td>
-          </tr>
-        `;
-      }).join("");
+    tbody.innerHTML = sales.map(order => {
+
+      const created = order.created_at ? new Date(order.created_at).toLocaleDateString() : "";
+      const amt = Number(order.total_amount || 0).toFixed(2);
+
+      // Highlight returns/refunds
+      const rowClass = (order.order_status === "return" || order.order_status === "refund")
+        ? "highlight-return"
+        : "";
+
+      return `
+        <tr class="${rowClass}">
+          <td>${order.order_id}</td>
+          <td>${order.customer_id}</td>
+          <td>₱${amt}</td>
+          <td style="text-transform:capitalize">${order.order_status}</td>
+          <td>${created}</td>
+          <td>
+            <button class="details-btn" data-id="${order.order_id}">View Details</button>
+          </td>
+        </tr>
+      `;
+    }).join("");
+
 
       // attach listeners for details buttons
       tbody.querySelectorAll(".details-btn").forEach(btn => {
@@ -100,6 +107,7 @@ export async function initSales() {
       tbody.innerHTML = `<tr><td colspan="6" class="error">Failed to load sales report.</td></tr>`;
     }
   }
+
 
   // export CSV
   function exportCSV(sales) {
@@ -175,3 +183,4 @@ export async function initSales() {
 
   await loadSalesReport();
 }
+

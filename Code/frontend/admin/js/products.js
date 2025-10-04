@@ -80,6 +80,7 @@ export async function initPage() {
     try {
       const res = await fetch(apiUrl("products"));
       const allProducts = await res.json();
+  
       
       // Separate active and expired products
       const activeProducts = allProducts.filter(p => !isExpired(p.expiration_date));

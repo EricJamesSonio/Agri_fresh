@@ -5,6 +5,8 @@ export async function initStock() {
     bunch: 10
   };
 
+  
+
   // UI elements
   const thresholdInput = document.getElementById("threshold-input");
   const thresholdUnit = document.getElementById("threshold-unit");
