@@ -18,11 +18,54 @@ header{
   color:#fff;
 }
 header h1{font-size:1.5rem;font-weight:600}
-header nav a{
-  margin-left:1.5rem;
-  color:#fff;
-  text-decoration:none;
-  font-weight:500;
+header nav {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+header nav a {
+  color: #fff;
+  text-decoration: none;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+}
+
+header nav a img {
+  vertical-align: middle;
+  transition: transform 0.2s;
+}
+
+header nav a:hover img {
+  transform: scale(1.1);
+}
+
+.notification-wrapper {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  cursor: pointer;
+}
+
+#notifCount {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  background: #ff4444;
+  color: white;
+  font-size: 0.7rem;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
 }
 
 

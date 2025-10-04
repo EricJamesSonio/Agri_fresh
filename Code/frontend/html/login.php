@@ -11,51 +11,7 @@
   <link rel="stylesheet" href="../css/login.css">
   <link rel="stylesheet" href="../css/sidebar.css">
 
-  <style>
-    .back-btn {
-      position: fixed;
-      top: 1rem;
-      right: 1rem;
-      background: #4CAF50;
-      color: white;
-      border: none;
-      padding: 0.6rem 1.2rem;
-      border-radius: 4px;
-      cursor: pointer;
-      font-size: 1rem;
-      z-index: 1000;
-    }
 
-    .back-btn:hover {
-      background: #45a049;
-    }
-
-    /* Password field wrapper */
-    .password-wrapper {
-      position: relative;
-      width: 100%;
-    }
-
-    .password-wrapper input {
-      width: 100%;
-      padding-right: 2.5rem; /* space for eye icon inside */
-      box-sizing: border-box;
-    }
-
-    .toggle-password {
-      position: absolute;
-      top: 40%;
-      right: 0.75rem;
-      transform: translateY(-50%);
-      cursor: pointer;
-      color: #888;
-      font-size: 1rem;
-    }
-
-    .toggle-password:hover {
-      color: #787878ff;
-    }
-  </style>
 </head>
 
 <body>
