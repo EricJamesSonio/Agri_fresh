@@ -26,7 +26,8 @@ $_SESSION['otp_email'] = $email;
 $_SESSION['otp_expiry'] = time() + 300; // 5 minutes
 
 // Absolute path to Python
-$python = 'C:\\Users\\admin\\AppData\\Local\\Programs\\Python\\Python313\\python.exe';
+$python = 'C:\\Users\\TBPPH\\AppData\\Local\\Microsoft\\WindowsApps\\python.exe';
+
 
 // Path to your Python script
 $pythonScript = realpath(__DIR__ . '/../../../scripts/send-otp.py');

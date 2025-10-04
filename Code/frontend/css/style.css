@@ -224,8 +224,190 @@ header nav a{
 .modal-content button{margin-top:1rem;padding:.5rem 1.5rem;background:var(--green);color:#fff;border:none;border-radius:4px;cursor:pointer}
 .close{position:absolute;top:.5rem;right:.8rem;font-size:1.4rem;cursor:pointer}
 
-@media(max-width:600px){
-  .grid{grid-template-columns:1fr 1fr}
+/* ===== Responsive Design ===== */
+
+/* Base font size for rem units */
+html {
+  font-size: 16px;
+}
+
+/* Large devices (desktops, 1200px and up) */
+@media (max-width: 1200px) {
+  html {
+    font-size: 15px;
+  }
+}
+
+/* Medium devices (tablets, 992px and down) */
+@media (max-width: 992px) {
+  html {
+    font-size: 14px;
+  }
+  
+  .hero {
+    height: 50vh;
+  }
+  
+  .hero-text {
+    left: 5%;
+    right: 5%;
+    width: auto;
+    max-width: 100%;
+    padding: 1.5rem;
+  }
+  
+  .mega-title {
+    font-size: 2.5rem;
+  }
+}
+
+/* Small devices (landscape phones, 768px and down) */
+@media (max-width: 768px) {
+  html {
+    font-size: 13px;
+  }
+  
+  header {
+    flex-direction: column;
+    padding: 1rem;
+    text-align: center;
+  }
+  
+  header nav {
+    margin-top: 1rem;
+  }
+  
+  header nav a {
+    margin: 0 0.5rem;
+    display: inline-block;
+  }
+  
+  .filters {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.5rem;
+  }
+  
+  .filters input, 
+  .filters select {
+    width: 100%;
+  }
+  
+  .tags {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  
+  .grid {
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 1rem;
+    padding: 1rem;
+  }
+  
+  #cart {
+    width: 90%;
+    right: 5%;
+    bottom: 1rem;
+    max-height: 60vh;
+  }
+  
+  .hero {
+    height: 40vh;
+    justify-content: center;
+    text-align: center;
+  }
+  
+  .hero-text {
+    text-align: center;
+    padding: 1.2rem;
+    left: 5%;
+    right: 5%;
+    width: auto;
+  }
+  
+  .mega-title {
+    font-size: 2rem;
+  }
+  
+  .mega-desc {
+    font-size: 1rem;
+  }
+  
+  .mega-cta {
+    padding: 0.7rem 1.5rem;
+    font-size: 1rem;
+  }
+}
+
+/* Extra small devices (portrait phones, 576px and down) */
+@media (max-width: 576px) {
+  html {
+    font-size: 12px;
+  }
+  
+  .grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 0.8rem;
+    padding: 0.8rem;
+  }
+  
+  .card img {
+    height: 120px;
+  }
+  
+  .hero {
+    height: 35vh;
+  }
+  
+  .hero-text {
+    padding: 1rem;
+  }
+  
+  .mega-title {
+    font-size: 1.8rem;
+  }
+  
+  .modal-content {
+    width: 95%;
+    margin: 20% auto;
+    padding: 1rem;
+  }
+  
+  .dots-menu {
+    top: 0.5rem;
+    right: 0.5rem;
+  }
+  
+  .dots-menu label {
+    width: 2rem;
+    height: 2rem;
+    line-height: 2rem;
+  }
+}
+
+/* Very small devices (phones, 400px and down) */
+@media (max-width: 400px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .hero {
+    height: 30vh;
+  }
+  
+  .hero-text {
+    padding: 0.8rem;
+  }
+  
+  .mega-title {
+    font-size: 1.5rem;
+  }
+  
+  .mega-cta {
+    padding: 0.6rem 1.2rem;
+    font-size: 0.9rem;
+  }
 }
 
 .item-controls {

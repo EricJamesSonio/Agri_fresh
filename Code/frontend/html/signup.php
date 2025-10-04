@@ -3,8 +3,13 @@
 <head>
   <meta charset="UTF-8">
   <title>Sign Up – Agri Fresh</title>
+
+  <!-- Font Awesome for eye icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
   <link rel="stylesheet" href="../css/style.css">
   <link rel="stylesheet" href="../css/sidebar.css">
+
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -44,6 +49,7 @@
       border-radius: 6px;
       border: 1px solid #ccc;
       font-size: 1rem;
+      box-sizing: border-box;
     }
 
     form input:focus {
@@ -90,6 +96,30 @@
 
     .switch a:hover {
       text-decoration: underline;
+    }
+
+    /* Password wrapper (for eye icon) */
+    .password-wrapper {
+      position: relative;
+      width: 100%;
+    }
+
+    .password-wrapper input {
+      padding-right: 2.5rem;
+    }
+
+    .toggle-password {
+      position: absolute;
+      top: 45%;
+      right: 0.75rem;
+      transform: translateY(-50%);
+      cursor: pointer;
+      color: #888;
+      font-size: 1rem;
+    }
+
+    .toggle-password:hover {
+      color: #333;
     }
 
     /* OTP input overlay */
@@ -166,7 +196,10 @@
     </label>
 
     <label>Password
-      <input type="password" name="password" required />
+      <div class="password-wrapper">
+        <input type="password" name="password" id="password" required />
+        <i class="fa-solid fa-eye toggle-password" id="togglePassword"></i>
+      </div>
       <span class="error" id="passwordError"></span>
     </label>
 
@@ -182,7 +215,23 @@
 </footer>
 
 <script src="../js/signup.js"></script>
+
 <script>
+  // Toggle show/hide password
+  const togglePassword = document.getElementById('togglePassword');
+  const password = document.getElementById('password');
+
+  togglePassword.addEventListener('click', () => {
+    const type = password.getAttribute('type') === 'password' ? 'text' : 'password';
+    password.setAttribute('type', type);
+
+    if (type === 'password') {
+      togglePassword.classList.replace('fa-eye-slash', 'fa-eye');
+    } else {
+      togglePassword.classList.replace('fa-eye', 'fa-eye-slash');
+    }
+  });
+
   // --- OTP overlay example (can be triggered after sending OTP) ---
   async function promptOtp(email) {
     return new Promise(resolve => {
@@ -210,9 +259,6 @@
       });
     });
   }
-
-  // Example usage in your form JS:
-  // const userOtp = await promptOtp(email);
 </script>
 </body>
 </html>
