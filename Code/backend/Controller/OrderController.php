@@ -39,13 +39,13 @@ class OrderController {
             $prod = $stmt->get_result()->fetch_assoc();
 
             if (!$prod) throw new Exception("Product not found: {$item['name']}");
-$deductionQty = $item['quantity'] * $item['size_value'];
+            $deductionQty = $item['quantity']; // Changed: Using only the quantity, not multiplied by size_value
 
-if ($prod['stock_quantity'] < $deductionQty) {
-    throw new Exception("Insufficient stock for {$prod['name']}. 
-        Requested: {$deductionQty} {$item['size_unit']} 
-        Available: {$prod['stock_quantity']} {$item['size_unit']}");
-}
+            if ($prod['stock_quantity'] < $deductionQty) {
+                throw new Exception("Insufficient stock for {$prod['name']}. 
+                    Requested: {$deductionQty} items 
+                    Available: {$prod['stock_quantity']} items");
+            }
 
         }
 
@@ -99,13 +99,12 @@ if ($voucher_code) {
             $success = $this->orderModel->addOrderDetail($order_id, $item['product_id'], $item['quantity'], $item['price_each']);
             if (!$success) throw new Exception('Failed to add order details.');
 
-// Use size_value from cart item, multiplied by quantity
-$deductionQty = $item['quantity'] * $item['size_value'];
+            // Changed: Deduct only the quantity, not multiplied by size_value
+            $deductionQty = $item['quantity'];
 
-$stmt = $con->prepare("UPDATE product SET stock_quantity = stock_quantity - ? WHERE product_id = ?");
-$stmt->bind_param("di", $deductionQty, $item['product_id']);
-$stmt->execute();
-
+            $stmt = $con->prepare("UPDATE product SET stock_quantity = stock_quantity - ? WHERE product_id = ?");
+            $stmt->bind_param("ii", $deductionQty, $item['product_id']);
+            $stmt->execute();
 
         }
 
