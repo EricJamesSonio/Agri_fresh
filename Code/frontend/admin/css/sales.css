@@ -216,3 +216,12 @@ body {
   from { transform: translateY(-20px); opacity: 0; }
   to   { transform: translateY(0); opacity: 1; }
 }
+button {
+    padding: 8px 14px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.2s 
+ease;
+}
