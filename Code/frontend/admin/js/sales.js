@@ -50,32 +50,31 @@ export async function initSales() {
       }
 
       currentSales = sales;
-        window.currentSales = currentSales;
+      window.currentSales = currentSales;
+      
       // render rows
-    tbody.innerHTML = sales.map(order => {
+      tbody.innerHTML = sales.map(order => {
+        const created = order.created_at ? new Date(order.created_at).toLocaleDateString() : "";
+        const amt = Number(order.total_amount || 0).toFixed(2);
 
-      const created = order.created_at ? new Date(order.created_at).toLocaleDateString() : "";
-      const amt = Number(order.total_amount || 0).toFixed(2);
+        // Highlight returns/refunds
+        const rowClass = (order.order_status === "return" || order.order_status === "refund")
+          ? "highlight-return"
+          : "";
 
-      // Highlight returns/refunds
-      const rowClass = (order.order_status === "return" || order.order_status === "refund")
-        ? "highlight-return"
-        : "";
-
-      return `
-        <tr class="${rowClass}">
-          <td>${order.order_id}</td>
-          <td>${order.customer_id}</td>
-          <td>₱${amt}</td>
-          <td style="text-transform:capitalize">${order.order_status}</td>
-          <td>${created}</td>
-          <td>
-            <button class="details-btn" data-id="${order.order_id}">View Details</button>
-          </td>
-        </tr>
-      `;
-    }).join("");
-
+        return `
+          <tr class="${rowClass}">
+            <td>${order.order_id}</td>
+            <td>${order.customer_id}</td>
+            <td>₱${amt}</td>
+            <td style="text-transform:capitalize">${order.order_status}</td>
+            <td>${created}</td>
+            <td>
+              <button class="details-btn" data-id="${order.order_id}">View Details</button>
+            </td>
+          </tr>
+        `;
+      }).join("");
 
       // attach listeners for details buttons
       tbody.querySelectorAll(".details-btn").forEach(btn => {
@@ -108,39 +107,74 @@ export async function initSales() {
     }
   }
 
-
-  // export CSV
   function exportCSV(sales) {
     if (!Array.isArray(sales) || sales.length === 0) {
       alert("No sales data to export.");
       return;
     }
-
+    
     const headers = [
       "Order ID","Customer ID","Subtotal","Shipping Fee","Discount",
-      "Total Amount","Status","Created At"
+      "Total Amount","Status","Created At","Product Name","Quantity","Price","Line Total"
     ];
-
+    
     const currency = (val) =>
       "₱" + Number(val || 0).toLocaleString("en-PH", { minimumFractionDigits: 2 });
-
-    const rows = sales.map(o => {
-      const date = o.created_at ? new Date(o.created_at).toLocaleDateString("en-PH") : "";
+    
+    const rows = [];
+    
+    sales.forEach(o => {
+      // Format date as simple readable text (no special formatting for Excel)
+      const date = o.created_at
+        ? new Date(o.created_at).toLocaleString("en-PH", {
+            year: "numeric",
+            month: "2-digit",
+            day: "2-digit",
+            hour: "2-digit",
+            minute: "2-digit",
+            hour12: true
+          })
+        : "";
+      
       const status = o.order_status
         ? o.order_status.charAt(0).toUpperCase() + o.order_status.slice(1)
         : "";
-      return [
-        o.order_id,
-        o.customer_id,
-        currency(o.subtotal),
-        currency(o.shipping_fee),
-        currency(o.discount_amount),
-        currency(o.total_amount),
-        status,
-        date,
-      ];
+      
+      if (o.details && Array.isArray(o.details) && o.details.length > 0) {
+        o.details.forEach(item => {
+          rows.push([
+            o.order_id,
+            o.customer_id,
+            currency(o.subtotal),
+            currency(o.shipping_fee),
+            currency(o.discount_amount),
+            currency(o.total_amount),
+            status,
+            date,
+            item.product_name || "(unknown product)",
+            item.quantity || 0,
+            currency(item.price || 0),
+            currency((item.price || 0) * (item.quantity || 0))
+          ]);
+        });
+      } else {
+        rows.push([
+          o.order_id,
+          o.customer_id,
+          currency(o.subtotal),
+          currency(o.shipping_fee),
+          currency(o.discount_amount),
+          currency(o.total_amount),
+          status,
+          date,
+          "No items",
+          "",
+          "",
+          ""
+        ]);
+      }
     });
-
+    
     const totalRevenue = sales.reduce((s, o) => s + (parseFloat(o.total_amount) || 0), 0);
     const totalDiscounts = sales.reduce((s, o) => s + (parseFloat(o.discount_amount) || 0), 0);
     const totalItemsSold = sales.reduce((sum, o) => {
@@ -149,21 +183,27 @@ export async function initSales() {
       }
       return sum;
     }, 0);
-
+    
     const summary = [
-      ["", "", "", "", "", "", "", ""],
+      [""],
       ["Total Revenue", currency(totalRevenue)],
       ["Total Discounts", currency(totalDiscounts)],
       ["Total Items Sold", totalItemsSold],
     ];
-
+    
+    // Build CSV with proper quoting
     let csvContent = [headers, ...rows, ...summary]
-      .map(r => r.map(cell => `"${String(cell ?? "").replace(/"/g, '""')}"`).join(","))
+      .map(r =>
+        r.map(cell => {
+          const str = String(cell ?? "");
+          // Escape quotes and wrap in quotes
+          return `"${str.replace(/"/g, '""')}"`;
+        }).join(",")
+      )
       .join("\n");
-
+    
     const blob = new Blob(["\uFEFF" + csvContent], { type: "text/csv;charset=utf-8;" });
     const url = URL.createObjectURL(blob);
-
     const a = document.createElement("a");
     a.href = url;
     a.download = `sales_report_${new Date().toISOString().slice(0, 10)}.csv`;
@@ -183,4 +223,3 @@ export async function initSales() {
 
   await loadSalesReport();
 }
-

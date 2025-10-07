@@ -158,6 +158,7 @@ $notifCount = $notifCountRow['cnt'] ?? 0;
   const closeNotifBtn = document.getElementById('closeNotifBtn');
   const notifList = document.getElementById('notifList');
   const notifBadge = document.getElementById('notifCount');
+  
 
   function openNotifModal() {
       notifModal.classList.remove('hidden');
@@ -198,6 +199,14 @@ $notifCount = $notifCountRow['cnt'] ?? 0;
   notifWrapper.addEventListener('click', openNotifModal);
   closeNotifBtn.addEventListener('click', closeNotifModal);
   document.addEventListener('DOMContentLoaded', loadNotifications);
+
+  document.querySelectorAll('nav a').forEach(link => {
+  link.addEventListener('click', function() {
+    document.querySelectorAll('nav a').forEach(a => a.classList.remove('active'));
+    this.classList.add('active');
+  });
+});
+
   </script>
 
  

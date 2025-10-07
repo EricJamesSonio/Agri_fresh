@@ -658,3 +658,9 @@ html {
     border-radius: 50%;
     font-weight: bold;
 }
+nav a.active {
+  border-bottom: 3px solid #2ecc71;
+  color: #2ecc71;
+  font-weight: bold;
+}
+
